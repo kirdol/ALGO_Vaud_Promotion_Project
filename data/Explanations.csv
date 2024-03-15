@@ -1,0 +1,55 @@
+Name,Lettering,Values
+Serial2,Serial number 111062000,None
+F05_01,Q05: Your permanent residence. Continent:,"{1, Europe}..."
+F05_02,Q05: Your permanent residence. Land:,"{1, Australia}..."
+F05_03,Q05: Your permanent residence. Region:,"{1, Australian Capital Territory}..."
+F05_04,Q05: Your permanent residence. Subregion:,"{1, Barking and Dagenham}..."
+F12,F12: Start of holidays in Switzerland:,None
+F13,F13: End of holidays in Switzerland:,None
+F15,Q15: What time of year was in Switzerland during your holidays?,"{1, Winter}..."
+F16,Q16: Type of holiday:,"{1, Holidays with only one overnight stay in Switzerland}..."
+F20,F20: Number of overnight stays in Switzerland:,None
+F21,Q21: How long did your tour of Europe take in total (including Switzerland)?,None
+F30,"Q30: Have you booked a package tour (a bundling of arrival and departure, accommodation and/or other tourist services on site)?","{1, Yes}..."
+F31_01,Q31: Who did you travel with? -Alone,"{1, True}..."
+F31_02,Q31: Who did you travel with? - With partner,"{1, True}..."
+F31_03,Q31: Who did you travel with? - With friends / acquaintances,"{1, True}..."
+F31_04,Q31: Who did you travel with? - With children,"{1, True}..."
+F31_05,Q31: Who did you travel with? - With other family members,"{1, True}..."
+F31_06,Q31: Who did you travel with? - In a group with unknown people,"{1, True}..."
+F31_07,Q31: Who did you travel with? - With one dog(s),"{1, True}..."
+F31_08,Q31: Who did you travel with? - With one or more other pet(s),"{1, True}..."
+F32,F32: Size of your group (number of people including yourself):,"{1, 1}..."
+F33,F33: Size of your group (number of people including yourself but excluding people you don't know):,"{1, 1}..."
+hHoliday Duration,Auxiliary variable: Difference of F13 end of holiday CH minus F12 start of holiday CH plus 1,None
+hGroupPeople,Auxiliary variable: Number of persons from F32 / F33 travel group,None
+F80,Q80: Please select a currency for your details:,"{1, CHF}..."
+F80_a05,"Q80: Please select a currency for your details. - Others, namely:",None
+F81_01,Q81: How much did you spend in total during your stay in Switzerland? -Overnight stay:,None
+F81_02,"Q81: How much did you spend in total during your stay in Switzerland? - Without arrival and departure: train, mountain railway, boat and other public transport:",None
+F81_03,"Q81: How much did you spend in total during your stay in Switzerland? - Food & drink: in the accommodation, on the road, out and about:",None
+F81_04,"Q81: How much did you spend in total during your stay in Switzerland? - Souvenirs, gifts, watches, jewellery:",None
+F81_05,Q81: How much did you spend in total during your stay in Switzerland? - Other shopping:,None
+F81_06,Q81: How much did you spend in total during your stay in Switzerland? - Other expenses:,None
+F81_Total,Q81: How much did you spend in total during your stay in Switzerland? -Total:,None
+F82_01,Q82: How much did you spend in total during your stay in Switzerland? -Package:,None
+F82_02,Q82: How much did you spend in total during your stay in Switzerland? -Overnight stay:,None
+F82_03,"Q82: How much did you spend in total during your stay in Switzerland? - Without arrival and departure: train, mountain railway, boat and other public transport:",None
+F82_04,"Q82: How much did you spend in total during your stay in Switzerland? - Food & drink: in the accommodation, on the road, out and about:",None
+F82_05,"Q82: How much did you spend in total during your stay in Switzerland? - Souvenirs, gifts, watches, jewellery:",None
+F82_06,Q82: How much did you spend in total during your stay in Switzerland? - Other shopping:,None
+F82_07,Q82: How much did you spend in total during your stay in Switzerland? - Other expenses:,None
+F82_Total,Q82: How much did you spend in total during your stay in Switzerland? - Total expenditure excluding expenditure on package holidays,None
+F83,Q83: Does the package include travel to and from the resort?,"{1, Yes}..."
+F85,Q85: You have therefore spent a total of [amount] (excluding package costs) during your stay in Switzerland. Is that right?,"{1, Yes}..."
+F105,Q105: Your resort where you were staying when your email address was collected for this survey:,None
+F105A,Q105: Your resort where you were staying when your email address was collected for this survey. - Other resort:,None
+F105_Code,Q105: Your resort where you were staying when your email address was collected for this survey. -Code:,"{1, Aarau}..."
+F105_OrgCode,Q105: Your resort where you were staying when your email address was collected for this survey. - Organization Code:,"{1, aarau-info}..."
+F125,Q125: Your accommodation:,"{1, Hotel / Kurhaus}..."
+F125_a11,"Q125: Your accommodation: Other, namely:",None
+F130,F130: Star category of the hotel / spa house visited:,"{1, *}..."
+F130_a07,"F130: Star category of the hotel / spa house visited: Other classification, namely:",None
+F135_01,Q135: Number of nights in [Answer from F105]:,None
+F12_F13_Mittelwert_2Cat_final,Winter - Summer (average of arrival and departure date with limit end of April / beginning of May),"{0, Winter}..."
+filter_$,(F105_OrgCode = 4) OR (F105_OrgCode = 49) OR (F105_OrgCode = 57) OR (F105_OrgCode = 59) OR (F105_OrgCode = 65) OR (F105_OrgCode = 78) OR (F105_OrgCode = 116) OR (F105_OrgCode = 124) (FILTER),"{0, Not Selected}..."
