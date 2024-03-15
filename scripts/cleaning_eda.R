@@ -1,5 +1,6 @@
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240202_15.03Extract.csv"), sep = ";")
 
+#select columns fulfilled
 data_selected <- data |>
   select(Serial2, F05_01.ENG, F05_02, F05_03, F05_04, F12, F13, F15.ENG,
          F16.ENG, F17, F20, F21, F30.ENG, F31_01_ENG, F31_02_ENG, F31_03_ENG,
