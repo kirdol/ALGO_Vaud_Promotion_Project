@@ -18,6 +18,9 @@ for (i in 1:ncol(df)) {
   df[, i] <- ifelse(df[, i] == "Applies", 1, ifelse(df[, i] == "Not applicable", 0, NA))
 }
 
+# We add a column to separate couples from families. Here people only traveled with their partner.
+
+df$couples <- ifelse(df$F31_02_ENG == 1 & df$F31_03_ENG == 0 & df$F31_04_ENG == 0 & df$F31_05_ENG == 0, 1, 0)
 
 # Sums of responses for frequency plot
 df_sums <- list()
@@ -31,7 +34,5 @@ df_sums_df <- data.frame(Column = names(df_sums), Sum = unlist(df_sums))
 
 ggplot(df_sums_df, aes(x = Column, y = Sum)) +
   geom_bar(stat = "identity", fill = "skyblue") +
+  geom_bar(data = subset(df_sums_df, Column == "couples"), fill = "orange", stat = "identity") +
   labs(title = "Frequency of responses", x = "Column", y = "Sum")
-
-# Make a plot that shows if people chose multiple responses. Ex. How many of the people who
-# travelled with partner also travelled with friends, children, etc
