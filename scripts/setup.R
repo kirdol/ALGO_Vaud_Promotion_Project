@@ -16,3 +16,4 @@ for (pkg in packages_loaded) {
 
 # cleaning of the environment
 rm(pkg)
+
