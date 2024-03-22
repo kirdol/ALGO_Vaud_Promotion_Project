@@ -4,7 +4,7 @@ data <- data %>% select(c(1:18))
 library("dplyr")
 library("ggplot2")
 
-### F05_01 ###
+### F05_01.ENG ###
 #nb of occurrences by country and continents 
 OccurencesCountry <- data %>% 
   group_by(data$F05_02.ENG) %>% 
@@ -37,7 +37,7 @@ ggplot(F05_01_PCT, aes(x=reorder(F05_01.ENG, Percentage), y=Percentage, fill=F05
         axis.text.x = element_text(angle = 45, hjust = 1)) + # Rotate x-axis labels for readability
   geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_dodge(width=0.9), vjust=-0.25) # Add percentage labels
 
-### F05_02 ###
+### F05_02.ENG ###
 #plot with continents 
 F05_02_PCT <- data %>%
   group_by(F05_02.ENG, F05_01.ENG) %>%  # Group by both country and continent
@@ -54,6 +54,11 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02.ENG`, -Percentage), y = Percentage, f
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
         plot.title = element_text(hjust = 0.5),
         legend.position = "bottom")  # Adjust legend position
+
+### F12 & F13 ###
+#Are we more interested in knowing when they came for holidays or how long?
+
+
 
 
 
