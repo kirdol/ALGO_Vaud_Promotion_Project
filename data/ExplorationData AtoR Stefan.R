@@ -1,8 +1,10 @@
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240202_15.03Extract.csv"), sep = ";")
-data <- data %>% select(c(1:18))
+data <- data %>% select(c(1:18,38))
 
 library("dplyr")
 library("ggplot2")
+library("lubridate")
+library("tidyverse")
 
 ### F05_01.ENG ###
 #nb of occurrences by country and continents 
@@ -58,6 +60,14 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02.ENG`, -Percentage), y = Percentage, f
 ### F12 & F13 ###
 #Are we more interested in knowing when they came for holidays or how long?
 
+#duration per month 
+data <- data %>%
+  mutate(
+    # Convert to date format first
+    date_column = dmy(F12),
+    # If you want the month names instead
+    month_name_column = month(date_column, label = TRUE, abbr = FALSE) # Set abbr=FALSE for full month names
+  )
 
 
 
