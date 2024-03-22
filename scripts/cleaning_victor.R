@@ -36,3 +36,12 @@ ggplot(df_sums_df, aes(x = Column, y = Sum)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   geom_bar(data = subset(df_sums_df, Column == "couples"), fill = "orange", stat = "identity") +
   labs(title = "Frequency of responses", x = "Column", y = "Sum")
+
+# make the plot in percentages
+
+df_sums_df$Percentage <- (df_sums_df$Sum)/nrow(df)*100
+
+ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_bar(data = subset(df_sums_df, Column == "couples"), fill = "orange", stat = "identity") +
+  labs(title = "Frequency of responses", x = "Column", y = "Percentage")
