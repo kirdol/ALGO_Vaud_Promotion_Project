@@ -69,6 +69,36 @@ data <- data %>%
     month_name_column = month(date_column, label = TRUE, abbr = FALSE) # Set abbr=FALSE for full month names
   )
 
+#order
+desired_order <- c("Serial2",
+                    "F05_01",
+                    "F05_01.ENG",
+                    "F05_02",
+                    "F05_02.ENG",
+                    "F05_03",
+                    "F05_04",
+                    "F12",
+                    "F13",
+                    "month_name_column",
+                   "hFerienDauer")
+remaining_columns <- setdiff(names(data), desired_order)
+new_order <- c(desired_order, remaining_columns)
+data <- data[, new_order]
+
+# nb of days per month 
+nb_days_per_month <- data %>%
+  select(F12, F13, month_name_column, hFerienDauer) %>%
+  group_by(month_name_column) %>%
+  summarize(total_hFerienDauer = sum(hFerienDauer, na.rm = TRUE))
+  
+
+ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  theme_minimal() +
+  labs(x = "Month", y = "Total Holiday Duration", title = "Total Holiday Duration by Month") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # To improve readability of month names
+
+
 
 
 

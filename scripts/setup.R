@@ -2,7 +2,9 @@
 packages_loaded <- c(
   "here",
   "dplyr",
-  "ggplot2"
+  "ggplot2",
+  "tidyverse",
+  "lubridate"
 )
 
 # Function that install the packages if not already installed on your computer
