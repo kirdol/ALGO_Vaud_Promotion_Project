@@ -90,17 +90,75 @@ nb_days_per_month <- data %>%
   select(F12, F13, month_name_column, hFerienDauer) %>%
   group_by(month_name_column) %>%
   summarize(total_hFerienDauer = sum(hFerienDauer, na.rm = TRUE))
-  
 
-ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
+nb_days_per_month <- nb_days_per_month %>%
+  mutate(season = case_when(
+    month_name_column %in% c("December", "January", "February") ~ "Winter",
+    month_name_column %in% c("March", "April", "May") ~ "Spring",
+    month_name_column %in% c("June", "July", "August") ~ "Summer",
+    month_name_column %in% c("September", "October", "November") ~ "Fall",
+    TRUE ~ NA_character_ # for any month names not matched or NA values
+  ))
+
+#plot
+ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fill = season)) +
+  geom_bar(stat = "identity") +
+  geom_smooth(aes(group = 1), method = "loess", se = FALSE, color = "red", linetype = "dashed") +
+  scale_fill_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "purple", "Fall" = "orange")) +
   theme_minimal() +
-  labs(x = "Month", y = "Total Holiday Duration", title = "Total Holiday Duration by Month") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # To improve readability of month names
+  labs(x = "Months", y = "Sum Holiday Durations", title = "Total Holiday Duration by Month", fill = "Season") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+### F16 ### 
+F16_Q <- data %>% count(F16.ENG, name = "total_options")
+F16_Q$percentage <- with(F16_Q, total_options / sum(total_options) * 100)
+labels <- paste(F16_Q$F16.ENG, sprintf("%.1f%%", F16_Q$percentage))
 
+# Create a pie chart
+pie(F16_Q$total_options, labels = labels, main = "Distribution of F16.ENG Options")
 
+### F20 ###
+# Careful here: some people have 0 nightstay and only passed by switzerland for a day. 
+# but answered the question 16, asking about the number of nights.
+# also when f16 answered and F20 blanc, drop observations? 
+F20_freq <- data %>%
+  group_by(F20) %>%
+  summarize(Count = n(), .groups = 'drop') %>%
+  arrange(desc(Count)) # Optional: arrange in descending order of frequency
 
+ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(x = "Number of nights", y = "Frequency", title = "Frequency of the number of nights in Switzerland") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
+        legend.title = element_blank()) # Hide the legend if not needed
+
+### F21 ###
+#consider NA as 0 here. 
+
+F21_EU_locations <- data %>%
+  group_by(F21) %>%
+  summarize(Count = n(), .groups = 'drop') %>%
+  arrange(desc(Count)) # Optional: arrange in descending order of frequency
+
+ggplot(F21_EU_locations, aes(x = F21, y = Count, fill = F21)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(x = "Number of nights in EU", y = "Frequency", title = "Frequency of the number of nights in EU") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
+        legend.title = element_blank()) # Hide the legend if not needed
+
+### F30 ###
+F30_Q <- data %>% count(F30.ENG, name = "Total")
+F30_Q$percentage <- with(F30_Q, Total / sum(Total) * 100)
+
+ggplot(F30_Q, aes(x = F30.ENG, y = Total, label = paste(percentage, "%"))) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_text(vjust = -0.5, color = "black") +
+  theme_minimal() +
+  labs(title = "Q30: Have you booked a package tour?",
+       x = "Answers",
+       y = "Total")
 
 
 
