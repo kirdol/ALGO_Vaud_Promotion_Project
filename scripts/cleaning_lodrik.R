@@ -86,6 +86,7 @@ unique_values <- sort(unique(data_105$F105))
 datatable(data.frame(UniqueValues = unique_values), options = list(pageLength = 100))
 
 ### BH F105A        Q105: Your resort where you were staying when your email address was collected for this survey. - Other resort:
+data_105A <- data %>% filter(!is.na(F105A))
 
 # Unique values for the other resorts
 unique_values_105A <- sort(unique(data_105A$F105A))
