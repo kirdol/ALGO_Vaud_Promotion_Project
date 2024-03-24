@@ -3,13 +3,10 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240202_15.03Extract.csv"),
 
 
 ### BB - BS ###
-
-# BB F82_06       Q82: How much did you spend in total during your stay in Switzerland? - Other shopping:
-F82_06 <- data |>
-  select(Serial2, F82_06)
-
+data_non_na <- na.omit(data$F82_06)
+### General
 # Calculating the number of non-NA values for each column, normalized by the length of F82_06$Serial2
-non_NA = sapply(data, function(x) sum(!is.na(x))/length(F82_06$Serial2))
+non_NA = sapply(data, function(x) sum(!is.na(x))/length(data$Serial2))
 a = non_NA[non_NA < 1]
 b = sort(a, decreasing = TRUE)
 
@@ -25,7 +22,20 @@ ggplot(non_NA_df, aes(x = reorder(Column, Non_NA_Values), y = Non_NA_Values)) +
        y = "Number of Non-NA Values") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   theme_minimal()
-# BC F82_07       Q82: How much did you spend in total during your stay in Switzerland? - Other expenses:
+
+### BB F82_06       Q82: How much did you spend in total during your stay in Switzerland? - Other shopping:
+data_filtered <- data %>% filter(!is.na(F82_06))
+ggplot(data_filtered, aes(x = F82_06)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  theme_minimal() +
+  labs(title = "Histogramme de F86_02", x = "F82_06", y = "Fréquence")
+
+ggplot(data_filtered, aes(x = F82_06)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  theme_minimal() +
+  labs(title = "Densité de F82_06", x = "F82_06", y = "Densité")
+
+### BC F82_07       Q82: How much did you spend in total during your stay in Switzerland? - Other expenses:
 
 # BD F82_Total    Q82: How much did you spend in total during your stay in Switzerland? - Total expenditure excluding expenditure on package holidays
 
