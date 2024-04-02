@@ -41,7 +41,7 @@ ggplot(data_82_07, aes(x = F82_07)) +
   theme_minimal() +
   labs(title = "Histogramme de F82_06", x = "F82_07", y = "Fréquence")
 
-ggplot(data_86_02, aes(x = F82_06)) +
+ggplot(data_82_07, aes(x = F82_07)) +
   geom_density(fill = "blue", alpha = 0.5) +
   theme_minimal() +
   labs(title = "Densité de F82_07", x = "F82_07", y = "Densité")
@@ -57,7 +57,6 @@ ggplot(data_82_Total, aes(x = F82_Total)) +
   geom_density(fill = "blue", alpha = 0.5) +
   theme_minimal() +
   labs(title = "Densité de F82_Total", x = "F82_Total", y = "Densité")
-
 
 ### BE F83          Q83: Does the package include travel to and from the resort?
 data_83 <- data %>% filter(!is.na(F83))
