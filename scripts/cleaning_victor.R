@@ -53,10 +53,11 @@ ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
 library(leaflet)
 library(sf)
 
-
+# Data from https://labs.karavia.ch/swiss-boundaries-geojson/
 districts <- read_sf("data/swiss_districts.geojson")
 districts
 
+# Keep only Vaud
 vaud <- districts |>
   filter(KANTONSNUM == 22)
 
@@ -78,11 +79,32 @@ data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (
 data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux")] <- "Lavaux-Oron"
 data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
 
+# Count districts in data and add to vaud
+vaud$sum <- NA
 
-# Transform to leaflet projection if needed
+vaud$sum[vaud$NAME == "Jura-Nord vaudois"] <- sum(data$leaflet_districts == "Jura-Nord vaudois")
+vaud$sum[vaud$NAME == "Aigle"] <- sum(data$leaflet_districts == "Aigle")
+vaud$sum[vaud$NAME == "Morges"] <- sum(data$leaflet_districts == "Morges")
+vaud$sum[vaud$NAME == "Nyon"] <- sum(data$leaflet_districts == "Nyon")
+vaud$sum[vaud$NAME == "Riviera-Pays-d'Enhaut"] <- sum(data$leaflet_districts == "Riviera-Pays-d'Enhaut")
+vaud$sum[vaud$NAME == "Gros-de-Vaud"] <- sum(data$leaflet_districts == "Gros-de-Vaud")
+vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
+vaud$sum[vaud$NAME == "Lavaux-Oron"] <- sum(data$leaflet_districts == "Lavaux-Oron")
+vaud$sum[vaud$NAME == "Lausanne"] <- sum(data$leaflet_districts == "Lausanne")
+vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
+vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Ouest lausannois")
+
+
+# Transform to leaflet projection 
 vaud <- st_transform(vaud, crs = '+proj=longlat +datum=WGS84')
 
-leaflet() %>%
+palette <- colorNumeric(palette = "Purples", domain = vaud$sum)
+
+leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(data = vaud, stroke = 1, opacity = 0.8)
+  addPolygons(fillOpacity = 0.75, color = ~palette(vaud$sum), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$sum))
+
+# Save data to new dataset
+write.csv(data, file = "data/leaflet_dataset.csv", row.names = FALSE)
