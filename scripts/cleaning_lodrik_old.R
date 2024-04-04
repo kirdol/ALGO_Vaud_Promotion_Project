@@ -1,5 +1,5 @@
 # Loading data
-data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240202_15.03Extract.csv"),
                  sep = ";")
 ### BB - BS ###
 data_non_na <- na.omit(data$F82_06)
