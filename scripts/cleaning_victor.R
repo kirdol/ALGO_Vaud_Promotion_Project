@@ -99,7 +99,7 @@ vaud <- st_transform(vaud, crs = '+proj=longlat +datum=WGS84')
 
 palette <- colorNumeric(palette = "Purples", domain = vaud$sum)
 
-p1 <- leaflet(vaud) %>%
+leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~palette(vaud$sum), weight = 0) %>%
@@ -125,7 +125,7 @@ vaud$couples_percentage <- round((vaud$couples_sum)/sum(data$couples)*100, 2)
 # Couples plot
 couples_palette <- colorNumeric(palette = "Purples", domain = vaud$couples_percentage)
 
-p2 <- leaflet(vaud) %>%
+leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~couples_palette(vaud$couples_percentage), weight = 0) %>%
