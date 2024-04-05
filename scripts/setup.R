@@ -7,7 +7,9 @@ packages_loaded <- c(
   "lubridate",
   "DT",
   "plotly",
-  "ggridges"
+  "ggridges",
+  "leaflet",
+  "sf"
 )
 
 # Function that install the packages if not already installed on your computer

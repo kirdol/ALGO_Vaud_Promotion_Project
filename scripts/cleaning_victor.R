@@ -1,13 +1,13 @@
 setwd("~/GitHub/ALGO_Vaud_Promotion_Project")
 
-data <- read.csv("data/TMS_dataset_Vaud_20240202_15.03Extract.csv", sep = ";")
+data <- read.csv("data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ";")
 
 explanations <- read.csv("data/explanations.csv")
 
 which(colnames(data) == "F31_01")
 which(colnames(data) == "F32")
 
-df <- data[, 19:36]
+df <- data[, 18:33]
 
 # Keep english columns only
 seq(2, 17, 2)
@@ -50,9 +50,6 @@ ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
 #######################################################################################################################################
 # Leaflet map
 
-library(leaflet)
-library(sf)
-
 # Data from https://labs.karavia.ch/swiss-boundaries-geojson/
 districts <- read_sf("data/swiss_districts.geojson")
 districts
@@ -69,14 +66,14 @@ data$leaflet_districts <- NA
 
 # Assign cities to districts based on conditions
 data$leaflet_districts[data$F105_Code == "Lausanne"] <- "Lausanne"
-data$leaflet_districts[data$F105_Code %in% c("Montreux", "Vevey", "La Tour-de-Peilz", "Rougemont", "Château-d'Oex", "Veytaux", "Rossinière", "Corsier-sur-Vevey")] <- "Riviera-Pays-d'Enhaut"
+data$leaflet_districts[data$F105_Code %in% c("Montreux", "Vevey", "La Tour-de-Peilz", "Rougemont", "Château-d'Oex", "Veytaux", "Rossinière", "Corsier-sur-Vevey", "Saint-Légier-La-Chiésaz", "Blonay", "Chardonne", "Chernex")] <- "Riviera-Pays-d'Enhaut"
 data$leaflet_districts[data$F105_Code %in% c("Morges", "Yens", "Aubonne")] <- "Morges"
-data$leaflet_districts[data$F105_Code %in% c("Yverdon-les-Bains", "L'Abbaye", "Vallorbe", "Orbe", "Yvonand", "La Praz", "Le Chenit", "Bullet", "Montagny-près-Yverdon")] <- "Jura-Nord vaudois"
-data$leaflet_districts[data$F105_Code %in% c("Aigle", "Leysin", "Villeneuve (VD)", "Ormont-Dessus", "Bex", "Lavey-Morcles", "Gryon", "Ormont-Dessous")] <- "Aigle"
+data$leaflet_districts[data$F105_Code %in% c("Yverdon-les-Bains", "L'Abbaye", "Vallorbe", "Orbe", "Yvonand", "La Praz", "Le Chenit", "Bullet", "Montagny-près-Yverdon", "Saint Croix", "Le Rocheray", "Le Pont", "Le Sentier", "Le Brassus", "Les Rasses", "Les Charbonnieres")] <- "Jura-Nord vaudois"
+data$leaflet_districts[data$F105_Code %in% c("Aigle", "Leysin", "Villeneuve (VD)", "Ormont-Dessus", "Bex", "Lavey-Morcles", "Gryon", "Ormont-Dessous", "Les Diablerets", "Villars-sur-Ollon")] <- "Aigle"
 data$leaflet_districts[data$F105_Code %in% c("Nyon", "Prangins", "Chavannes-de-Bogis", "Coppet", "Rolle", "Commugny", "Duillier", "Gilly", "Founex")] <- "Nyon"
-data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "Payerne", "Cudrefin")] <- "Broye-Vully"
-data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)")] <- "Ouest lausannois"
-data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux")] <- "Lavaux-Oron"
+data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "Payerne", "Cudrefin", "St. Aubin", "Estavayer-le-Lac")] <- "Broye-Vully"
+data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)", "Renens", "Saint-Sulpice (VD)")] <- "Ouest lausannois"
+data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cully")] <- "Lavaux-Oron"
 data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
 
 # Count districts in data and add to vaud
@@ -94,17 +91,47 @@ vaud$sum[vaud$NAME == "Lausanne"] <- sum(data$leaflet_districts == "Lausanne")
 vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
 vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Ouest lausannois")
 
+# Transform sum to percentage
+vaud$percentage <- round((vaud$sum)/nrow(data)*100, 2)
 
 # Transform to leaflet projection 
 vaud <- st_transform(vaud, crs = '+proj=longlat +datum=WGS84')
 
 palette <- colorNumeric(palette = "Purples", domain = vaud$sum)
 
-leaflet(vaud) %>%
+p1 <- leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~palette(vaud$sum), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$sum))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%"))
+
+# Add couples column to data
+data$couples <- df$couples
+
+# Function to calculate sums for couples
+calculate_couples_sum <- function(data, vaud) {
+  vaud$couples_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$couples_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$couples == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_couples_sum(data, vaud)
+
+# Create couples percentage from couples_sum
+vaud$couples_percentage <- round((vaud$couples_sum)/sum(data$couples)*100, 2)
+
+# Couples plot
+couples_palette <- colorNumeric(palette = "Purples", domain = vaud$couples_percentage)
+
+p2 <- leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~couples_palette(vaud$couples_percentage), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$couples_percentage, "%"))
+
+
 
 # Save data to new dataset
-write.csv(data, file = "data/leaflet_dataset.csv", row.names = FALSE)
+#write.csv(data, file = "data/leaflet_dataset.csv", row.names = FALSE)
