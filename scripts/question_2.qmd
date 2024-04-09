@@ -1,13 +1,14 @@
-data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ";")
-data <- data %>% select(c(1:18,36))
+# Question 2
 
-### questions potentiellement intéressantes à explorer ###
+**Where are from the people coming in the canton of Vaud? What kind of trip are they doing?**
 
-# Concernant distribution des personnes voyageant en suisse durant l’année :  voir selon les mois qui vient de quel pays/ville en Suisse
-# Dépenses par nationalité? 
+```{r output = FALSE}
+source(here::here("scripts", "setup.R"))
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
+                 sep = ";")
+```
 
-###
-
+```{r}
 ### F05_01.ENG ###
 #nb of occurrences by country and continents 
 OccurencesCountry <- data %>% 
@@ -41,6 +42,9 @@ ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05
         axis.text.x = element_text(angle = 45, hjust = 1)) + # Rotate x-axis labels for readability
   geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_dodge(width=0.9), vjust=-0.25) # Add percentage labels
 
+```
+
+```{r}
 ### F05_02.ENG ###
 #plot with continents 
 F05_02_PCT <- data %>%
@@ -58,7 +62,9 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02.ENG`, -Percentage), y = Percentage, f
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
         plot.title = element_text(hjust = 0.5),
         legend.position = "bottom")  # Adjust legend position
+```
 
+```{r}
 ### F12 & F13 ###
 #Are we more interested in knowing when they came for holidays or how long?
 
@@ -110,7 +116,9 @@ ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fil
   theme_minimal() +
   labs(x = "Months", y = "Sum Holiday Durations", title = "Total Holiday Duration by Month", fill = "Season") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
+```{r}
 ### F16 ### 
 F16_Q <- data %>% count(F16.ENG, name = "total_options")
 F16_Q$percentage <- with(F16_Q, total_options / sum(total_options) * 100)
@@ -118,7 +126,9 @@ labels <- paste(F16_Q$F16.ENG, sprintf("%.1f%%", F16_Q$percentage))
 
 # Create a pie chart
 pie(F16_Q$total_options, labels = labels, main = "Distribution of F16.ENG Options")
+```
 
+```{r}
 ### F20 ###
 # Careful here: some people have 0 nightstay and only passed by switzerland for a day. 
 # but answered the question 16, asking about the number of nights.
@@ -134,7 +144,9 @@ ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
   labs(x = "Number of nights", y = "Frequency", title = "Frequency of the number of nights in Switzerland") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
         legend.title = element_blank()) # Hide the legend if not needed
+```
 
+```{r}
 ### F21 ###
 #consider NA as 0 here. 
 
@@ -149,7 +161,9 @@ ggplot(F21_EU_locations, aes(x = F21, y = Count, fill = F21)) +
   labs(x = "Number of nights in EU", y = "Frequency", title = "Frequency of the number of nights in EU") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
         legend.title = element_blank()) # Hide the legend if not needed
+```
 
+```{r}
 ### F30 ###
 F30_Q <- data %>% count(F30.ENG, name = "Total")
 F30_Q$percentage <- with(F30_Q, Total / sum(Total) * 100)
@@ -161,7 +175,9 @@ ggplot(F30_Q, aes(x = F30.ENG, y = Total, label = paste(percentage, "%"))) +
   labs(title = "Q30: Have you booked a package tour?",
        x = "Answers",
        y = "Total")
+```
 
+```{r}
 ### Deeper reasoning ###
 
 # Where are coming from the people, per month
@@ -182,4 +198,11 @@ ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02.ENG`, size = Cou
        size = "Number of Arrivals") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# If your data has many countries, this plot might be cluttered. Consider filtering or aggregating countries for clarity.
+```
+
+
+
+
+
+
+
