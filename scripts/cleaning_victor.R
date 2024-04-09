@@ -1,6 +1,6 @@
 setwd("~/GitHub/ALGO_Vaud_Promotion_Project")
 
-data <- read.csv("data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ";")
+data <- read.csv("data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
 
 explanations <- read.csv("data/explanations.csv")
 
@@ -32,10 +32,15 @@ for (col in names(df)) {
 # ggplot of frequency of responses
 df_sums_df <- data.frame(Column = names(df_sums), Sum = unlist(df_sums))
 
+#Change column names in df_sums_df
+df_sums_df$Column <- c("Alone", "Partner", "Friends", "Children", "Other family", "Unknown people (group)", "Dog", "Other pet(s)", "Only with partner")
+colnames(df_sums_df)[colnames(df_sums_df) == "Traveled with"] <- "Column"
+
+#Plot frequency
 ggplot(df_sums_df, aes(x = Column, y = Sum)) +
   geom_bar(stat = "identity", fill = "skyblue") +
-  geom_bar(data = subset(df_sums_df, Column == "couples"), fill = "orange", stat = "identity") +
-  labs(title = "Frequency of responses", x = "Column", y = "Sum")
+  geom_bar(data = subset(df_sums_df, Column == "Only with partner"), fill = "orange", stat = "identity") +
+  labs(title = "Frequency of responses", x = "Traveled with", y = "Sum")
 
 # make the plot in percentages
 
@@ -43,8 +48,8 @@ df_sums_df$Percentage <- (df_sums_df$Sum)/nrow(df)*100
 
 ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
   geom_bar(stat = "identity", fill = "skyblue") +
-  geom_bar(data = subset(df_sums_df, Column == "couples"), fill = "orange", stat = "identity") +
-  labs(title = "Frequency of responses", x = "Column", y = "Percentage")
+  geom_bar(data = subset(df_sums_df, Column == "Only with partner"), fill = "orange", stat = "identity") +
+  labs(title = "Frequency of responses", x = "Traveled with", y = "Percentage")
 
 
 #######################################################################################################################################
@@ -97,13 +102,36 @@ vaud$percentage <- round((vaud$sum)/nrow(data)*100, 2)
 # Transform to leaflet projection 
 vaud <- st_transform(vaud, crs = '+proj=longlat +datum=WGS84')
 
-palette <- colorNumeric(palette = "Purples", domain = vaud$sum)
+palette <- colorNumeric(palette = "Greens", domain = vaud$percentage)
+
+tag.map.title <- tags$style(HTML("
+  .leaflet-control.map-title { 
+    transform: translate(-50%,20%);
+    position: fixed !important;
+    left: 50%;
+    text-align: center;
+    padding-left: 10px; 
+    padding-right: 10px; 
+    background: rgba(255,255,255,0.75);
+    font-weight: bold;
+    font-size: 28px;
+  }
+"))
+
+title <- tags$div(
+  tag.map.title, HTML("Map title")
+)
 
 leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(fillOpacity = 0.75, color = ~palette(vaud$sum), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%"))
+  addPolygons(fillOpacity = 0.75, color = ~palette(vaud$percentage), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%")) %>%
+  addLegend(position = "bottomright",
+            title = "Legend",
+            opacity = 1)
+
+
 
 # Add couples column to data
 data$couples <- df$couples
@@ -123,7 +151,7 @@ vaud <- calculate_couples_sum(data, vaud)
 vaud$couples_percentage <- round((vaud$couples_sum)/sum(data$couples)*100, 2)
 
 # Couples plot
-couples_palette <- colorNumeric(palette = "Purples", domain = vaud$couples_percentage)
+couples_palette <- colorNumeric(palette = "Oranges", domain = vaud$couples_percentage)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -132,6 +160,32 @@ leaflet(vaud) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$couples_percentage, "%"))
 
 
+# Add children column to data
+data$children <- df$F31_04_ENG
+
+# Function to calculate sums for children
+calculate_children_sum <- function(data, vaud) {
+  vaud$children_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$children_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$children == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_children_sum(data, vaud)
+
+# Create children percentage from couples_sum
+vaud$children_percentage <- round((vaud$children_sum)/sum(data$children)*100, 2)
+
+# Children plot
+children_palette <- colorNumeric(palette = "Purples", domain = vaud$children_percentage)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~children_palette(vaud$children_percentage), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_percentage, "%"))
 
 # Save data to new dataset
 #write.csv(data, file = "data/leaflet_dataset.csv", row.names = FALSE)
+
