@@ -7,3 +7,4 @@ data_selected <- data |>
          F82_04, F82_05, F82_06, F82_07, F82_Total, F83, F85, F105, F105A,
          F105_Code, F105_Code_nr, F105_OrgCode, F125_ENG, F125_a11.ENG, F30,
          F130_a07, F135_01, F12_F13_Mittelwert_2Cat_final)
+hello
