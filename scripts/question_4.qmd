@@ -5,7 +5,7 @@
 ```{r output = FALSE}
 source(here::here("scripts", "setup.R"))
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
-                 sep = ";")
+                 sep = ",")
 ```
 
 
