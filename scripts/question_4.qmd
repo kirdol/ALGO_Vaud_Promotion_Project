@@ -9,7 +9,7 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 ```
 
 
-## Most Popular Destinations
+## Most Popular Destinations (where people stayed)
 ```{r}
 resort_counts <- table(data$F105_Code)
 accommodation_counts <- table(data$F125_ENG)
