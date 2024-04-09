@@ -19,7 +19,7 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 ### F05_01.ENG ###
 #nb of occurrences by country and continents 
 OccurencesCountry <- data %>% 
-  group_by(data$F05_02.ENG) %>% 
+  group_by(data$F05_02_ENG) %>% 
   count(sort = TRUE)
 
 OccurencesContinent <- data %>% 
@@ -27,7 +27,7 @@ OccurencesContinent <- data %>%
   count(sort = TRUE)
 
 #list all countries and continents 
-# print(unique(data$F05_02.ENG))
+# print(unique(data$F05_02_ENG))
 # print(unique(data$F05_01_ENG))
 
 #Continent in percentages
@@ -39,7 +39,7 @@ F05_01_PCT <- data %>%
   
 # Countries in percentages 
 F05_02_PCT <- data %>% 
-  group_by(F05_02.ENG) %>%
+  group_by(F05_02_ENG) %>%
   summarise(Count = n()) %>%
   mutate(Percentage = Count / sum(Count) * 100) %>% 
   arrange(desc(Percentage))
@@ -69,15 +69,15 @@ ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05
 ```
 
 ```{r}
-### F05_02.ENG ###
+### F05_02_ENG ###
 #plot with continents 
 F05_02_PCT <- data %>%
-  group_by(F05_02.ENG, F05_01_ENG) %>%  # Group by both country and continent
+  group_by(F05_02_ENG, F05_01_ENG) %>%  # Group by both country and continent
   summarise(Count = n(), .groups = 'drop') %>%
   mutate(Percentage = Count / sum(Count) * 100) %>%
   arrange(desc(Percentage))
 
-ggplot(F05_02_PCT, aes(x = reorder(`F05_02.ENG`, -Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
+ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, -Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
   geom_bar(stat = "identity") +
   coord_flip() +  # Make the plot horizontal
   scale_fill_brewer(palette = "Set3", name = "Continent") +  # Use a color palette for continents
@@ -106,7 +106,7 @@ desired_order <- c("Serial2",
                     "F05_01",
                     "F05_01_ENG",
                     "F05_02",
-                    "F05_02.ENG",
+                    "F05_02_ENG",
                     "F05_03",
                     "F05_04",
                     "F12",
@@ -144,12 +144,12 @@ ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fil
 
 ```{r}
 ### F16 ### 
-F16_Q <- data %>% count(F16.ENG, name = "total_options")
+F16_Q <- data %>% count(F16_ENG, name = "total_options")
 F16_Q$percentage <- with(F16_Q, total_options / sum(total_options) * 100)
-labels <- paste(F16_Q$F16.ENG, sprintf("%.1f%%", F16_Q$percentage))
+labels <- paste(F16_Q$F16_ENG, sprintf("%.1f%%", F16_Q$percentage))
 
 # Create a pie chart
-pie(F16_Q$total_options, labels = labels, main = "Distribution of F16.ENG Options")
+pie(F16_Q$total_options, labels = labels, main = "Distribution of F16_ENG Options")
 ```
 
 ```{r}
@@ -189,10 +189,10 @@ ggplot(F21_EU_locations, aes(x = F21, y = Count, fill = F21)) +
 
 ```{r}
 ### F30 ###
-F30_Q <- data %>% count(F30.ENG, name = "Total")
+F30_Q <- data %>% count(F30_ENG, name = "Total")
 F30_Q$percentage <- with(F30_Q, Total / sum(Total) * 100)
 
-ggplot(F30_Q, aes(x = F30.ENG, y = Total, label = paste(percentage, "%"))) +
+ggplot(F30_Q, aes(x = F30_ENG, y = Total, label = paste(percentage, "%"))) +
   geom_bar(stat = "identity", fill = "skyblue") +
   geom_text(vjust = -0.5, color = "black") +
   theme_minimal() +
@@ -208,12 +208,12 @@ ggplot(F30_Q, aes(x = F30.ENG, y = Total, label = paste(percentage, "%"))) +
 
 # Summarize data: count arrivals per month and country
 monthly_arrivals <- data %>%
-  group_by(month_name_column, F05_02.ENG) %>%
+  group_by(month_name_column, F05_02_ENG) %>%
   summarise(Count = n(), .groups = 'drop') %>%
-  arrange(month_name_column, F05_02.ENG) # This will ensure the data is ordered, which might help in visualization
+  arrange(month_name_column, F05_02_ENG) # This will ensure the data is ordered, which might help in visualization
 
 # Visualize
-ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02.ENG`, size = Count)) +
+ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02_ENG`, size = Count)) +
   geom_point(alpha = 0.7) + # Using alpha for better visibility if points overlap
   theme_minimal() +
   labs(title = "Monthly Arrivals in Switzerland by Country of Origin",
