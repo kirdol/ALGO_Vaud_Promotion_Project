@@ -1,37 +1,61 @@
-# Question 2
+---
+title: "Question 2"
+format:
+  html:
+    code-fold: true
+---
 
 **Where are from the people coming in the canton of Vaud? What kind of trip are they doing?**
 
 ```{r output = FALSE}
 source(here::here("scripts", "setup.R"))
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
-                 sep = ";")
+                 sep = ",")
 ```
+
+### Data Exploration: Who is coming? 
 
 ```{r}
 ### F05_01.ENG ###
 #nb of occurrences by country and continents 
 OccurencesCountry <- data %>% 
   group_by(data$F05_02.ENG) %>% 
-  count(sort = TRUE) %>% 
-  print() 
+  count(sort = TRUE)
 
 OccurencesContinent <- data %>% 
   group_by(data$F05_01_ENG) %>% 
-  count(sort = TRUE) %>% 
-  print() 
+  count(sort = TRUE)
 
 #list all countries and continents 
-print(unique(data$F05_02.ENG))
-print(unique(data$F05_01_ENG))
+# print(unique(data$F05_02.ENG))
+# print(unique(data$F05_01_ENG))
 
-#in percentages and plot continents 
+#Continent in percentages
 F05_01_PCT <- data %>% 
   group_by(F05_01_ENG) %>%
   summarise(Count = n()) %>%
   mutate(Percentage = Count / sum(Count) * 100) %>% 
   arrange(desc(Percentage))
+  
+# Countries in percentages 
+F05_02_PCT <- data %>% 
+  group_by(F05_02.ENG) %>%
+  summarise(Count = n()) %>%
+  mutate(Percentage = Count / sum(Count) * 100) %>% 
+  arrange(desc(Percentage))
 
+datatable(F05_01_PCT, options = list(pageLength = 5,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE) 
+
+datatable(OccurencesCountry, options = list(pageLength = 10,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE)
+
+#add continent next to each country
+#or merge continent and country table. 1st column continents, 2nd countries, # of occurences then percentage
+
+#plot numbers continent 
 ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05_01_ENG)) +
   geom_bar(stat="identity") +
   theme_minimal() +
@@ -199,10 +223,3 @@ ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02.ENG`, size = Cou
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
-
-
-
-
-
-
-
