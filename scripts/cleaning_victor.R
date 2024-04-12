@@ -104,32 +104,11 @@ vaud <- st_transform(vaud, crs = '+proj=longlat +datum=WGS84')
 
 palette <- colorNumeric(palette = "Greens", domain = vaud$percentage)
 
-tag.map.title <- tags$style(HTML("
-  .leaflet-control.map-title { 
-    transform: translate(-50%,20%);
-    position: fixed !important;
-    left: 50%;
-    text-align: center;
-    padding-left: 10px; 
-    padding-right: 10px; 
-    background: rgba(255,255,255,0.75);
-    font-weight: bold;
-    font-size: 28px;
-  }
-"))
-
-title <- tags$div(
-  tag.map.title, HTML("Map title")
-)
-
 leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~palette(vaud$percentage), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%")) %>%
-  addLegend(position = "bottomright",
-            title = "Legend",
-            opacity = 1)
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%"))
 
 
 
