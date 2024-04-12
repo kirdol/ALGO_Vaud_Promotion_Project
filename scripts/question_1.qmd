@@ -1,0 +1,81 @@
+---
+title: "Question 1"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+# Question 1 - Expenses and where they come from, when, where and for which sector?
+
+```{r}
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ";")
+```
+
+```{r}
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240202_15.03Extract.csv"), sep = ";")
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(tidyr)
+
+```
+
+## Average Spending by category (no package tour)
+
+```{r}
+spending_data <- data.frame(
+  Spending_Type = c("Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F81_01, na.rm = TRUE), 
+             mean(data$F81_02, na.rm = TRUE),
+             mean(data$F81_03, na.rm = TRUE),
+             mean(data$F81_04, na.rm = TRUE),
+             mean(data$F81_05, na.rm = TRUE),
+             mean(data$F81_06, na.rm = TRUE))
+)
+
+ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Average Spending by Category (no package tour)", x = "Category", y = "Average Amount") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
+```
+
+## Average Spending by Category (with package)
+
+```{r}
+spending_data_package <- data.frame(
+  Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F82_01, na.rm = TRUE), 
+             mean(data$F82_02, na.rm = TRUE),
+             mean(data$F82_03, na.rm = TRUE),
+             mean(data$F82_04, na.rm = TRUE),
+             mean(data$F82_05, na.rm = TRUE),
+             mean(data$F82_06, na.rm = TRUE),
+             mean(data$F82_07, na.rm = TRUE))
+)
+
+ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Average Spending by Category", x = "Category", y = "Average Amount") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Spending by Nationality
+
+```{r}
+filtered_data <- data %>%
+  rename(Continent = F05_01.ENG) %>%
+  filter(F81_Total <= 100000)
+
+ggplot(filtered_data, aes(x = F05_02.ENG, y = F81_Total, fill = Continent)) +
+  geom_boxplot() +
+  labs(title = "Spending by Nationality", x = "Nationality", y = "Spending") +
+  scale_fill_brewer(palette = "Set3") + # Adds a color palette for the continents
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom")
+```
