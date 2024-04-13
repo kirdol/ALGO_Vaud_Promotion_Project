@@ -1,5 +1,5 @@
 # Question 4
-> **Where did they stay? (For example: yes, they went to Montreux, but what type of accommodation, what price?**
+> Where did they stay? (For example: yes, they went to Montreux, but what type of accommodation, what price?
 
 ## Initializations
 ```{r output = FALSE}
