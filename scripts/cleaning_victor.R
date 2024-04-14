@@ -1,4 +1,4 @@
-setwd("~/GitHub/ALGO_Vaud_Promotion_Project")
+# setwd("~/GitHub/ALGO_Vaud_Promotion_Project")
 
 data <- read.csv("data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
 

@@ -48,12 +48,182 @@ datatable(F05_01_PCT, options = list(pageLength = 5,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE) 
 
-datatable(OccurencesCountry, options = list(pageLength = 10,
+datatable(F05_02_PCT, options = list(pageLength = 10,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE)
 
 #add continent next to each country
 #or merge continent and country table. 1st column continents, 2nd countries, # of occurences then percentage
+```
+More details about where are the tourists coming from by city
+
+```{r}
+# #total number of tourist per city
+# numbertouristpercity <- data %>%
+#   group_by(F105_Code) %>%
+#   count(sort = TRUE)
+#   
+# #ratio of nationality per city
+# <- data %>% 
+#   group_by(F105_Code) %>%
+#   summarise(Count = n()) %>%
+#   mutate(Percentage = Count / sum(Count) * 100) %>% 
+#   arrange(desc(Percentage))
+
+# Counting the number of tourists by city and nationality
+tourists_by_nationality <- data %>%
+  group_by(F105_Code, F05_02_ENG) %>%
+  summarise(Count = n(), .groups = 'drop')
+
+# Calculating the total number of tourists per city
+total_tourists_per_city <- tourists_by_nationality %>%
+  group_by(F105_Code) %>%
+  summarise(TotalCount = sum(Count), .groups = 'drop')
+
+# Joining the counts back to the detailed breakdown and calculating the ratio
+nationality_ratio_per_city <- tourists_by_nationality %>%
+  left_join(total_tourists_per_city, by = "F105_Code") %>%
+  mutate(Ratio = Count / TotalCount) %>%
+  select(F105_Code, F05_02_ENG, Ratio)
+
+datatable(nationality_ratio_per_city, options = list(pageLength = 5,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE)
+
+```
+
+leaflet
+
+```{r}
+# Leaflet map
+
+# Data from https://labs.karavia.ch/swiss-boundaries-geojson/
+districts <- read_sf("/Users/stefanfavre/Documents/GitHub/ALGO_Vaud_Promotion_Project/data/swiss_districts.geojson")
+districts
+
+# Keep only Vaud
+vaud <- districts |>
+  filter(KANTONSNUM == 22)
+
+# We will transform data to include corresponding leaflet district. 
+unique(data$F105_Code)
+
+# Create a new column 'leaflet_region' with NA values
+data$leaflet_districts <- NA
+
+# Assign cities to districts based on conditions
+data$leaflet_districts[data$F105_Code == "Lausanne"] <- "Lausanne"
+data$leaflet_districts[data$F105_Code %in% c("Montreux", "Vevey", "La Tour-de-Peilz", "Rougemont", "Château-d'Oex", "Veytaux", "Rossinière", "Corsier-sur-Vevey", "Saint-Légier-La-Chiésaz", "Blonay", "Chardonne", "Chernex")] <- "Riviera-Pays-d'Enhaut"
+data$leaflet_districts[data$F105_Code %in% c("Morges", "Yens", "Aubonne")] <- "Morges"
+data$leaflet_districts[data$F105_Code %in% c("Yverdon-les-Bains", "L'Abbaye", "Vallorbe", "Orbe", "Yvonand", "La Praz", "Le Chenit", "Bullet", "Montagny-près-Yverdon", "Saint Croix", "Le Rocheray", "Le Pont", "Le Sentier", "Le Brassus", "Les Rasses", "Les Charbonnieres")] <- "Jura-Nord vaudois"
+data$leaflet_districts[data$F105_Code %in% c("Aigle", "Leysin", "Villeneuve (VD)", "Ormont-Dessus", "Bex", "Lavey-Morcles", "Gryon", "Ormont-Dessous", "Les Diablerets", "Villars-sur-Ollon")] <- "Aigle"
+data$leaflet_districts[data$F105_Code %in% c("Nyon", "Prangins", "Chavannes-de-Bogis", "Coppet", "Rolle", "Commugny", "Duillier", "Gilly", "Founex")] <- "Nyon"
+data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "Payerne", "Cudrefin", "St. Aubin", "Estavayer-le-Lac")] <- "Broye-Vully"
+data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)", "Renens", "Saint-Sulpice (VD)")] <- "Ouest lausannois"
+data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cully")] <- "Lavaux-Oron"
+data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
+
+# Count districts in data and add to vaud
+vaud$sum <- NA
+
+vaud$sum[vaud$NAME == "Jura-Nord vaudois"] <- sum(data$leaflet_districts == "Jura-Nord vaudois")
+vaud$sum[vaud$NAME == "Aigle"] <- sum(data$leaflet_districts == "Aigle")
+vaud$sum[vaud$NAME == "Morges"] <- sum(data$leaflet_districts == "Morges")
+vaud$sum[vaud$NAME == "Nyon"] <- sum(data$leaflet_districts == "Nyon")
+vaud$sum[vaud$NAME == "Riviera-Pays-d'Enhaut"] <- sum(data$leaflet_districts == "Riviera-Pays-d'Enhaut")
+vaud$sum[vaud$NAME == "Gros-de-Vaud"] <- sum(data$leaflet_districts == "Gros-de-Vaud")
+vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
+vaud$sum[vaud$NAME == "Lavaux-Oron"] <- sum(data$leaflet_districts == "Lavaux-Oron")
+vaud$sum[vaud$NAME == "Lausanne"] <- sum(data$leaflet_districts == "Lausanne")
+vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
+vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Ouest lausannois")
+
+# Transform sum to percentage
+vaud$percentage <- round((vaud$sum)/nrow(data)*100, 2)
+
+# Transform to leaflet projection 
+vaud <- st_transform(vaud, crs = '+proj=longlat +datum=WGS84')
+
+palette <- colorNumeric(palette = "Greens", domain = vaud$percentage)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~palette(vaud$percentage), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%"))
+
+library(dplyr)
+library(sf)
+library(leaflet)
+
+# Step 1: Add leaflet_districts to nationality_ratio_per_city
+nationality_district_data <- nationality_ratio_per_city %>%
+  left_join(data %>% select(F105_Code, leaflet_districts), by = "F105_Code") %>%
+  group_by(leaflet_districts, F05_02_ENG) %>%
+  summarise(Count = sum(Count), TotalCount = sum(TotalCount), .groups = 'drop') %>%
+  mutate(Ratio = Count / TotalCount) %>%
+  mutate(InfoText = paste(F05_02_ENG, ":", round(Ratio * 100, 2), "%")) %>%
+  group_by(leaflet_districts) %>%
+  summarise(AllNationalities = paste(InfoText, collapse = "\n"))
+
+# Step 2: Merge nationality data with vaud data
+vaud <- vaud %>%
+  left_join(nationality_district_data, by = c("NAME" = "leaflet_districts"))
+
+# Leaflet map
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(
+    fillOpacity = 0.75, color = ~palette(percentage), weight = 0,
+    label = ~paste(NAME, percentage, "%", "\n", AllNationalities),
+    popup = ~AllNationalities
+  ) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0)
+
+
+```
+
+```{r}
+# Assume 'F105_Code' is your city code and maps directly to 'leaflet_districts'
+# Add district info to nationality ratios
+nationality_with_districts <- nationality_ratio_per_city %>%
+  left_join(data %>% select(F105_Code, leaflet_districts), by = "F105_Code")
+
+# Aggregate nationality data by district
+district_nationality_ratios <- nationality_with_districts %>%
+  group_by(leaflet_districts, F05_02_ENG) %>%
+  summarise(AverageRatio = mean(Ratio), .groups = 'drop') %>%
+  mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
+  group_by(leaflet_districts) %>%
+  summarise(AllLabels = paste(Label, collapse = "\n"))
+
+# Join with geographic data
+vaud <- vaud %>%
+  left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
+
+# Adjust the join operation to match actual column names
+vaud <- vaud %>%
+  left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
+
+# Assuming AverageRatio is correctly calculated and added
+palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
+
+# Create a Leaflet map
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(
+    fillOpacity = 0.75, color = ~palette(AverageRatio),
+    weight = 1,
+    popup = ~AllLabels
+  )
+
+
+
+```
+
+
 
 #plot numbers continent 
 ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05_01_ENG)) +
@@ -67,6 +237,19 @@ ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05
   geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_dodge(width=0.9), vjust=-0.25) # Add percentage labels
 
 ```
+
+Who is coming: stacked bar graph 
+```{r}
+
+# faire par ville les pourcentages des nationalités par rapport au nombre de personnes qui ont visité la ville 
+# 
+# faire un graph par continent ? (beaucoup de villes )
+
+
+
+```
+
+
 
 ```{r}
 ### F05_02_ENG ###
