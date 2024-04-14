@@ -152,36 +152,6 @@ leaflet(vaud) %>%
   addPolygons(fillOpacity = 0.75, color = ~palette(vaud$percentage), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%"))
 
-library(dplyr)
-library(sf)
-library(leaflet)
-
-# Step 1: Add leaflet_districts to nationality_ratio_per_city
-nationality_district_data <- nationality_ratio_per_city %>%
-  left_join(data %>% select(F105_Code, leaflet_districts), by = "F105_Code") %>%
-  group_by(leaflet_districts, F05_02_ENG) %>%
-  summarise(Count = sum(Count), TotalCount = sum(TotalCount), .groups = 'drop') %>%
-  mutate(Ratio = Count / TotalCount) %>%
-  mutate(InfoText = paste(F05_02_ENG, ":", round(Ratio * 100, 2), "%")) %>%
-  group_by(leaflet_districts) %>%
-  summarise(AllNationalities = paste(InfoText, collapse = "\n"))
-
-# Step 2: Merge nationality data with vaud data
-vaud <- vaud %>%
-  left_join(nationality_district_data, by = c("NAME" = "leaflet_districts"))
-
-# Leaflet map
-leaflet(vaud) %>%
-  addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(
-    fillOpacity = 0.75, color = ~palette(percentage), weight = 0,
-    label = ~paste(NAME, percentage, "%", "\n", AllNationalities),
-    popup = ~AllNationalities
-  ) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0)
-
-
 ```
 
 ```{r}
@@ -218,6 +188,78 @@ leaflet(vaud) %>%
     weight = 1,
     popup = ~AllLabels
   )
+
+
+
+
+# Verify columns in district_nationality_ratios
+colnames(district_nationality_ratios)
+
+# If AverageRatio is not listed, ensure it is being calculated correctly
+district_nationality_ratios <- nationality_with_districts %>%
+  group_by(leaflet_districts, F05_02_ENG) %>%
+  summarise(AverageRatio = mean(Ratio, na.rm = TRUE), .groups = 'drop') %>%
+  mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
+  group_by(leaflet_districts) %>%
+  summarise(AllLabels = paste(Label, collapse = "\n"))
+
+# Make sure that the column names used in the join are correct
+colnames(vaud)
+colnames(district_nationality_ratios)
+
+# Correct the join statement
+vaud <- vaud %>%
+  left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
+
+# Check for AverageRatio in vaud
+if("AverageRatio" %in% colnames(vaud)) {
+  print("AverageRatio is present")
+} else {
+  print("AverageRatio is missing")
+}
+
+# Adjust palette creation
+if("AverageRatio" %in% colnames(vaud)) {
+  palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
+} else {
+  palette <- colorNumeric(palette = "Blues", domain = c(0, 1))  # Default or fallback range
+}
+
+# Create the Leaflet map
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(
+    fillOpacity = 0.75, color = ~palette(AverageRatio),
+    weight = 1,
+    popup = ~AllLabels
+  )
+
+
+
+# Example to combine columns if necessary (adjust as needed based on content)
+vaud$AllLabels <- apply(vaud[, grep("AllLabels", colnames(vaud))], 1, function(x) paste(na.omit(x), collapse = " "))
+
+# Drop the old AllLabels.x.x columns
+vaud <- vaud %>%
+  select(-matches("AllLabels.[0-9]+"))
+
+# Check the new AllLabels column
+head(vaud$AllLabels)
+
+# Set up a simple color palette if no AverageRatio is available
+palette <- colorNumeric(palette = "Blues", domain = c(0, 1))
+
+# Create the Leaflet map using vaud2
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(
+    fillOpacity = 0.75, color = ~palette(1),  # Uniform color as no AverageRatio is available
+    weight = 1,
+    popup = ~AllLabels
+  )
+
 
 
 
