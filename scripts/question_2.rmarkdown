@@ -5,7 +5,9 @@ format:
     code-fold: true
 ---
 
+
 **Where are from the people coming in the canton of Vaud? What kind of trip are they doing?**
+
 
 ```{r output = FALSE}
 source(here::here("scripts", "setup.R"))
@@ -13,7 +15,9 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
                  sep = ",")
 ```
 
+
 ### Data Exploration: Who is coming? 
+
 
 ```{r}
 ### F05_01.ENG ###
@@ -55,7 +59,9 @@ datatable(F05_02_PCT, options = list(pageLength = 10,
 #add continent next to each country
 #or merge continent and country table. 1st column continents, 2nd countries, # of occurences then percentage
 ```
+
 More details about where are the tourists coming from by city
+
 
 ```{r}
 # #total number of tourist per city
@@ -92,7 +98,9 @@ datatable(nationality_ratio_per_city, options = list(pageLength = 5,
 
 ```
 
+
 leaflet
+
 
 ```{r}
 # Leaflet map
@@ -155,80 +163,6 @@ leaflet(vaud) %>%
 ```
 
 ```{r}
-# Assume 'F105_Code' is your city code and maps directly to 'leaflet_districts'
-# Add district info to nationality ratios
-nationality_with_districts <- nationality_ratio_per_city %>%
-  left_join(data %>% select(F105_Code, leaflet_districts), by = "F105_Code")
-
-# Aggregate nationality data by district
-district_nationality_ratios <- nationality_with_districts %>%
-  group_by(leaflet_districts, F05_02_ENG) %>%
-  summarise(AverageRatio = mean(Ratio), .groups = 'drop') %>%
-  mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
-  group_by(leaflet_districts) %>%
-  summarise(AllLabels = paste(Label, collapse = "\n"))
-
-# Join with geographic data
-vaud <- vaud %>%
-  left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
-
-# Assuming AverageRatio is correctly calculated and added
-palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
-
-# Create a Leaflet map
-leaflet(vaud) %>%
-  addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(
-    fillOpacity = 0.75, color = ~palette(AverageRatio),
-    weight = 1,
-    popup = ~AllLabels
-  )
-
-
-
-
-# If AverageRatio is not listed, ensure it is being calculated correctly
-district_nationality_ratios <- nationality_with_districts %>%
-  group_by(leaflet_districts, F05_02_ENG) %>%
-  summarise(AverageRatio = mean(Ratio, na.rm = TRUE), .groups = 'drop') %>%
-  mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
-  group_by(leaflet_districts) %>%
-  summarise(AllLabels = paste(Label, collapse = "\n"))
-
-# Make sure that the column names used in the join are correct
-colnames(vaud)
-colnames(district_nationality_ratios)
-
-# Correct the join statement
-vaud <- vaud %>%
-  left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
-
-# Check for AverageRatio in vaud
-if("AverageRatio" %in% colnames(vaud)) {
-  print("AverageRatio is present")
-} else {
-  print("AverageRatio is missing")
-}
-
-# Adjust palette creation
-if("AverageRatio" %in% colnames(vaud)) {
-  palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
-} else {
-  palette <- colorNumeric(palette = "Blues", domain = c(0, 1))  # Default or fallback range
-}
-
-# Create the Leaflet map
-leaflet(vaud) %>%
-  addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(
-    fillOpacity = 0.75, color = ~palette(AverageRatio),
-    weight = 1,
-    popup = ~AllLabels
-  )
-
-
 
 # Example to combine columns if necessary (adjust as needed based on content)
 vaud$AllLabels <- apply(vaud[, grep("AllLabels", colnames(vaud))], 1, function(x) paste(na.omit(x), collapse = " "))
@@ -260,6 +194,7 @@ leaflet(vaud) %>%
 
 
 
+
 #plot numbers continent 
 ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05_01_ENG)) +
   geom_bar(stat="identity") +
@@ -283,6 +218,7 @@ Who is coming: stacked bar graph
 
 
 ```
+
 
 
 
@@ -441,3 +377,4 @@ ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02_ENG`, size = Cou
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+
