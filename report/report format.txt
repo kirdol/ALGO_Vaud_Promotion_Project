@@ -1,0 +1,13 @@
+Intro
+
+EDA
+graphes à une variables, graphes de frequency, etc
+
+Analysis/Correlations
+graphes à plusieurs variables, subsets du data pour certaines demographiques
+
+Map
+Plot différentes variables sur la carte leaflet du canton de vaud par district
+
+Conclusions
+conseils pour vaud promotion?
