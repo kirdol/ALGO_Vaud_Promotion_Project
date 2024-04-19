@@ -1,0 +1,443 @@
+---
+title: "Question 2"
+format:
+  html:
+    code-fold: true
+---
+
+**Where are from the people coming in the canton of Vaud? What kind of trip are they doing?**
+
+```{r output = FALSE}
+source(here::here("scripts", "setup.R"))
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
+                 sep = ",")
+```
+
+### Data Exploration: Who is coming? 
+
+```{r}
+### F05_01.ENG ###
+#nb of occurrences by country and continents 
+OccurencesCountry <- data %>% 
+  group_by(data$F05_02_ENG) %>% 
+  count(sort = TRUE)
+
+OccurencesContinent <- data %>% 
+  group_by(data$F05_01_ENG) %>% 
+  count(sort = TRUE)
+
+#list all countries and continents 
+# print(unique(data$F05_02_ENG))
+# print(unique(data$F05_01_ENG))
+
+#Continent in percentages
+F05_01_PCT <- data %>% 
+  group_by(F05_01_ENG) %>%
+  summarise(Count = n()) %>%
+  mutate(Percentage = Count / sum(Count) * 100) %>% 
+  arrange(desc(Percentage))
+  
+# Countries in percentages 
+F05_02_PCT <- data %>% 
+  group_by(F05_02_ENG) %>%
+  summarise(Count = n()) %>%
+  mutate(Percentage = Count / sum(Count) * 100) %>% 
+  arrange(desc(Percentage))
+
+datatable(F05_01_PCT, options = list(pageLength = 5,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE) 
+
+datatable(F05_02_PCT, options = list(pageLength = 10,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE)
+
+#add continent next to each country
+#or merge continent and country table. 1st column continents, 2nd countries, # of occurences then percentage
+```
+More details about where are the tourists coming from by city
+
+```{r}
+# #total number of tourist per city
+# numbertouristpercity <- data %>%
+#   group_by(F105_Code) %>%
+#   count(sort = TRUE)
+#   
+# #ratio of nationality per city
+# <- data %>% 
+#   group_by(F105_Code) %>%
+#   summarise(Count = n()) %>%
+#   mutate(Percentage = Count / sum(Count) * 100) %>% 
+#   arrange(desc(Percentage))
+
+# Counting the number of tourists by city and nationality
+tourists_by_nationality <- data %>%
+  group_by(F105_Code, F05_02_ENG) %>%
+  summarise(Count = n(), .groups = 'drop')
+
+# Calculating the total number of tourists per city
+total_tourists_per_city <- tourists_by_nationality %>%
+  group_by(F105_Code) %>%
+  summarise(TotalCount = sum(Count), .groups = 'drop')
+
+# Joining the counts back to the detailed breakdown and calculating the ratio
+nationality_ratio_per_city <- tourists_by_nationality %>%
+  left_join(total_tourists_per_city, by = "F105_Code") %>%
+  mutate(Ratio = Count / TotalCount) %>%
+  select(F105_Code, F05_02_ENG, Ratio)
+
+datatable(nationality_ratio_per_city, options = list(pageLength = 5,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE)
+
+```
+
+leaflet
+
+```{r}
+# Leaflet map
+
+# Data from https://labs.karavia.ch/swiss-boundaries-geojson/
+districts <- read_sf("/Users/stefanfavre/Documents/GitHub/ALGO_Vaud_Promotion_Project/data/swiss_districts.geojson")
+districts
+
+# Keep only Vaud
+vaud <- districts |>
+  filter(KANTONSNUM == 22)
+
+# We will transform data to include corresponding leaflet district. 
+unique(data$F105_Code)
+
+# Create a new column 'leaflet_region' with NA values
+data$leaflet_districts <- NA
+
+# Assign cities to districts based on conditions
+data$leaflet_districts[data$F105_Code == "Lausanne"] <- "Lausanne"
+data$leaflet_districts[data$F105_Code %in% c("Montreux", "Vevey", "La Tour-de-Peilz", "Rougemont", "Château-d'Oex", "Veytaux", "Rossinière", "Corsier-sur-Vevey", "Saint-Légier-La-Chiésaz", "Blonay", "Chardonne", "Chernex")] <- "Riviera-Pays-d'Enhaut"
+data$leaflet_districts[data$F105_Code %in% c("Morges", "Yens", "Aubonne")] <- "Morges"
+data$leaflet_districts[data$F105_Code %in% c("Yverdon-les-Bains", "L'Abbaye", "Vallorbe", "Orbe", "Yvonand", "La Praz", "Le Chenit", "Bullet", "Montagny-près-Yverdon", "Saint Croix", "Le Rocheray", "Le Pont", "Le Sentier", "Le Brassus", "Les Rasses", "Les Charbonnieres")] <- "Jura-Nord vaudois"
+data$leaflet_districts[data$F105_Code %in% c("Aigle", "Leysin", "Villeneuve (VD)", "Ormont-Dessus", "Bex", "Lavey-Morcles", "Gryon", "Ormont-Dessous", "Les Diablerets", "Villars-sur-Ollon")] <- "Aigle"
+data$leaflet_districts[data$F105_Code %in% c("Nyon", "Prangins", "Chavannes-de-Bogis", "Coppet", "Rolle", "Commugny", "Duillier", "Gilly", "Founex")] <- "Nyon"
+data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "Payerne", "Cudrefin", "St. Aubin", "Estavayer-le-Lac")] <- "Broye-Vully"
+data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)", "Renens", "Saint-Sulpice (VD)")] <- "Ouest lausannois"
+data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cully")] <- "Lavaux-Oron"
+data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
+
+# Count districts in data and add to vaud
+vaud$sum <- NA
+
+vaud$sum[vaud$NAME == "Jura-Nord vaudois"] <- sum(data$leaflet_districts == "Jura-Nord vaudois")
+vaud$sum[vaud$NAME == "Aigle"] <- sum(data$leaflet_districts == "Aigle")
+vaud$sum[vaud$NAME == "Morges"] <- sum(data$leaflet_districts == "Morges")
+vaud$sum[vaud$NAME == "Nyon"] <- sum(data$leaflet_districts == "Nyon")
+vaud$sum[vaud$NAME == "Riviera-Pays-d'Enhaut"] <- sum(data$leaflet_districts == "Riviera-Pays-d'Enhaut")
+vaud$sum[vaud$NAME == "Gros-de-Vaud"] <- sum(data$leaflet_districts == "Gros-de-Vaud")
+vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
+vaud$sum[vaud$NAME == "Lavaux-Oron"] <- sum(data$leaflet_districts == "Lavaux-Oron")
+vaud$sum[vaud$NAME == "Lausanne"] <- sum(data$leaflet_districts == "Lausanne")
+vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
+vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Ouest lausannois")
+
+# Transform sum to percentage
+vaud$percentage <- round((vaud$sum)/nrow(data)*100, 2)
+
+# Transform to leaflet projection 
+vaud <- st_transform(vaud, crs = '+proj=longlat +datum=WGS84')
+
+palette <- colorNumeric(palette = "Greens", domain = vaud$percentage)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~palette(vaud$percentage), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%"))
+
+```
+
+```{r}
+# Assume 'F105_Code' is your city code and maps directly to 'leaflet_districts'
+# Add district info to nationality ratios
+nationality_with_districts <- nationality_ratio_per_city %>%
+  left_join(data %>% select(F105_Code, leaflet_districts), by = "F105_Code")
+
+# Aggregate nationality data by district
+district_nationality_ratios <- nationality_with_districts %>%
+  group_by(leaflet_districts, F05_02_ENG) %>%
+  summarise(AverageRatio = mean(Ratio), .groups = 'drop') %>%
+  mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
+  group_by(leaflet_districts) %>%
+  summarise(AllLabels = paste(Label, collapse = "\n"))
+
+# Join with geographic data
+vaud <- vaud %>%
+  left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
+
+# Assuming AverageRatio is correctly calculated and added
+palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
+
+# Create a Leaflet map
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(
+    fillOpacity = 0.75, color = ~palette(AverageRatio),
+    weight = 1,
+    popup = ~AllLabels
+  )
+
+
+
+
+# If AverageRatio is not listed, ensure it is being calculated correctly
+district_nationality_ratios <- nationality_with_districts %>%
+  group_by(leaflet_districts, F05_02_ENG) %>%
+  summarise(AverageRatio = mean(Ratio, na.rm = TRUE), .groups = 'drop') %>%
+  mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
+  group_by(leaflet_districts) %>%
+  summarise(AllLabels = paste(Label, collapse = "\n"))
+
+# Make sure that the column names used in the join are correct
+colnames(vaud)
+colnames(district_nationality_ratios)
+
+# Correct the join statement
+vaud <- vaud %>%
+  left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
+
+# Check for AverageRatio in vaud
+if("AverageRatio" %in% colnames(vaud)) {
+  print("AverageRatio is present")
+} else {
+  print("AverageRatio is missing")
+}
+
+# Adjust palette creation
+if("AverageRatio" %in% colnames(vaud)) {
+  palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
+} else {
+  palette <- colorNumeric(palette = "Blues", domain = c(0, 1))  # Default or fallback range
+}
+
+# Create the Leaflet map
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(
+    fillOpacity = 0.75, color = ~palette(AverageRatio),
+    weight = 1,
+    popup = ~AllLabels
+  )
+
+
+
+# Example to combine columns if necessary (adjust as needed based on content)
+vaud$AllLabels <- apply(vaud[, grep("AllLabels", colnames(vaud))], 1, function(x) paste(na.omit(x), collapse = " "))
+
+# Drop the old AllLabels.x.x columns
+vaud <- vaud %>%
+  select(-matches("AllLabels.[0-9]+"))
+
+# Check the new AllLabels column
+head(vaud$AllLabels)
+
+# Set up a simple color palette if no AverageRatio is available
+palette <- colorNumeric(palette = "Blues", domain = c(0, 1))
+
+# Create the Leaflet map using vaud2
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(
+    fillOpacity = 0.75, color = ~palette(1),  # Uniform color as no AverageRatio is available
+    weight = 1,
+    popup = ~AllLabels
+  )
+
+
+
+
+```
+
+
+
+#plot numbers continent 
+ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05_01_ENG)) +
+  geom_bar(stat="identity") +
+  theme_minimal() +
+  labs(x="Continents", y="Percentage", title="Percentage of Each Unique Continent") +
+  theme(legend.title = element_blank(), # Remove the legend title
+        legend.position = "none", # Hide the legend as the colors are not necessary with labels
+        plot.title = element_text(hjust = 0.5), # Center the plot title
+        axis.text.x = element_text(angle = 45, hjust = 1)) + # Rotate x-axis labels for readability
+  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_dodge(width=0.9), vjust=-0.25) # Add percentage labels
+
+```
+
+Who is coming: stacked bar graph 
+```{r}
+
+# faire par ville les pourcentages des nationalités par rapport au nombre de personnes qui ont visité la ville 
+# 
+# faire un graph par continent ? (beaucoup de villes )
+
+
+
+```
+
+
+
+```{r}
+### F05_02_ENG ###
+#plot with continents 
+F05_02_PCT <- data %>%
+  group_by(F05_02_ENG, F05_01_ENG) %>%  # Group by both country and continent
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Percentage = Count / sum(Count) * 100) %>%
+  arrange(desc(Percentage))
+
+ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, -Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
+  geom_bar(stat = "identity") +
+  coord_flip() +  # Make the plot horizontal
+  scale_fill_brewer(palette = "Set3", name = "Continent") +  # Use a color palette for continents
+  theme_minimal() +
+  labs(x = "Country", y = "Percentage", title = "Percentage of Responses by Country and Continent") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom")  # Adjust legend position
+```
+
+```{r, message = FALSE, warning = FALSE}
+### F12 & F13 ###
+#Are we more interested in knowing when they came for holidays or how long?
+
+#duration per month 
+data <- data %>%
+  mutate(
+    # Convert to date format first
+    date_column = dmy(F12),
+    # If you want the month names instead
+    month_name_column = month(date_column, label = TRUE, abbr = FALSE) # Set abbr=FALSE for full month names
+  )
+
+#order
+desired_order <- c("Serial2",
+                    "F05_01",
+                    "F05_01_ENG",
+                    "F05_02",
+                    "F05_02_ENG",
+                    "F05_03",
+                    "F05_04",
+                    "F12",
+                    "F13",
+                    "month_name_column",
+                   "hFerienDauer")
+remaining_columns <- setdiff(names(data), desired_order)
+new_order <- c(desired_order, remaining_columns)
+data <- data[, new_order]
+
+# nb of days per month 
+nb_days_per_month <- data %>%
+  select(F12, F13, month_name_column, hFerienDauer) %>%
+  group_by(month_name_column) %>%
+  summarize(total_hFerienDauer = sum(hFerienDauer, na.rm = TRUE))
+
+nb_days_per_month <- nb_days_per_month %>%
+  mutate(season = case_when(
+    month_name_column %in% c("December", "January", "February") ~ "Winter",
+    month_name_column %in% c("March", "April", "May") ~ "Spring",
+    month_name_column %in% c("June", "July", "August") ~ "Summer",
+    month_name_column %in% c("September", "October", "November") ~ "Fall",
+    TRUE ~ NA_character_ # for any month names not matched or NA values
+  ))
+
+#plot
+ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fill = season)) +
+  geom_bar(stat = "identity") +
+  geom_smooth(aes(group = 1), method = "loess", se = FALSE, color = "red", linetype = "dashed") +
+  scale_fill_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "purple", "Fall" = "orange")) +
+  theme_minimal() +
+  labs(x = "Months", y = "Sum Holiday Durations", title = "Total Holiday Duration by Month", fill = "Season") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+### F16 ### 
+F16_Q <- data %>% count(F16_ENG, name = "total_options")
+F16_Q$percentage <- with(F16_Q, total_options / sum(total_options) * 100)
+labels <- paste(F16_Q$F16_ENG, sprintf("%.1f%%", F16_Q$percentage))
+
+# Create a pie chart
+pie(F16_Q$total_options, labels = labels, main = "Distribution of F16_ENG Options")
+```
+
+```{r, message = FALSE, warning = FALSE}
+### F20 ###
+# Careful here: some people have 0 nightstay and only passed by switzerland for a day. 
+# but answered the question 16, asking about the number of nights.
+# also when f16 answered and F20 blanc, drop observations? 
+F20_freq <- data %>%
+  group_by(F20) %>%
+  summarize(Count = n(), .groups = 'drop') %>%
+  arrange(desc(Count)) # Optional: arrange in descending order of frequency
+
+ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(x = "Number of nights", y = "Frequency", title = "Frequency of the number of nights in Switzerland") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
+        legend.title = element_blank()) # Hide the legend if not needed
+```
+
+```{r, message = FALSE, warning = FALSE}
+### F21 ###
+#consider NA as 0 here. 
+
+F21_EU_locations <- data %>%
+  group_by(F21) %>%
+  summarize(Count = n(), .groups = 'drop') %>%
+  arrange(desc(Count)) # Optional: arrange in descending order of frequency
+
+ggplot(F21_EU_locations, aes(x = F21, y = Count, fill = F21)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(x = "Number of nights in EU", y = "Frequency", title = "Frequency of the number of nights in EU") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
+        legend.title = element_blank()) # Hide the legend if not needed
+```
+
+```{r}
+### F30 ###
+F30_Q <- data %>% count(F30_ENG, name = "Total")
+F30_Q$percentage <- with(F30_Q, Total / sum(Total) * 100)
+
+ggplot(F30_Q, aes(x = F30_ENG, y = Total, label = paste(percentage, "%"))) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_text(vjust = -0.5, color = "black") +
+  theme_minimal() +
+  labs(title = "Q30: Have you booked a package tour?",
+       x = "Answers",
+       y = "Total")
+```
+
+```{r}
+### Deeper reasoning ###
+
+# Where are coming from the people, per month
+
+# Summarize data: count arrivals per month and country
+monthly_arrivals <- data %>%
+  group_by(month_name_column, F05_02_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  arrange(month_name_column, F05_02_ENG) # This will ensure the data is ordered, which might help in visualization
+
+# Visualize
+ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02_ENG`, size = Count)) +
+  geom_point(alpha = 0.7) + # Using alpha for better visibility if points overlap
+  theme_minimal() +
+  labs(title = "Monthly Arrivals in Switzerland by Country of Origin",
+       x = "Month",
+       y = "Country of Origin",
+       size = "Number of Arrivals") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```

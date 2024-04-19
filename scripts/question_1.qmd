@@ -9,19 +9,12 @@ editor_options:
 # Question 1 - Expenses and where they come from, when, where and for which sector?
 
 ```{r}
-data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ";")
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 ```
 
 ```{r}
-data <- read.csv(here("data", "TMS_dataset_Vaud_20240202_15.03Extract.csv"), sep = ";")
-```
-
-```{r}
-library(ggplot2)
-library(dplyr)
-library(plotly)
 library(tidyr)
-
+library(ggr)
 ```
 
 ## Average Spending by category (no package tour)
@@ -65,17 +58,123 @@ ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+### Comparison of Spending with & without package
+
+```{r}
+# Data for spending without package
+spending_data <- data.frame(
+  Spending_Type = c("Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F81_01, na.rm = TRUE), 
+             mean(data$F81_02, na.rm = TRUE),
+             mean(data$F81_03, na.rm = TRUE),
+             mean(data$F81_04, na.rm = TRUE),
+             mean(data$F81_05, na.rm = TRUE),
+             mean(data$F81_06, na.rm = TRUE))
+)
+
+# Data for spending with package
+spending_data_package <- data.frame(
+  Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F82_01, na.rm = TRUE), 
+             mean(data$F82_02, na.rm = TRUE),
+             mean(data$F82_03, na.rm = TRUE),
+             mean(data$F82_04, na.rm = TRUE),
+             mean(data$F82_05, na.rm = TRUE),
+             mean(data$F82_06, na.rm = TRUE),
+             mean(data$F82_07, na.rm = TRUE))
+)
+
+# Create plotly objects for each spending type
+p1 <- plot_ly(spending_data, x = ~Spending_Type, y = ~Amount, type = 'bar', name = 'No Package',
+              marker = list(color = 'rgba(50, 171, 96, 0.6)', line = list(color = 'rgba(50, 171, 96, 1.0)', width = 1))) %>%
+  layout(title = "Average Spending by Category (No Package Tour)",
+         xaxis = list(title = "Category", tickangle = 45),
+         yaxis = list(title = "Average Amount"),
+         barmode = 'group')
+
+p2 <- plot_ly(spending_data_package, x = ~Spending_Type, y = ~Amount, type = 'bar', name = 'With Package',
+              marker = list(color = 'rgba(128, 0, 128, 0.6)', line = list(color = 'rgba(128, 0, 128, 1.0)', width = 1))) %>%
+  layout(title = "Average Spending by Category (With Package)",
+         xaxis = list(title = "Category", tickangle = 45),
+         yaxis = list(title = "Average Amount"),
+         barmode = 'group')
+
+# Combine plots into a single plot with a dropdown menu
+subplot(p1, p2, nrows = 1) %>%
+  layout(
+    title = "Comparison of Spending With and Without Package",
+    updatemenus = list(
+      list(
+        y = 0.7,
+        buttons = list(
+          list(method = "relayout", args = list("visible", c(TRUE, FALSE)), label = "No Package"),
+          list(method = "relayout", args = list("visible", c(FALSE, TRUE)), label = "With Package")
+        )
+      )
+    )
+  )
+```
+
 ## Spending by Nationality
 
 ```{r}
 filtered_data <- data %>%
-  rename(Continent = F05_01.ENG) %>%
+  rename(Continent = F05_01_ENG) %>%
   filter(F81_Total <= 100000)
 
-ggplot(filtered_data, aes(x = F05_02.ENG, y = F81_Total, fill = Continent)) +
+ggplot(filtered_data, aes(x = F05_02_ENG, y = F81_Total, fill = Continent)) +
   geom_boxplot() +
   labs(title = "Spending by Nationality", x = "Nationality", y = "Spending") +
   scale_fill_brewer(palette = "Set3") + # Adds a color palette for the continents
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "bottom")
+```
+
+## Distribution of Currency
+
+```{r}
+# Calculate the frequency and percentage of each currency value
+currency_data <- data %>%
+  count(F80) %>%
+  mutate(Percentage = n / sum(n) * 100)
+
+# Create a bar chart
+ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Currency", x = "Currency", y = "Percentage (%)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Adjust text angle for better readability
+```
+
+```{r}
+# Reshape the data to long format
+data_long <- data %>%
+  pivot_longer(
+    cols = starts_with("F81_"),  # Selecting the spending categories
+    names_to = "Category", 
+    values_to = "Spending"
+  ) %>%
+  filter(!is.na(Spending))  # Optionally remove NA values if your data might have them
+  mutate(Spending = Spending / 1000)  # Convert spending to thousands
+
+# Calculate the total spending by city and select the top 10 cities
+top_cities <- data_long %>%
+  group_by(F105_Code) %>%
+  summarize(TotalSpending = sum(Spending)) %>%
+  arrange(desc(TotalSpending)) %>%
+  top_n(10) %>%
+  pull(F105_Code)
+
+# Filter the long data to include only top cities
+data_long_top_cities <- data_long %>%
+  filter(F105_Code %in% top_cities)
+
+# Create the ridge plot
+ggplot(data_long_top_cities, aes(x = Spending, y = F105_Code, fill = F105_Code, group = interaction(F105_Code, Category))) +
+  geom_density_ridges(scale = 2) +  # Adjust the scale parameter to manage overlap
+  labs(title = "Distribution of Spending Categories by Top 10 Cities",
+       x = "Spending Amount",
+       y = "City Code") +
+  theme_ridges() +
+  scale_fill_brewer(palette = "Set3")  # Adjust color scheme as needed
 ```
