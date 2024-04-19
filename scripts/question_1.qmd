@@ -9,12 +9,15 @@ editor_options:
 # Question 1 - Expenses and where they come from, when, where and for which sector?
 
 ```{r}
-data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
+library(here)
+library(tidyr)
+library(ggridges)
+library(treemap)
+library(ggplot2)
 ```
 
 ```{r}
-library(tidyr)
-library(ggr)
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 ```
 
 ## Average Spending by category (no package tour)
@@ -130,6 +133,62 @@ ggplot(filtered_data, aes(x = F05_02_ENG, y = F81_Total, fill = Continent)) +
         legend.position = "bottom")
 ```
 
+## Spending by city
+
+```{r}
+# Convert data to long format and rename categories
+data_long <- data %>%
+  pivot_longer(
+    cols = F81_01:F81_06,
+    names_to = "Spending_Type",
+    values_to = "Amount"
+  ) %>%
+  mutate(Spending_Type = recode(Spending_Type,
+    "F81_01" = "Overnight stay",
+    "F81_02" = "Transports",
+    "F81_03" = "Food & Drink",
+    "F81_04" = "Souvenirs",
+    "F81_05" = "Other shopping",
+    "F81_06" = "Other expenses"
+  ))
+
+# Generate a list of unique cities (F105_Code)
+cities <- unique(data_long$F105_OrgCode)
+
+# Create a plotly object with a dropdown menu
+p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', color = ~Spending_Type) %>%
+  layout(
+    title = "Spendings by City",
+    xaxis = list(title = "Spending Type"),
+    yaxis = list(title = "Amount"),
+    updatemenus = list(
+      list(
+        y = 0.9,
+        buttons = lapply(cities, function(city) {
+          list(
+            method = "update",
+            args = list(
+              list(
+                x = list(data_long[data_long$F105_OrgCode == city,]$Spending_Type),
+                y = list(data_long[data_long$F105_OrgCode == city,]$Amount)
+              ),
+              list(
+                title = paste("Spendings for", city),
+                annotations = list()
+              )
+            ),
+            label = city
+          )
+        })
+      )
+    )
+  )
+
+p
+```
+
+It is more interesting to only look at the data with no package, as the one with package is mainly composed of a long bar for the package variable.
+
 ## Distribution of Currency
 
 ```{r}
@@ -146,35 +205,9 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Adjust text angle for better readability
 ```
 
+## Ratio
+
 ```{r}
-# Reshape the data to long format
-data_long <- data %>%
-  pivot_longer(
-    cols = starts_with("F81_"),  # Selecting the spending categories
-    names_to = "Category", 
-    values_to = "Spending"
-  ) %>%
-  filter(!is.na(Spending))  # Optionally remove NA values if your data might have them
-  mutate(Spending = Spending / 1000)  # Convert spending to thousands
 
-# Calculate the total spending by city and select the top 10 cities
-top_cities <- data_long %>%
-  group_by(F105_Code) %>%
-  summarize(TotalSpending = sum(Spending)) %>%
-  arrange(desc(TotalSpending)) %>%
-  top_n(10) %>%
-  pull(F105_Code)
-
-# Filter the long data to include only top cities
-data_long_top_cities <- data_long %>%
-  filter(F105_Code %in% top_cities)
-
-# Create the ridge plot
-ggplot(data_long_top_cities, aes(x = Spending, y = F105_Code, fill = F105_Code, group = interaction(F105_Code, Category))) +
-  geom_density_ridges(scale = 2) +  # Adjust the scale parameter to manage overlap
-  labs(title = "Distribution of Spending Categories by Top 10 Cities",
-       x = "Spending Amount",
-       y = "City Code") +
-  theme_ridges() +
-  scale_fill_brewer(palette = "Set3")  # Adjust color scheme as needed
 ```
+
