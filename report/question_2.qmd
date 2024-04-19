@@ -55,6 +55,7 @@ datatable(F05_02_PCT, options = list(pageLength = 10,
 #add continent next to each country
 #or merge continent and country table. 1st column continents, 2nd countries, # of occurences then percentage
 ```
+
 More details about where are the tourists coming from by city
 
 ```{r}
@@ -89,6 +90,21 @@ nationality_ratio_per_city <- tourists_by_nationality %>%
 datatable(nationality_ratio_per_city, options = list(pageLength = 5,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE)
+
+```
+
+```{r}
+
+# stacked bar plot with cities on y and % on x and fill = % nationalities per city relatively to the number of tourist who visited the city 
+
+# Create the bar chart
+# Create the bar chart
+# ggplot(nationality_ratio_per_city, aes(x = Ratio, y = F105_Code)) +
+#   geom_bar(stat = "identity") +
+#   labs(x = "Percentage", y = "City", title = "Percentage of Tourists by City") +
+#   theme_minimal()
+
+
 
 ```
 
@@ -155,111 +171,111 @@ leaflet(vaud) %>%
 ```
 
 ```{r}
-# Assume 'F105_Code' is your city code and maps directly to 'leaflet_districts'
-# Add district info to nationality ratios
-nationality_with_districts <- nationality_ratio_per_city %>%
-  left_join(data %>% select(F105_Code, leaflet_districts), by = "F105_Code")
-
-# Aggregate nationality data by district
-district_nationality_ratios <- nationality_with_districts %>%
-  group_by(leaflet_districts, F05_02_ENG) %>%
-  summarise(AverageRatio = mean(Ratio), .groups = 'drop') %>%
-  mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
-  group_by(leaflet_districts) %>%
-  summarise(AllLabels = paste(Label, collapse = "\n"))
-
-# Join with geographic data
-vaud <- vaud %>%
-  left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
-
-# Assuming AverageRatio is correctly calculated and added
-palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
-
-# Create a Leaflet map
-leaflet(vaud) %>%
-  addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(
-    fillOpacity = 0.75, color = ~palette(AverageRatio),
-    weight = 1,
-    popup = ~AllLabels
-  )
-
-
-
-
-# If AverageRatio is not listed, ensure it is being calculated correctly
-district_nationality_ratios <- nationality_with_districts %>%
-  group_by(leaflet_districts, F05_02_ENG) %>%
-  summarise(AverageRatio = mean(Ratio, na.rm = TRUE), .groups = 'drop') %>%
-  mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
-  group_by(leaflet_districts) %>%
-  summarise(AllLabels = paste(Label, collapse = "\n"))
-
-# Make sure that the column names used in the join are correct
-colnames(vaud)
-colnames(district_nationality_ratios)
-
-# Correct the join statement
-vaud <- vaud %>%
-  left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
-
-# Check for AverageRatio in vaud
-if("AverageRatio" %in% colnames(vaud)) {
-  print("AverageRatio is present")
-} else {
-  print("AverageRatio is missing")
-}
-
-# Adjust palette creation
-if("AverageRatio" %in% colnames(vaud)) {
-  palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
-} else {
-  palette <- colorNumeric(palette = "Blues", domain = c(0, 1))  # Default or fallback range
-}
-
-# Create the Leaflet map
-leaflet(vaud) %>%
-  addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(
-    fillOpacity = 0.75, color = ~palette(AverageRatio),
-    weight = 1,
-    popup = ~AllLabels
-  )
-
-
-
-# Example to combine columns if necessary (adjust as needed based on content)
-vaud$AllLabels <- apply(vaud[, grep("AllLabels", colnames(vaud))], 1, function(x) paste(na.omit(x), collapse = " "))
-
-# Drop the old AllLabels.x.x columns
-vaud <- vaud %>%
-  select(-matches("AllLabels.[0-9]+"))
-
-# Check the new AllLabels column
-head(vaud$AllLabels)
-
-# Set up a simple color palette if no AverageRatio is available
-palette <- colorNumeric(palette = "Blues", domain = c(0, 1))
-
-# Create the Leaflet map using vaud2
-leaflet(vaud) %>%
-  addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(
-    fillOpacity = 0.75, color = ~palette(1),  # Uniform color as no AverageRatio is available
-    weight = 1,
-    popup = ~AllLabels
-  )
-
+# # Assume 'F105_Code' is your city code and maps directly to 'leaflet_districts'
+# # Add district info to nationality ratios
+# nationality_with_districts <- nationality_ratio_per_city %>%
+#   left_join(data %>% select(F105_Code, leaflet_districts), by = "F105_Code")
+# 
+# # Aggregate nationality data by district
+# district_nationality_ratios <- nationality_with_districts %>%
+#   group_by(leaflet_districts, F05_02_ENG) %>%
+#   summarise(AverageRatio = mean(Ratio), .groups = 'drop') %>%
+#   mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
+#   group_by(leaflet_districts) %>%
+#   summarise(AllLabels = paste(Label, collapse = "\n"))
+# 
+# # Join with geographic data
+# vaud <- vaud %>%
+#   left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
+# 
+# # Assuming AverageRatio is correctly calculated and added
+# palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
+# 
+# # Create a Leaflet map
+# leaflet(vaud) %>%
+#   addTiles() %>%
+#   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+#   addPolygons(
+#     fillOpacity = 0.75, color = ~palette(AverageRatio),
+#     weight = 1,
+#     popup = ~AllLabels
+#   )
+# 
+# 
+# 
+# 
+# # If AverageRatio is not listed, ensure it is being calculated correctly
+# district_nationality_ratios <- nationality_with_districts %>%
+#   group_by(leaflet_districts, F05_02_ENG) %>%
+#   summarise(AverageRatio = mean(Ratio, na.rm = TRUE), .groups = 'drop') %>%
+#   mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
+#   group_by(leaflet_districts) %>%
+#   summarise(AllLabels = paste(Label, collapse = "\n"))
+# 
+# # Make sure that the column names used in the join are correct
+# colnames(vaud)
+# colnames(district_nationality_ratios)
+# 
+# # Correct the join statement
+# vaud <- vaud %>%
+#   left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
+# 
+# # Check for AverageRatio in vaud
+# if("AverageRatio" %in% colnames(vaud)) {
+#   print("AverageRatio is present")
+# } else {
+#   print("AverageRatio is missing")
+# }
+# 
+# # Adjust palette creation
+# if("AverageRatio" %in% colnames(vaud)) {
+#   palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
+# } else {
+#   palette <- colorNumeric(palette = "Blues", domain = c(0, 1))  # Default or fallback range
+# }
+# 
+# # Create the Leaflet map
+# leaflet(vaud) %>%
+#   addTiles() %>%
+#   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+#   addPolygons(
+#     fillOpacity = 0.75, color = ~palette(AverageRatio),
+#     weight = 1,
+#     popup = ~AllLabels
+#   )
+# 
+# 
+# 
+# # Example to combine columns if necessary (adjust as needed based on content)
+# vaud$AllLabels <- apply(vaud[, grep("AllLabels", colnames(vaud))], 1, function(x) paste(na.omit(x), collapse = " "))
+# 
+# # Drop the old AllLabels.x.x columns
+# vaud <- vaud %>%
+#   select(-matches("AllLabels.[0-9]+"))
+# 
+# # Check the new AllLabels column
+# head(vaud$AllLabels)
+# 
+# # Set up a simple color palette if no AverageRatio is available
+# palette <- colorNumeric(palette = "Blues", domain = c(0, 1))
+# 
+# # Create the Leaflet map using vaud2
+# leaflet(vaud) %>%
+#   addTiles() %>%
+#   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+#   addPolygons(
+#     fillOpacity = 0.75, color = ~palette(1),  # Uniform color as no AverageRatio is available
+#     weight = 1,
+#     popup = ~AllLabels
+#   )
+# 
 
 
 
 ```
 
 
-
+```{r}
 #plot numbers continent 
 ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05_01_ENG)) +
   geom_bar(stat="identity") +
@@ -362,12 +378,48 @@ ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fil
 
 ```{r}
 ### F16 ### 
+
+# do a tableau with the percentage of each trip option per nationality 
+trip_counts <- data %>%
+  group_by(F05_02_ENG, F16_ENG) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+# Calculate total counts per nationality
+nationality_totals <- trip_counts %>%
+  group_by(F05_02_ENG) %>%
+  summarise(total_count = sum(count))
+
+# Join the trip counts with the total counts per nationality
+trip_percentages <- trip_counts %>%
+  left_join(nationality_totals, by = "F05_02_ENG") %>%
+  mutate(percentage = (count / total_count) * 100) %>% 
+  select(-c(count, total_count))
+
+datatable(trip_percentages, options = list(pageLength = 5,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE) 
+
+#plot
 F16_Q <- data %>% count(F16_ENG, name = "total_options")
 F16_Q$percentage <- with(F16_Q, total_options / sum(total_options) * 100)
 labels <- paste(F16_Q$F16_ENG, sprintf("%.1f%%", F16_Q$percentage))
 
 # Create a pie chart
-pie(F16_Q$total_options, labels = labels, main = "Distribution of F16_ENG Options")
+pie(F16_Q$total_options, labels = labels, main = "Global Percentage Distribution of Type of Trips")
+
+#other plot
+# Create stacked bar plot
+ggplot(trip_percentages, aes(x = F05_02_ENG, y = percentage, fill = F16_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Country", y = "Percentage", fill = "Type of Trip") +
+  ggtitle("Stacked Bar Plot of Type of Trip by Country") +
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.position = "top",
+        legend.text = element_text(size = 7),
+        legend.title = element_text(size = 7))  # Adjust legend title size)
+
 ```
 
 ```{r, message = FALSE, warning = FALSE}
@@ -386,6 +438,67 @@ ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
   labs(x = "Number of nights", y = "Frequency", title = "Frequency of the number of nights in Switzerland") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
         legend.title = element_blank()) # Hide the legend if not needed
+
+
+# frequency nightstays distribution per city 
+distr_nightstays_per_district <- data %>% 
+  select(F105_OrgCode, F20) %>%
+  group_by(F105_OrgCode)
+
+distr_nightstays_per_district$F20[is.na(distr_nightstays_per_district$F20)] <- 0
+
+
+library(ggridges)
+# Adjust the plot theme for better readability
+my_theme <- theme_minimal() +
+  theme(
+    text = element_text(size = 12),  # Adjust text size
+    panel.grid.major = element_blank(),  # Remove major gridlines
+    panel.grid.minor = element_blank(),  # Remove minor gridlines
+    panel.border = element_blank(),  # Remove plot border
+    axis.line = element_line(color = "black"),  # Add axis lines
+    legend.position = "bottom")  # Move legend to bottom
+    
+# Plotting the density ridgeline plot
+ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F105_OrgCode)) + 
+  geom_density_ridges(fill = "#00AFBB", color = "white", alpha = 0.8) +  # Adjust alpha for transparency
+  scale_x_continuous(labels = scales::comma) +  # Add comma separator to x-axis labels for better readability
+  labs(
+    x = "Number of Nights",  # Adjust x-axis label
+    y = "City",  # Adjust y-axis label
+    title = "Density Plot of Night Stays per City",  # Add plot title
+    subtitle = "Distribution of night stays across different cities",  # Add plot subtitle
+    caption = "Source: Your Dataset"  # Add data source caption
+  ) +
+  my_theme  # Apply custom theme
+
+
+# Replace NA values with 0 in column F20
+distr_nightstays_per_district$F20[is.na(distr_nightstays_per_district$F20)] <- 0
+
+distr_nightstays_per_district <- distr_nightstays_per_district %>%
+  group_by(F105_OrgCode) %>% 
+  summarise(count = n(), .groups = 'drop')
+  
+  
+distr_nightstays_per_district %>% ifelse(is.na(distr_nightstays_per_district$F20), 0, distr_nightstays_per_district$F20) # Replace NA values with 0 in column F20 using ifels
+
+
+
+
+# Plot the distribution of the SDG scores
+ggplot(long_df_goal_distribution,
+       aes(x = Value,
+           y = Goal,
+           fill = ..density..)) +
+  geom_density_ridges_gradient(scale = 3,
+                               size = 0.3,
+                               rel_min_height = 0.01) +
+  scale_fill_viridis_c(option = "D") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(x = 'Score',
+       y = 'Goals',
+       title = 'SDG Scores Distribution')
 ```
 
 ```{r, message = FALSE, warning = FALSE}
