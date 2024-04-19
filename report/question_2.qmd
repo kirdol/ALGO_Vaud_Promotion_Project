@@ -132,7 +132,7 @@ leaflet
 # Leaflet map
 
 # Data from https://labs.karavia.ch/swiss-boundaries-geojson/
-districts <- read_sf("/Users/stefanfavre/Documents/GitHub/ALGO_Vaud_Promotion_Project/data/swiss_districts.geojson")
+districts <- read_sf(here("data","swiss_districts.geojson"))
 districts
 
 # Keep only Vaud
