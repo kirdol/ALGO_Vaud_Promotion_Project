@@ -1,9 +1,41 @@
 # Question 4
 > Where did they stay? (For example: yes, they went to Montreux, but what type of accommodation, what price?
 
-```{r Initialization, output = FALSE, echo = FALSE}
+```{r Initialization and district creation, output = FALSE, echo = FALSE}
+# Importing the data and loading the necessary packages
 source(here::here("scripts", "setup.R"))
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
+
+# Assign cities to districts
+# Lausanne
+data$leaflet_districts[data$F105_Code == "Lausanne"] <- "Lausanne"
+
+# Riviera-Pays-d'Enhaut
+data$leaflet_districts[data$F105_Code %in% c("Montreux", "Vevey", "La Tour-de-Peilz", "Rougemont", "Château-d'Oex", "Veytaux", "Rossinière", "Corsier-sur-Vevey", "Saint-Légier-La-Chiésaz", "Blonay", "Chardonne", "Chernex")] <- "Riviera-Pays-d'Enhaut"
+
+# Morges
+data$leaflet_districts[data$F105_Code %in% c("Morges", "Yens", "Aubonne")] <- "Morges"
+
+# Jura-Nord vaudois
+data$leaflet_districts[data$F105_Code %in% c("Yverdon-les-Bains", "L'Abbaye", "Vallorbe", "Orbe", "Yvonand", "La Praz", "Le Chenit", "Bullet", "Montagny-près-Yverdon", "Saint Croix", "Le Rocheray", "Le Pont", "Le Sentier", "Le Brassus", "Les Rasses", "Les Charbonnieres")] <- "Jura-Nord vaudois"
+
+# Aigle
+data$leaflet_districts[data$F105_Code %in% c("Aigle", "Leysin", "Villeneuve (VD)", "Ormont-Dessus", "Bex", "Lavey-Morcles", "Gryon", "Ormont-Dessous", "Les Diablerets", "Villars-sur-Ollon")] <- "Aigle"
+
+# Nyon
+data$leaflet_districts[data$F105_Code %in% c("Nyon", "Prangins", "Chavannes-de-Bogis", "Coppet", "Rolle", "Commugny", "Duillier", "Gilly", "Founex")] <- "Nyon"
+
+# Broye-Vully
+data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "Payerne", "Cudrefin", "St. Aubin", "Estavayer-le-Lac")] <- "Broye-Vully"
+
+# Ouest lausannois
+data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)", "Renens", "Saint-Sulpice (VD)")] <- "Ouest lausannois"
+
+# Lavaux-Oron
+data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cully")] <- "Lavaux-Oron"
+
+# Gros-de-Vaud
+data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
 ```
 
 Let's now dive into the subject of the location of their stay. First, let's have a look at the most popular locations in the canton Vaud. Given the architecture of the study this gives us the city where most people answer the survey.
@@ -54,7 +86,7 @@ plot_ly(resort_counts_df,
 ```
 
 ```{r Most Popular District destinations, echo = FALSE}
-resort_counts <- table(data$F105_OrgCode)
+resort_counts <- table(data$leaflet_districts)
 accommodation_counts <- table(data$F125_ENG)
 
 # Proportion
@@ -96,7 +128,7 @@ plot_ly(resort_counts_df,
          hovermode = 'closest')
 ```
 
-As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r n_distinct(data$F105_OrgCode)` district, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller one. It is still interesting to have a look to keep this in mind.
+As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r n_distinct(data$leaflet_districts)` district, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller one. It is still interesting to have a look to keep this in mind.
 
 ## Hotels Stars
 Now, let's have a look at the hotel standing of the places where the people stayed. This will highlight the quality of the stay per district.
@@ -117,33 +149,33 @@ data <- data %>%
 ```{r Average Stars per City, echo = FALSE, warning = FALSE}
 # Calculation of the average of F130_num by F105_OrgCode, ordered by average
 average_per_city <- data %>%
-  group_by(F105_OrgCode) %>%
+  group_by(leaflet_districts) %>%
   summarise(Average_F130_num = round(mean(F130_num, na.rm = TRUE), digits=2)) %>%
   arrange(desc(Average_F130_num))
 
 # Create ordered cities list for plotly
-ordered_cities <- average_per_city$F105_OrgCode
+ordered_cities <- average_per_city$leaflet_districts
 
 # Calculate the number of observations per city (F105_OrgCode)
 observations_per_district <- data %>%
-  group_by(F105_OrgCode) %>%
+  group_by(leaflet_districts) %>%
   summarise(Count = n())
 
 # Join datasets to ensure alignment
 combined_data <- left_join(average_per_city,
                            observations_per_district,
-                           by = "F105_OrgCode")
+                           by = "leaflet_districts")
 
 # Custom hover text
 combined_data$HoverText <-
-  paste("District name: ", combined_data$F105_OrgCode,
+  paste("District name: ", combined_data$leaflet_districts,
         "<br>Average Stars:", combined_data$Average_F130_num,
         "<br>Number of people visiting this district:", combined_data$Count,
         "/", sum(combined_data$Count))
 
 # Creation of the plotly
 plot_ly(combined_data,
-        x = ~F105_OrgCode,
+        x = ~leaflet_districts,
         y = ~Average_F130_num,
         type = 'bar',
         text = "",
@@ -164,29 +196,28 @@ plot_ly(combined_data,
          hovermode = "closest") 
 ```
 
-As we can see on the graph above, the best average is optain in `r combined_data$F105_OrgCode[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But this statistics is not very representative to the reality. Only `r combined_data$Count[1]` people answered the survey in this district which is not enough to have a good idea of the quality of the hotels in this district. The second best region after 
-`r combined_data$F105_OrgCode[1]` is `r combined_data$F105_OrgCode[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district got with `r combined_data$Count[2]` observation which is more representative. This high score for the Region of `r combined_data$F105_OrgCode[2]` is not really surprising given the fact that this place is well know for its luxury hotels.
+As we can see on the graph above, the best average is optain in `r combined_data$leaflet_districts[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But this statistics is not very representative to the reality. Only `r combined_data$Count[1]` people answered the survey in this district which is not enough to have a good idea of the quality of the hotels in this district. The second best region after `r combined_data$leaflet_districts[1]` is `r combined_data$leaflet_districts[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district got with `r combined_data$Count[2]` observation which is more representative. This high score for the Region of `r combined_data$leaflet_districts[2]` is not really surprising given the fact that this place is well know for its luxury hotels.
 
 ### Distribution of Stars by District
 ```{r Distribution of Stars by City, echo = FALSE, warning = FALSE}
 # Filtering to exclude cities with no valid data in F130_num
 data_filtered <- data %>%
   filter(!is.na(F130_num)) %>%
-  group_by(F105_OrgCode) %>%
+  group_by(leaflet_districts) %>%
   # Calculate the average to ensure we only include cities with data
   summarise(Average_F130_num = mean(F130_num, na.rm = TRUE)) %>%
   filter(!is.na(Average_F130_num)) %>%
   arrange(desc(Average_F130_num))
 
 # Reorder the F105_Code factor in the filtered dataframe according to the calculated averages
-data$F105_Code <- factor(data$F105_OrgCode, levels = data_filtered$F105_OrgCode)
+data$F105_Code <- factor(data$leaflet_districts, levels = data_filtered$leaflet_districts)
 
 # Ensure that the original dataframe is filtered to match the selected cities
 data <- data %>%
-  filter(F105_OrgCode %in% data_filtered$F105_OrgCode)
+  filter(leaflet_districts %in% data_filtered$leaflet_districts)
 
 # Create the chart with geom_density_ridges_gradient for cities with valid data in F130_num
-ggplot(data, aes(x = F130_num, y = F105_OrgCode, fill = ..x..)) +
+ggplot(data, aes(x = F130_num, y = leaflet_districts, fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis_c(option = "C") +
   labs(title = "Distribution of F130_num by City with Gradient",
