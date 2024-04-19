@@ -113,6 +113,11 @@ swiss_german_cantons = c("Luzern", "Schwyz", "Bern", "Neuenburg", "Aargau",
 data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
 
 
+# Percent of total tourists that are Swiss-German
+nrow(data[data$swiss_german == 1,])/nrow(data)*100
+
+# Percent of total tourists that are Swiss
+nrow(data[data$F05_02 == "Schweiz",])/nrow(data)*100
 
 
 #######################################################################################################################################

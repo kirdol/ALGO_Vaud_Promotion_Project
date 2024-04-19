@@ -1,0 +1,12 @@
+---
+title: "question_3"
+format: html
+editor: visual
+---
+
+
+
+
+```{r}
+1 + 1
+```
