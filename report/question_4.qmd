@@ -164,21 +164,11 @@ plot_ly(combined_data,
          hovermode = "closest") 
 ```
 
-### Number of Observations by District
-```{r Number of Observations per district, echo = FALSE}
-# Calculation of the number of observations per city (F105_Code)
-observations_per_city <- data %>%
-  group_by(F105_OrgCode) %>%
-  summarise(Number_observations = n()) %>%
-  arrange(desc(Number_observations))
-
-# Display the table
-datatable(observations_per_city,
-          options = list(pageLength = 15))
-```
+As we can see on the graph above, the best average is optain in `r combined_data$F105_OrgCode[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But this statistics is not very representative to the reality. Only `r combined_data$Count[1]` people answered the survey in this district which is not enough to have a good idea of the quality of the hotels in this district. The second best region after 
+`r combined_data$F105_OrgCode[1]` is `r combined_data$F105_OrgCode[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district got with `r combined_data$Count[2]` observation which is more representative. This high score for the Region of `r combined_data$F105_OrgCode[2]` is not really surprising given the fact that this place is well know for its luxury hotels.
 
 ### Distribution of Stars by District
-```{r}
+```{r Distribution of Stars by City, echo = FALSE, warning = FALSE}
 # Filtering to exclude cities with no valid data in F130_num
 data_filtered <- data %>%
   filter(!is.na(F130_num)) %>%
@@ -198,25 +188,9 @@ data <- data %>%
 # Create the chart with geom_density_ridges_gradient for cities with valid data in F130_num
 ggplot(data, aes(x = F130_num, y = F105_OrgCode, fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
-  scale_fill_viridis_c(option = "C") + # Use a color gradient
+  scale_fill_viridis_c(option = "C") +
   labs(title = "Distribution of F130_num by City with Gradient",
        x = "F130_num",
-       y = "City (F105_OrgCode)") +
+       y = "District") +
   theme_ridges() + theme(legend.position = "none")
-```
-
-### List of Hotels Sorted by Number of Stars
-```{r}
-# Calculation of the number of observations per city with a value in F130_num
-observations_per_city <- data %>%
-  filter(!is.na(F130_num)) %>%
-  group_by(F105_OrgCode) %>%
-  summarise(Number_observations = n())
-
-# Merge the data to include the number of observations in average_per_city
-average_and_number_per_city <- average_per_city %>%
-  left_join(observations_per_city, by = "F105_OrgCode")
-
-# Display the table with datatable and adjust options
-datatable(average_and_number_per_city, options = list(pageLength = 15))
 ```
