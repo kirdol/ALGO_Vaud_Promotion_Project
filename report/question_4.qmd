@@ -109,7 +109,7 @@ data <- data %>%
     F130 == "***" ~ 3,
     F130 == "**" ~ 2,
     F130 == "*" ~ 1,
-    TRUE ~ NA_real_  # Pour gérer les cas où aucun des motifs ci-dessus n'est trouvé
+    TRUE ~ NA_real_
   ))
 ```
 
