@@ -165,6 +165,35 @@ leaflet(vaud) %>%
   addPolygons(fillOpacity = 0.75, color = ~children_palette(vaud$children_percentage), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_percentage, "%"))
 
+
+# Now we will plot the proportion of couples for each district in %
+vaud$couples_proportion <- round((vaud$couples_sum / vaud$sum) * 100, 2)
+
+# Couples proportion plot
+couples_palette <- colorNumeric(palette = "Oranges", domain = vaud$couples_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~couples_palette(vaud$couples_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$couples_proportion, "%"))
+# High proportion of couples without children in Broye-Vully and Lavaux-Oron
+
+
+# Now we will plot the proportion of children for each district in %
+vaud$children_proportion <- round((vaud$children_sum / vaud$sum) * 100, 2)
+
+# Couples proportion plot
+children_palette <- colorNumeric(palette = "Purples", domain = vaud$children_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~children_palette(vaud$children_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_proportion, "%"))
+# High proportion of children in Aigle discrict, maybe for ski holidays.
+
+
 # Save data to new dataset
 #write.csv(data, file = "data/leaflet_dataset.csv", row.names = FALSE)
 

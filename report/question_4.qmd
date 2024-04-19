@@ -1,33 +1,105 @@
 # Question 4
 > Where did they stay? (For example: yes, they went to Montreux, but what type of accommodation, what price?
 
-## Initializations
-```{r output = FALSE}
+```{r Initialization, output = FALSE, echo = FALSE}
 source(here::here("scripts", "setup.R"))
-data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
-                 sep = ",")
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 ```
 
+Let's now dive into the subject of the location of their stay. First, let's have a look at the most popular locations in the canton Vaud. Given the architecture of the study this gives us the city where most people answer the survey.
 
-## Most Popular Destinations (where people stayed)
-```{r}
+```{r Most Popular City destinations, echo = FALSE}
 resort_counts <- table(data$F105_Code)
 accommodation_counts <- table(data$F125_ENG)
 
 # Proportion
 resort_counts_df <- as.data.frame(resort_counts)
-resort_counts_df$Proportion <- resort_counts_df$Freq / sum(resort_counts_df$Freq)
+resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
 
-# Plot
-plot_ly(resort_counts_df, labels = ~Var1, values = ~Proportion, type = 'pie',
-        textinfo = 'label+percent',
-        insidetextorientation = 'radial') %>%
-  layout(title = 'Most Popular Destinations',
-         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+# Adjust factor levels based on Proportion descending
+resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+
+# Custom hover text
+resort_counts_df$HoverText <-
+  paste("City name: ", resort_counts_df$Var1,
+        "<br>Number of people visiting this city:", resort_counts_df$Freq,
+        "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this city:",
+        scales::percent(resort_counts_df$Proportion))
+
+# Plot as a bar plot
+plot_ly(resort_counts_df,
+        x = ~Var1,
+        y = ~Proportion,
+        type = 'bar',
+        text = "",
+        hoverinfo = 'text',
+        hovertext = ~HoverText,
+        textposition = 'auto') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = 'Most Popular Destinations (City)',
+         xaxis = list(title = 'Destination',
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(title = 'Proportion',
+                      showgrid = TRUE,
+                      zeroline = FALSE),
+         hovermode = 'x')
 ```
 
+```{r Most Popular District destinations, echo = FALSE}
+resort_counts <- table(data$F105_OrgCode)
+accommodation_counts <- table(data$F125_ENG)
+
+# Proportion
+resort_counts_df <- as.data.frame(resort_counts)
+resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
+
+# Adjust factor levels based on Proportion descending
+resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+
+# Custom hover text
+resort_counts_df$HoverText <-
+  paste("City name: ", resort_counts_df$Var1,
+        "<br>Number of people visiting this district:", resort_counts_df$Freq,
+        "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this district:",
+        scales::percent(resort_counts_df$Proportion))
+
+# Plot as a bar plot
+plot_ly(resort_counts_df,
+        x = ~Var1,
+        y = ~Proportion,
+        type = 'bar',
+        text = "",
+        hoverinfo = 'text',
+        hovertext = ~HoverText,
+        textposition = 'auto') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = 'Most Popular Destinations (District)',
+         xaxis = list(title = 'Destination',
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(title = 'Proportion',
+                      showgrid = TRUE,
+                      zeroline = FALSE),
+         hovermode = 'closest')
+```
+
+As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r n_distinct(data$F105_OrgCode)` district, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in this city/districts than other smaller one. It is still interesting to have a look to keep this in mind.
+
 ## Hotels Stars
+Now, let's have a look at the hotel standing of the places where the people stayed. This will give us a highlight the 
+
+
 ```{r}
 data <- data %>% 
   mutate(F130_num = case_when(
