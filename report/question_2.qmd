@@ -460,6 +460,7 @@ my_theme <- theme_minimal() +
     legend.position = "bottom")  # Move legend to bottom
     
 # Plotting the density ridgeline plot
+
 ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F105_OrgCode)) + 
   geom_density_ridges(fill = "#00AFBB", color = "white", alpha = 0.8) +  # Adjust alpha for transparency
   scale_x_continuous(labels = scales::comma) +  # Add comma separator to x-axis labels for better readability
@@ -469,36 +470,9 @@ ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F10
     title = "Density Plot of Night Stays per City",  # Add plot title
     subtitle = "Distribution of night stays across different cities",  # Add plot subtitle
     caption = "Source: Your Dataset"  # Add data source caption
-  ) +
-  my_theme  # Apply custom theme
+  )
 
 
-# Replace NA values with 0 in column F20
-distr_nightstays_per_district$F20[is.na(distr_nightstays_per_district$F20)] <- 0
-
-distr_nightstays_per_district <- distr_nightstays_per_district %>%
-  group_by(F105_OrgCode) %>% 
-  summarise(count = n(), .groups = 'drop')
-  
-  
-distr_nightstays_per_district %>% ifelse(is.na(distr_nightstays_per_district$F20), 0, distr_nightstays_per_district$F20) # Replace NA values with 0 in column F20 using ifels
-
-
-
-
-# Plot the distribution of the SDG scores
-ggplot(long_df_goal_distribution,
-       aes(x = Value,
-           y = Goal,
-           fill = ..density..)) +
-  geom_density_ridges_gradient(scale = 3,
-                               size = 0.3,
-                               rel_min_height = 0.01) +
-  scale_fill_viridis_c(option = "D") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  labs(x = 'Score',
-       y = 'Goals',
-       title = 'SDG Scores Distribution')
 ```
 
 ```{r, message = FALSE, warning = FALSE}
