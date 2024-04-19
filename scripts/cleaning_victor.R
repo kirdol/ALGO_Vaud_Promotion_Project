@@ -36,10 +36,12 @@ df_sums_df <- data.frame(Column = names(df_sums), Sum = unlist(df_sums))
 df_sums_df$Column <- c("Alone", "Partner", "Friends", "Children", "Other family", "Unknown people (group)", "Dog", "Other pet(s)", "Only with partner")
 colnames(df_sums_df)[colnames(df_sums_df) == "Traveled with"] <- "Column"
 
+# Sort by descending sum
+df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(-df_sums_df$Sum)])
+
 #Plot frequency
 ggplot(df_sums_df, aes(x = Column, y = Sum)) +
   geom_bar(stat = "identity", fill = "skyblue") +
-  geom_bar(data = subset(df_sums_df, Column == "Only with partner"), fill = "orange", stat = "identity") +
   labs(title = "Frequency of responses", x = "Traveled with", y = "Sum")
 
 # make the plot in percentages
@@ -48,8 +50,69 @@ df_sums_df$Percentage <- (df_sums_df$Sum)/nrow(df)*100
 
 ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
   geom_bar(stat = "identity", fill = "skyblue") +
-  geom_bar(data = subset(df_sums_df, Column == "Only with partner"), fill = "orange", stat = "identity") +
   labs(title = "Frequency of responses", x = "Traveled with", y = "Percentage")
+
+
+# Compare traveled with and how much average CHF was spent per person
+
+# Create total spent column and add group size columns
+df$Total_spent <- ifelse(data$F81_Total != "", data$F81_Total, data$F82_Total)
+df$group_size <- ifelse(data$F32 != "", data$F32, data$F33)
+df$group_size <- as.numeric(df$group_size)
+
+#Reset column names in df_sums_df
+df_sums_df$Column <- c("Alone", "Partner", "Friends", "Children", "Other family", "Unknown people (group)", "Dog", "Other pet(s)", "Only with partner")
+
+# Average spending vector
+average_spending <- numeric(0)
+
+# Average spending for visitor Alone
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_01_ENG == 1] / df$group_size[df$F31_01_ENG == 1], na.rm = TRUE) / sum(df$F31_01_ENG))
+# With partner
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_02_ENG == 1] / df$group_size[df$F31_02_ENG == 1], na.rm = TRUE) / sum(df$F31_02_ENG))
+# With friends
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_03_ENG == 1] / df$group_size[df$F31_03_ENG == 1], na.rm = TRUE) / sum(df$F31_03_ENG))
+# With children
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_04_ENG == 1] / df$group_size[df$F31_04_ENG == 1], na.rm = TRUE) / sum(df$F31_04_ENG))
+# With other family
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_05_ENG == 1] / df$group_size[df$F31_05_ENG == 1], na.rm = TRUE) / sum(df$F31_05_ENG))
+# With unknown people
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_06_ENG == 1] / df$group_size[df$F31_06_ENG == 1], na.rm = TRUE) / sum(df$F31_06_ENG))
+# With dog
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_07_ENG == 1] / df$group_size[df$F31_07_ENG == 1], na.rm = TRUE) / sum(df$F31_07_ENG))
+# With other pet
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_08_ENG == 1] / df$group_size[df$F31_08_ENG == 1], na.rm = TRUE) / sum(df$F31_08_ENG))
+# Only partner
+average_spending <- c(average_spending, sum(df$Total_spent[df$couples == 1] / df$group_size[df$couples == 1], na.rm = TRUE) / sum(df$couples))
+
+
+# Add column to df_sums_df
+df_sums_df$Spent = average_spending
+
+# Plot average spending
+# Sort by descending sum
+df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(-df_sums_df$Spent)])
+
+#Plot frequency
+ggplot(df_sums_df, aes(x = Column, y = Spent)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Average CHF spent by group type", x = "Traveled with", y = "Amount spent / person")
+#######################################################################################################################################
+# Swiss german column
+
+unique(data[data$F05_02 == "Schweiz", ]$F05_03)
+
+swiss_german_cantons = c("Luzern", "Schwyz", "Bern", "Neuenburg", "Aargau",
+                         "Zürich", "Basel-Stadt", "Basel-Landschaft", "Obwalden",
+                         "Appenzell Innerrhoden", "Schaffhausen", "Thurgau",
+                         "St. Gallen", "Solothurn", "Uri", "Zug", "Nidwalden",
+                         "Appenzell Ausserrhoden")
+
+
+# Binary column for swiss germans
+data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
+
+
 
 
 #######################################################################################################################################
