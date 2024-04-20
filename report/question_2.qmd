@@ -15,6 +15,8 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 
 ### Data Exploration: Who is coming? 
 
+**Global percentage of people coming in Switzerland per continent**
+
 ```{r}
 ### F05_01.ENG ###
 #nb of occurrences by country and continents 
@@ -26,27 +28,114 @@ OccurencesContinent <- data %>%
   group_by(data$F05_01_ENG) %>% 
   count(sort = TRUE)
 
-#list all countries and continents 
-# print(unique(data$F05_02_ENG))
-# print(unique(data$F05_01_ENG))
-
 #Continent in percentages
 F05_01_PCT <- data %>% 
   group_by(F05_01_ENG) %>%
   summarise(Count = n()) %>%
   mutate(Percentage = Count / sum(Count) * 100) %>% 
   arrange(desc(Percentage))
-  
+
+datatable(F05_01_PCT, options = list(pageLength = 10,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE) 
+```
+
+```{r}
+#plot numbers continent 
+ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05_01_ENG)) +
+  geom_bar(stat="identity") +
+  coord_flip() +  # Flip coordinates for horizontal bars
+  theme_minimal() +
+  labs(x="Continents", y="Percentage", title="Percentage of Each Unique Continent") +
+  theme(legend.title = element_blank(), # Remove the legend title
+        legend.position = "none", # Hide the legend as the colors are not necessary with labels
+        plot.title = element_text(hjust = 0.5), # Center the plot title
+        axis.text.x = element_text(angle = 45, hjust = 1)) + # Rotate x-axis labels for readability
+  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_dodge(width=0.9), vjust=-0.25) # Add percentage labels
+
+```
+
+```{r}
+# Assuming 'F05_01_PCT' contains continent data and 'F05_02_PCT' contains country data
+# Let's merge the country percentages into the continent data frame.
+# Ensure that both data frames have a common identifier for continents. Adjust 'by' as needed.
+
+# Creating a country percentage by continent
+F05_02_PCT <- data %>%
+  group_by(F05_01_ENG, F05_02_ENG) %>%  # Group by both continent and country
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Percentage = Count / sum(Count) * 100) %>%
+  arrange(desc(Percentage))
+
+# Merge country data back to continent data
+combined_data <- merge(F05_01_PCT, F05_02_PCT, by="F05_01_ENG", all.x = TRUE)
+
+# Now create the horizontal stacked bar plot
+ggplot(combined_data, aes(x=reorder(F05_01_ENG, -Percentage.y), y=Percentage.y, fill=F05_02_ENG)) +
+  geom_bar(stat="identity") +
+  coord_flip() +  # Flip coordinates for horizontal bars
+  theme_minimal() +
+  labs(x="Continents", y="Percentage", title="Percentage of Each Country by Continent") +
+  theme(legend.position = "none",
+    legend.title = element_text(size=0),
+        legend.text = element_text(size = 0),# Add legend title if needed
+        plot.title = element_text(hjust = 0.5), # Center the plot title
+        axis.text.y = element_text(angle = 0, hjust = 1)) + # Adjust text angle and justification
+  geom_text(aes(label=sprintf("%.2f%%", Percentage.y)), position=position_stack(vjust=0.5))  # Add percentage labels inside the bars
+```
+
+```{r}
+# # trying the shiny for this plot
+
+
+#Add a column continent to F05_02_ENG
+
+# # UI
+# ui <- fluidPage(
+#   titlePanel("Interactive Continent/Country Percentage Plot"),
+#   sidebarLayout(
+#     sidebarPanel(
+#       helpText("Displays the percentage of each country by continent.")
+#     ),
+#     mainPanel(
+#       plotOutput("stackedPlot")
+#     )
+#   )
+# )
+# 
+# # Server
+# server <- function(input, output) {
+# 
+#   output$stackedPlot <- renderPlot({
+#     # Merge the datasets on the continent identifier, F05_01_ENG
+#     combined_data <- merge(F05_01_PCT, F05_02_PCT, by="F05_01_ENG")
+# 
+#     ggplot(combined_data, aes(x=reorder(F05_01_ENG, -Country_Percentage), y=Country_Percentage, fill=F05_02_ENG)) +
+#       geom_bar(stat="identity") +
+#       coord_flip() +  # Flip coordinates for horizontal bars
+#       theme_minimal() +
+#       labs(x="Continents", y="Percentage", title="Percentage of Each Country by Continent") +
+#       theme(legend.position = "none", # Hide the legend
+#             plot.title = element_text(hjust = 0.5), # Center the plot title
+#             axis.text.y = element_text(angle = 0, hjust = 1)) + # Adjust text angle and justification
+#       geom_text(aes(label=sprintf("%.2f%%", Country_Percentage)), position=position_stack(vjust=0.5))  # Add percentage labels inside the bars
+#   })
+# }
+# 
+# # Run the application 
+# shinyApp(ui = ui, server = server)
+```
+
+**Global percentage of people coming in Switzerland per country of origin**
+
+```{r}
+
 # Countries in percentages 
 F05_02_PCT <- data %>% 
   group_by(F05_02_ENG) %>%
   summarise(Count = n()) %>%
   mutate(Percentage = Count / sum(Count) * 100) %>% 
   arrange(desc(Percentage))
-
-datatable(F05_01_PCT, options = list(pageLength = 5,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE) 
 
 datatable(F05_02_PCT, options = list(pageLength = 10,
                                    class = "hover",
@@ -56,7 +145,7 @@ datatable(F05_02_PCT, options = list(pageLength = 10,
 #or merge continent and country table. 1st column continents, 2nd countries, # of occurences then percentage
 ```
 
-More details about where are the tourists coming from by city
+**Ratio of each country of origin over the total number of visitors surveyed per city**
 
 ```{r}
 # #total number of tourist per city
@@ -87,27 +176,57 @@ nationality_ratio_per_city <- tourists_by_nationality %>%
   mutate(Ratio = Count / TotalCount) %>%
   select(F105_Code, F05_02_ENG, Ratio)
 
-datatable(nationality_ratio_per_city, options = list(pageLength = 5,
+datatable(nationality_ratio_per_city, options = list(pageLength = 10,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE)
+
+# stacked bar plot with cities on y and % on x and fill = % nationalities per city relatively to the number of tourist who visited the city 
+# faire un graph par continent ? (beaucoup de villes )
+```
+
+**Ratio of each country of origin relatively to the number of tourist surveyed in each district**
+
+```{r}
+#ratio of each nationality relatively to the number of tourist surveyed in each district F105_OrgCode
+tourists_by_nationality <- data %>%
+  group_by(F105_OrgCode, F05_02_ENG) %>%
+  summarise(Count = n(), .groups = 'drop')
+
+# Calculating the total number of tourists per city
+total_tourists_per_city <- tourists_by_nationality %>%
+  group_by(F105_OrgCode) %>%
+  summarise(TotalCount = sum(Count), .groups = 'drop')
+
+# Joining the counts back to the detailed breakdown and calculating the ratio
+nationality_ratio_per_city <- tourists_by_nationality %>%
+  left_join(total_tourists_per_city, by = "F105_OrgCode") %>%
+  mutate(Ratio = Count / TotalCount) %>%
+  select(F105_OrgCode, F05_02_ENG, Ratio)
+
+datatable(nationality_ratio_per_city, options = list(pageLength = 10,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE)
 
 ```
+
+
 ```{r}
 
-# Swiss german column
+## Séparation cantons suisse-allemands 
 
-unique(data[data$F05_02 == "Schweiz", ]$F05_03)
-
-swiss_german_cantons = c("Luzern", "Schwyz", "Bern", "Neuenburg", "Aargau",
-                         "Zürich", "Basel-Stadt", "Basel-Landschaft", "Obwalden",
-                         "Appenzell Innerrhoden", "Schaffhausen", "Thurgau",
-                         "St. Gallen", "Solothurn", "Uri", "Zug", "Nidwalden",
-                         "Appenzell Ausserrhoden")
-
-
-# Binary column for swiss germans
-data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
-
+# # Swiss german column
+# 
+# unique(data[data$F05_02 == "Schweiz", ]$F05_03)
+# 
+# swiss_german_cantons = c("Luzern", "Schwyz", "Bern", "Neuenburg", "Aargau",
+#                          "Zürich", "Basel-Stadt", "Basel-Landschaft", "Obwalden",
+#                          "Appenzell Innerrhoden", "Schaffhausen", "Thurgau",
+#                          "St. Gallen", "Solothurn", "Uri", "Zug", "Nidwalden",
+#                          "Appenzell Ausserrhoden")
+# 
+# 
+# # Binary column for swiss germans
+# data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
 ```
 
 
@@ -126,128 +245,11 @@ data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_ge
 
 ```
 
-leaflet
-
 ```{r}
-<<<<<<< Updated upstream
-# Leaflet map
 
-# Data from https://labs.karavia.ch/swiss-boundaries-geojson/
-districts <- read_sf(here("data","swiss_districts.geojson"))
-districts
+## trying to add percentage country of origin visitors relatively to each district on leaflet
 
-# Keep only Vaud
-vaud <- districts |>
-  filter(KANTONSNUM == 22)
 
-# We will transform data to include corresponding leaflet district. 
-unique(data$F105_Code)
-
-# Create a new column 'leaflet_region' with NA values
-data$leaflet_districts <- NA
-
-# Assign cities to districts based on conditions
-data$leaflet_districts[data$F105_Code == "Lausanne"] <- "Lausanne"
-data$leaflet_districts[data$F105_Code %in% c("Montreux", "Vevey", "La Tour-de-Peilz", "Rougemont", "Château-d'Oex", "Veytaux", "Rossinière", "Corsier-sur-Vevey", "Saint-Légier-La-Chiésaz", "Blonay", "Chardonne", "Chernex")] <- "Riviera-Pays-d'Enhaut"
-data$leaflet_districts[data$F105_Code %in% c("Morges", "Yens", "Aubonne")] <- "Morges"
-data$leaflet_districts[data$F105_Code %in% c("Yverdon-les-Bains", "L'Abbaye", "Vallorbe", "Orbe", "Yvonand", "La Praz", "Le Chenit", "Bullet", "Montagny-près-Yverdon", "Saint Croix", "Le Rocheray", "Le Pont", "Le Sentier", "Le Brassus", "Les Rasses", "Les Charbonnieres")] <- "Jura-Nord vaudois"
-data$leaflet_districts[data$F105_Code %in% c("Aigle", "Leysin", "Villeneuve (VD)", "Ormont-Dessus", "Bex", "Lavey-Morcles", "Gryon", "Ormont-Dessous", "Les Diablerets", "Villars-sur-Ollon")] <- "Aigle"
-data$leaflet_districts[data$F105_Code %in% c("Nyon", "Prangins", "Chavannes-de-Bogis", "Coppet", "Rolle", "Commugny", "Duillier", "Gilly", "Founex")] <- "Nyon"
-data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "Payerne", "Cudrefin", "St. Aubin", "Estavayer-le-Lac")] <- "Broye-Vully"
-data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)", "Renens", "Saint-Sulpice (VD)")] <- "Ouest lausannois"
-data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cully")] <- "Lavaux-Oron"
-data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
-
-# Count districts in data and add to vaud
-vaud$sum <- NA
-
-vaud$sum[vaud$NAME == "Jura-Nord vaudois"] <- sum(data$leaflet_districts == "Jura-Nord vaudois")
-vaud$sum[vaud$NAME == "Aigle"] <- sum(data$leaflet_districts == "Aigle")
-vaud$sum[vaud$NAME == "Morges"] <- sum(data$leaflet_districts == "Morges")
-vaud$sum[vaud$NAME == "Nyon"] <- sum(data$leaflet_districts == "Nyon")
-vaud$sum[vaud$NAME == "Riviera-Pays-d'Enhaut"] <- sum(data$leaflet_districts == "Riviera-Pays-d'Enhaut")
-vaud$sum[vaud$NAME == "Gros-de-Vaud"] <- sum(data$leaflet_districts == "Gros-de-Vaud")
-vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
-vaud$sum[vaud$NAME == "Lavaux-Oron"] <- sum(data$leaflet_districts == "Lavaux-Oron")
-vaud$sum[vaud$NAME == "Lausanne"] <- sum(data$leaflet_districts == "Lausanne")
-vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
-vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Ouest lausannois")
-
-# Transform sum to percentage
-vaud$percentage <- round((vaud$sum)/nrow(data)*100, 2)
-
-# Transform to leaflet projection 
-vaud <- st_transform(vaud, crs = '+proj=longlat +datum=WGS84')
-
-palette <- colorNumeric(palette = "Greens", domain = vaud$percentage)
-
-leaflet(vaud) %>%
-  addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(fillOpacity = 0.75, color = ~palette(vaud$percentage), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%"))
-=======
-# # Leaflet map
-# 
-# # Data from https://labs.karavia.ch/swiss-boundaries-geojson/
-# districts <- read_sf("/Users/stefanfavre/Documents/GitHub/ALGO_Vaud_Promotion_Project/data/swiss_districts.geojson")
-# districts
-# 
-# # Keep only Vaud
-# vaud <- districts |>
-#   filter(KANTONSNUM == 22)
-# 
-# # We will transform data to include corresponding leaflet district. 
-# unique(data$F105_Code)
-# 
-# # Create a new column 'leaflet_region' with NA values
-# data$leaflet_districts <- NA
-# 
-# # Assign cities to districts based on conditions
-# data$leaflet_districts[data$F105_Code == "Lausanne"] <- "Lausanne"
-# data$leaflet_districts[data$F105_Code %in% c("Montreux", "Vevey", "La Tour-de-Peilz", "Rougemont", "Château-d'Oex", "Veytaux", "Rossinière", "Corsier-sur-Vevey", "Saint-Légier-La-Chiésaz", "Blonay", "Chardonne", "Chernex")] <- "Riviera-Pays-d'Enhaut"
-# data$leaflet_districts[data$F105_Code %in% c("Morges", "Yens", "Aubonne")] <- "Morges"
-# data$leaflet_districts[data$F105_Code %in% c("Yverdon-les-Bains", "L'Abbaye", "Vallorbe", "Orbe", "Yvonand", "La Praz", "Le Chenit", "Bullet", "Montagny-près-Yverdon", "Saint Croix", "Le Rocheray", "Le Pont", "Le Sentier", "Le Brassus", "Les Rasses", "Les Charbonnieres")] <- "Jura-Nord vaudois"
-# data$leaflet_districts[data$F105_Code %in% c("Aigle", "Leysin", "Villeneuve (VD)", "Ormont-Dessus", "Bex", "Lavey-Morcles", "Gryon", "Ormont-Dessous", "Les Diablerets", "Villars-sur-Ollon")] <- "Aigle"
-# data$leaflet_districts[data$F105_Code %in% c("Nyon", "Prangins", "Chavannes-de-Bogis", "Coppet", "Rolle", "Commugny", "Duillier", "Gilly", "Founex")] <- "Nyon"
-# data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "Payerne", "Cudrefin", "St. Aubin", "Estavayer-le-Lac")] <- "Broye-Vully"
-# data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)", "Renens", "Saint-Sulpice (VD)")] <- "Ouest lausannois"
-# data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cully")] <- "Lavaux-Oron"
-# data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
-# 
-# # Count districts in data and add to vaud
-# vaud$sum <- NA
-# 
-# vaud$sum[vaud$NAME == "Jura-Nord vaudois"] <- sum(data$leaflet_districts == "Jura-Nord vaudois")
-# vaud$sum[vaud$NAME == "Aigle"] <- sum(data$leaflet_districts == "Aigle")
-# vaud$sum[vaud$NAME == "Morges"] <- sum(data$leaflet_districts == "Morges")
-# vaud$sum[vaud$NAME == "Nyon"] <- sum(data$leaflet_districts == "Nyon")
-# vaud$sum[vaud$NAME == "Riviera-Pays-d'Enhaut"] <- sum(data$leaflet_districts == "Riviera-Pays-d'Enhaut")
-# vaud$sum[vaud$NAME == "Gros-de-Vaud"] <- sum(data$leaflet_districts == "Gros-de-Vaud")
-# vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
-# vaud$sum[vaud$NAME == "Lavaux-Oron"] <- sum(data$leaflet_districts == "Lavaux-Oron")
-# vaud$sum[vaud$NAME == "Lausanne"] <- sum(data$leaflet_districts == "Lausanne")
-# vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
-# vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Ouest lausannois")
-# 
-# # Transform sum to percentage
-# vaud$percentage <- round((vaud$sum)/nrow(data)*100, 2)
-# 
-# # Transform to leaflet projection 
-# vaud <- st_transform(vaud, crs = '+proj=longlat +datum=WGS84')
-# 
-# palette <- colorNumeric(palette = "Greens", domain = vaud$percentage)
-# 
-# leaflet(vaud) %>%
-#   addTiles() %>%
-#   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-#   addPolygons(fillOpacity = 0.75, color = ~palette(vaud$percentage), weight = 0) %>%
-#   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$percentage, "%"))
->>>>>>> Stashed changes
-
-```
-
-```{r}
 # # Assume 'F105_Code' is your city code and maps directly to 'leaflet_districts'
 # # Add district info to nationality ratios
 # nationality_with_districts <- nationality_ratio_per_city %>%
@@ -353,33 +355,6 @@ leaflet(vaud) %>%
 
 
 ```{r}
-#plot numbers continent 
-ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05_01_ENG)) +
-  geom_bar(stat="identity") +
-  theme_minimal() +
-  labs(x="Continents", y="Percentage", title="Percentage of Each Unique Continent") +
-  theme(legend.title = element_blank(), # Remove the legend title
-        legend.position = "none", # Hide the legend as the colors are not necessary with labels
-        plot.title = element_text(hjust = 0.5), # Center the plot title
-        axis.text.x = element_text(angle = 45, hjust = 1)) + # Rotate x-axis labels for readability
-  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_dodge(width=0.9), vjust=-0.25) # Add percentage labels
-
-```
-
-Who is coming: stacked bar graph 
-```{r}
-
-# faire par ville les pourcentages des nationalités par rapport au nombre de personnes qui ont visité la ville 
-# 
-# faire un graph par continent ? (beaucoup de villes )
-
-
-
-```
-
-
-
-```{r}
 ### F05_02_ENG ###
 #plot with continents 
 F05_02_PCT <- data %>%
@@ -388,15 +363,16 @@ F05_02_PCT <- data %>%
   mutate(Percentage = Count / sum(Count) * 100) %>%
   arrange(desc(Percentage))
 
-ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, -Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
+ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
   geom_bar(stat = "identity") +
   coord_flip() +  # Make the plot horizontal
   scale_fill_brewer(palette = "Set3", name = "Continent") +  # Use a color palette for continents
   theme_minimal() +
   labs(x = "Country", y = "Percentage", title = "Percentage of Responses by Country and Continent") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        axis.text.y = element_text(angle = 45, hjust = 1, size = 7),
         plot.title = element_text(hjust = 0.5),
-        legend.position = "bottom")  # Adjust legend position
+        legend.position = "right")  # Adjust legend position
 ```
 
 ```{r, message = FALSE, warning = FALSE}
@@ -453,7 +429,7 @@ ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fil
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-```{r}
+```{r, message=FALSE}
 ### F16 ### 
 
 # do a tableau with the percentage of each trip option per nationality 
@@ -473,7 +449,7 @@ trip_percentages <- trip_counts %>%
   mutate(percentage = (count / total_count) * 100) %>% 
   select(-c(count, total_count))
 
-datatable(trip_percentages, options = list(pageLength = 5,
+datatable(trip_percentages, options = list(pageLength = 10,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE) 
 
@@ -492,10 +468,11 @@ ggplot(trip_percentages, aes(x = F05_02_ENG, y = percentage, fill = F16_ENG)) +
   labs(x = "Country", y = "Percentage", fill = "Type of Trip") +
   ggtitle("Stacked Bar Plot of Type of Trip by Country") +
   theme_minimal() + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5), 
         legend.position = "top",
-        legend.text = element_text(size = 7),
-        legend.title = element_text(size = 7))  # Adjust legend title size)
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 0),
+        legend.box = "vertical")
 
 ```
 
