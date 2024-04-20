@@ -2,6 +2,14 @@
 title: "Question 2"
 format:
   html:
+    includes:
+      in-header: |
+        <style>
+          body {
+            margin-left: 50px; /* Sets the left margin to 50 pixels */
+            margin-right: 50px; /* Sets the right margin to 50 pixels */
+          }
+        </style>
     code-fold: true
 ---
 
@@ -354,7 +362,7 @@ datatable(nationality_ratio_per_city, options = list(pageLength = 10,
 ```
 
 
-```{r}
+```{r, fig.width=10, fig.height=20}
 ### F05_02_ENG ###
 #plot with continents 
 F05_02_PCT <- data %>%
@@ -369,10 +377,11 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
   scale_fill_brewer(palette = "Set3", name = "Continent") +  # Use a color palette for continents
   theme_minimal() +
   labs(x = "Country", y = "Percentage", title = "Percentage of Responses by Country and Continent") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-        axis.text.y = element_text(angle = 45, hjust = 1, size = 7),
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 9), 
+        axis.text.y = element_text(angle = 45, hjust = 1, size = 9),
         plot.title = element_text(hjust = 0.5),
-        legend.position = "right")  # Adjust legend position
+        legend.position = "right") +  # Adjust legend position
+  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_stack(vjust=0.5))
 ```
 
 ```{r, message = FALSE, warning = FALSE}
@@ -454,23 +463,40 @@ datatable(trip_percentages, options = list(pageLength = 10,
                                    searchHighlight = TRUE), rownames = FALSE) 
 
 #plot
-F16_Q <- data %>% count(F16_ENG, name = "total_options")
-F16_Q$percentage <- with(F16_Q, total_options / sum(total_options) * 100)
-labels <- paste(F16_Q$F16_ENG, sprintf("%.1f%%", F16_Q$percentage))
 
-# Create a pie chart
-pie(F16_Q$total_options, labels = labels, main = "Global Percentage Distribution of Type of Trips")
+my_colors <- c("Holidays with only one overnight stay in Switzerland" = "#FF9999",
+"Round trip only within Switzerland (several overnight locations in Switzerland)" = "#9999FF",
+"Round trip through Europe: only one overnight stay in Switzerland" = "#66CC99",
+"Round trip through Europe: several places to stay in Switzerland" = "#E69F00")
 
-#other plot
-# Create stacked bar plot
+F16_Q <- data %>%
+  count(F16_ENG, name = "total_options") %>%
+  mutate(percentage = total_options / sum(total_options) * 100,
+         label = sprintf("%.1f%%", percentage)) 
+
+# Use ggplot2 to create the pie chart
+ggplot(F16_Q, aes(x = "", y = percentage, fill = F16_ENG)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) + 
+  theme_void() +
+  scale_fill_manual(values = my_colors) + # Use your defined colors here
+  geom_text(aes(label = percentage), position = position_stack(vjust = 0.5)) +
+  ggtitle("Global Percentage Distribution of Type of Trips") 
+
+```
+
+```{r, fig.width=15, fig.height=10}
+
 ggplot(trip_percentages, aes(x = F05_02_ENG, y = percentage, fill = F16_ENG)) +
   geom_bar(stat = "identity") +
   labs(x = "Country", y = "Percentage", fill = "Type of Trip") +
   ggtitle("Stacked Bar Plot of Type of Trip by Country") +
+  scale_fill_manual(values = my_colors) + # Use your defined colors here
   theme_minimal() + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5), 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+        axis.text.y = element_text(hjust = 1, size = 8),
         legend.position = "top",
-        legend.text = element_text(size = 4),
+        legend.text = element_text(size = 8),
         legend.title = element_text(size = 0),
         legend.box = "vertical")
 
@@ -527,6 +553,52 @@ ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F10
 ## means that most of the people coming in Switzerland would stay less than 1 night in Switzerland 
 ```
 
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Assuming 'data' is your dataframe, 'F20' is the number of nights, and 'F105_orgCode' is the district code
+F20_freq <- data %>%
+  group_by(F20, F105_OrgCode) %>%
+  summarize(Count = n(), .groups = 'drop') %>%
+  arrange(desc(Count))  # Arranges in descending order of frequency
+
+# Plotting with ggplot2
+ggplot(F20_freq, aes(x = F20, y = Count, fill = F105_OrgCode)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(x = "Number of nights", y = "Frequency", title = "Frequency of the number of nights in Switzerland by District") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
+        legend.title = element_blank(), # Hide the legend title
+        legend.position = "bottom") # Position legend at the bottom
+
+# Note: If district codes are many and make the plot crowded or unreadable, consider grouping small categories or using facet_wrap() for a clearer presentation.
+
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Assuming 'data' is your data frame, 'F20' is the number of nights, and 'F105_orgCode' is the district code
+F20_freq <- data %>%
+  group_by(F20, F105_OrgCode) %>%
+  summarize(Count = n(), .groups = 'drop') %>%
+  arrange(F105_OrgCode, desc(Count))  # Arranges primarily by district and then in descending order of frequency
+
+# Plotting with ggplot2 using facet_wrap to create a separate plot for each district
+ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ F105_OrgCode, scales = "free_y") +  # Free scales can adjust if district frequencies vary significantly
+  theme_minimal() +
+  labs(x = "Number of nights", y = "Frequency", title = "Frequency of the number of nights in Switzerland by District") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
+        legend.title = element_blank()) # Hide the legend title if it's not needed
+
+# Adjust further to improve plot appearance or readability as necessary
+
+```
+
 ```{r, message = FALSE, warning = FALSE}
 ### F21 ###
 #consider NA as 0 here. 
@@ -580,7 +652,7 @@ ggplot(F30_Q, aes(x = F30_ENG, y = Total, label = paste(percentage, "%"))) +
        y = "Total")
 ```
 
-```{r}
+```{r, fig.height=15}
 ### Deeper reasoning ###
 
 # Where are coming from the people, per month
