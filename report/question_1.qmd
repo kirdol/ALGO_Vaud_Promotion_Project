@@ -14,6 +14,8 @@ library(tidyr)
 library(ggridges)
 library(treemap)
 library(ggplot2)
+library(dplyr)
+library(plotly)
 ```
 
 ```{r}
