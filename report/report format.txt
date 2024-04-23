@@ -1,13 +1,29 @@
 Intro
+contexte
+objectifs
+qui, quoi
 
 EDA
-graphes à une variables, graphes de frequency, etc
+Présenter dans l'ordre des colonnes, (grouper les colonnes par type.)
+- histograms/tableaux de fréquence. Graphes à une variable, graphes simples.
+-Nuage de mots
+
 
 Analysis/Correlations
-graphes à plusieurs variables, subsets du data pour certaines demographiques
-
-Map
+Trouver ce qui ressort, ce qui est surprenant
+- continents/dépenses, groupes etc
+- graphes à plusieurs variables, subsets du data pour certaines demographiques
+- provenances géographiques, top 7, USA régions, continents, etc
+Maps
 Plot différentes variables sur la carte leaflet du canton de vaud par district
+- continents/districts
+
+- top 7/dépenses, groupes, nuitées, etc
+- top 7/districts
+- top 7 élargi 3 variables (ex: district + dépenses + top7)
+
 
 Conclusions
+synthèse
+limitations, dataset, futur études
 conseils pour vaud promotion?

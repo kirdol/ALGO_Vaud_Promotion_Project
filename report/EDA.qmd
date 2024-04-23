@@ -836,3 +836,79 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Adjust text angle for better readability
 ```
+
+## Responses in % to the question "Who did you travel with?"
+```{r}
+data <- read.csv("data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
+
+explanations <- read.csv("data/explanations.csv")
+
+which(colnames(data) == "F31_01")
+which(colnames(data) == "F32")
+
+df <- data[, 18:33]
+
+# Keep english columns only
+seq(2, 17, 2)
+df <- df[, seq(2, 17, 2)]
+
+# Set responses to binary values
+for (i in 1:ncol(df)) {
+  df[, i] <- ifelse(df[, i] == "Applies", 1, ifelse(df[, i] == "Not applicable", 0, NA))
+}
+
+# We add a column to separate couples from families. Here people only traveled with their partner.
+
+df$couples <- ifelse(df$F31_02_ENG == 1 & df$F31_03_ENG == 0 & df$F31_04_ENG == 0 & df$F31_05_ENG == 0, 1, 0)
+
+# Sums of responses for frequency plot
+df_sums <- list()
+
+for (col in names(df)) {
+  df_sums[[col]] <- sum(df[[col]])
+}
+
+# ggplot of frequency of responses
+df_sums_df <- data.frame(Column = names(df_sums), Sum = unlist(df_sums))
+
+#Change column names in df_sums_df
+df_sums_df$Column <- c("Alone", "Partner", "Friends", "Children", "Other family", "Unknown people (group)", "Dog", "Other pet(s)", "Only with partner")
+colnames(df_sums_df)[colnames(df_sums_df) == "Traveled with"] <- "Column"
+
+# Sort by descending sum
+df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(-df_sums_df$Sum)])
+
+#Plot frequency of "traveled with" groups
+#ggplot(df_sums_df, aes(x = Column, y = Sum)) +
+#  geom_bar(stat = "identity", fill = "skyblue") +
+#  labs(title = "Frequency of responses", x = "Traveled with", y = "Sum")
+
+# make the plot in percentages
+
+df_sums_df$Percentage <- (df_sums_df$Sum)/nrow(df)*100
+
+ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Frequency of responses", x = "Traveled with", y = "Percentage")
+
+```
+
+## Percentage of tourists that are Swiss german and Swiss
+```{r}
+swiss_german_cantons = c("Luzern", "Schwyz", "Bern", "Neuenburg", "Aargau",
+                         "Zürich", "Basel-Stadt", "Basel-Landschaft", "Obwalden",
+                         "Appenzell Innerrhoden", "Schaffhausen", "Thurgau",
+                         "St. Gallen", "Solothurn", "Uri", "Zug", "Nidwalden",
+                         "Appenzell Ausserrhoden")
+
+
+# Binary column for swiss germans
+data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
+
+
+# Percent of total tourists that are Swiss-German
+nrow(data[data$swiss_german == 1,])/nrow(data)*100
+
+# Percent of total tourists that are Swiss
+nrow(data[data$F05_02 == "Schweiz",])/nrow(data)*100
+```
