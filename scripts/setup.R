@@ -9,7 +9,8 @@ packages_loaded <- c(
   "plotly",
   "ggridges",
   "leaflet",
-  "sf"
+  "sf",
+  "treemap"
 )
 
 # Function that install the packages if not already installed on your computer
