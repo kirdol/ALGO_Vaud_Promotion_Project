@@ -10,7 +10,8 @@ packages_loaded <- c(
   "ggridges",
   "leaflet",
   "sf",
-  "treemap"
+  "treemap",
+  "tidyr"
 )
 
 # Function that install the packages if not already installed on your computer

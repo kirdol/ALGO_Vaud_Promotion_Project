@@ -721,4 +721,118 @@ ggplot(data, aes(x = F130_num, y = leaflet_districts, fill = ..x..)) +
   theme_ridges() + theme(legend.position = "none")
 ```
 
+# Partie Jeff
 
+## Average Spending by category (no package tour)
+
+```{r}
+spending_data <- data.frame(
+  Spending_Type = c("Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F81_01, na.rm = TRUE), 
+             mean(data$F81_02, na.rm = TRUE),
+             mean(data$F81_03, na.rm = TRUE),
+             mean(data$F81_04, na.rm = TRUE),
+             mean(data$F81_05, na.rm = TRUE),
+             mean(data$F81_06, na.rm = TRUE))
+)
+
+ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Average Spending by Category (no package tour)", x = "Category", y = "Average Amount") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
+```
+
+## Average Spending by Category (with package)
+
+```{r}
+spending_data_package <- data.frame(
+  Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F82_01, na.rm = TRUE), 
+             mean(data$F82_02, na.rm = TRUE),
+             mean(data$F82_03, na.rm = TRUE),
+             mean(data$F82_04, na.rm = TRUE),
+             mean(data$F82_05, na.rm = TRUE),
+             mean(data$F82_06, na.rm = TRUE),
+             mean(data$F82_07, na.rm = TRUE))
+)
+
+ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Average Spending by Category", x = "Category", y = "Average Amount") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### Comparison of Spending with & without package
+
+```{r}
+# Data for spending without package
+spending_data <- data.frame(
+  Spending_Type = c("Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F81_01, na.rm = TRUE), 
+             mean(data$F81_02, na.rm = TRUE),
+             mean(data$F81_03, na.rm = TRUE),
+             mean(data$F81_04, na.rm = TRUE),
+             mean(data$F81_05, na.rm = TRUE),
+             mean(data$F81_06, na.rm = TRUE))
+)
+
+# Data for spending with package
+spending_data_package <- data.frame(
+  Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F82_01, na.rm = TRUE), 
+             mean(data$F82_02, na.rm = TRUE),
+             mean(data$F82_03, na.rm = TRUE),
+             mean(data$F82_04, na.rm = TRUE),
+             mean(data$F82_05, na.rm = TRUE),
+             mean(data$F82_06, na.rm = TRUE),
+             mean(data$F82_07, na.rm = TRUE))
+)
+
+# Create plotly objects for each spending type
+p1 <- plot_ly(spending_data, x = ~Spending_Type, y = ~Amount, type = 'bar', name = 'No Package',
+              marker = list(color = 'rgba(50, 171, 96, 0.6)', line = list(color = 'rgba(50, 171, 96, 1.0)', width = 1))) %>%
+  layout(title = "Average Spending by Category (No Package Tour)",
+         xaxis = list(title = "Category", tickangle = 45),
+         yaxis = list(title = "Average Amount"),
+         barmode = 'group')
+
+p2 <- plot_ly(spending_data_package, x = ~Spending_Type, y = ~Amount, type = 'bar', name = 'With Package',
+              marker = list(color = 'rgba(128, 0, 128, 0.6)', line = list(color = 'rgba(128, 0, 128, 1.0)', width = 1))) %>%
+  layout(title = "Average Spending by Category (With Package)",
+         xaxis = list(title = "Category", tickangle = 45),
+         yaxis = list(title = "Average Amount"),
+         barmode = 'group')
+
+# Combine plots into a single plot with a dropdown menu
+subplot(p1, p2, nrows = 1) %>%
+  layout(
+    title = "Comparison of Spending With and Without Package",
+    updatemenus = list(
+      list(
+        y = 0.7,
+        buttons = list(
+          list(method = "relayout", args = list("visible", c(TRUE, FALSE)), label = "No Package"),
+          list(method = "relayout", args = list("visible", c(FALSE, TRUE)), label = "With Package")
+        )
+      )
+    )
+  )
+```
+
+## Distribution of Currency
+
+```{r}
+# Calculate the frequency and percentage of each currency value
+currency_data <- data %>%
+  count(F80) %>%
+  mutate(Percentage = n / sum(n) * 100)
+
+# Create a bar chart
+ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Currency", x = "Currency", y = "Percentage (%)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Adjust text angle for better readability
+```
