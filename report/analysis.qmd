@@ -1,1 +1,3 @@
 # Analysis
+
+## Correlations entre variables, ce qui en resort

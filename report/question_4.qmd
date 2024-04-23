@@ -1,4 +1,5 @@
 # Question 4
+
 > Where did they stay? (For example: yes, they went to Montreux, but what type of accommodation, what price?
 
 ```{r Initialization and district creation, output = FALSE, echo = FALSE}
@@ -131,6 +132,7 @@ plot_ly(resort_counts_df,
 As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r n_distinct(data$leaflet_districts)` district, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller one. It is still interesting to have a look to keep this in mind.
 
 ## Hotels Stars
+
 Now, let's have a look at the hotel standing of the places where the people stayed. This will highlight the quality of the stay per district.
 
 ```{r Assign numeric value to the stars, echo = FALSE}
@@ -146,6 +148,7 @@ data <- data %>%
 ```
 
 ### Average Stars per District
+
 ```{r Average Stars per City, echo = FALSE, warning = FALSE}
 # Calculation of the average of F130_num by F105_OrgCode, ordered by average
 average_per_city <- data %>%
@@ -199,6 +202,7 @@ plot_ly(combined_data,
 As we can see on the graph above, the best average is optain in `r combined_data$leaflet_districts[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But this statistics is not very representative to the reality. Only `r combined_data$Count[1]` people answered the survey in this district which is not enough to have a good idea of the quality of the hotels in this district. The second best region after `r combined_data$leaflet_districts[1]` is `r combined_data$leaflet_districts[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district got with `r combined_data$Count[2]` observation which is more representative. This high score for the Region of `r combined_data$leaflet_districts[2]` is not really surprising given the fact that this place is well know for its luxury hotels.
 
 ### Distribution of Stars by District
+
 ```{r Distribution of Stars by City, echo = FALSE, warning = FALSE}
 # Filtering to exclude cities with no valid data in F130_num
 data_filtered <- data %>%
