@@ -1,17 +1,10 @@
 ---
-title: "Question 2"
 format:
   html:
-    includes:
-      in-header: |
-        <style>
-          body {
-            margin-left: 50px; /* Sets the left margin to 50 pixels */
-            margin-right: 50px; /* Sets the right margin to 50 pixels */
-          }
-        </style>
     code-fold: true
 ---
+
+# Question 2
 
 **Where are from the people coming in the canton of Vaud? What kind of trip are they doing?**
 
