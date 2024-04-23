@@ -667,3 +667,13 @@ ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02_ENG`, size = Cou
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+
+::: panel-tabset
+
+## titre
+
+```{r}
+
+```
+
+:::
