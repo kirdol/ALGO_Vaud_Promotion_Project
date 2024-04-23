@@ -210,4 +210,3 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
 ```{r}
 
 ```
-

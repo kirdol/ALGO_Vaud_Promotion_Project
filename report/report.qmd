@@ -18,5 +18,5 @@ format:
     link-external-icon: true
 ---
 
-```{r child = c('intro.qmd', 'data.qmd', 'question_2.qmd', 'question_4.qmd', 'analysis.qmd', 'conclusion.qmd')}
+```{r child = c('intro.qmd', 'data.qmd', 'question_1.qmd', 'question_2.qmd', 'question_4.qmd', 'analysis.qmd', 'conclusion.qmd')}
 ```
