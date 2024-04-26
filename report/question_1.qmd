@@ -338,3 +338,36 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
 # ANALYSE
 Top 7 countries are: Switzerland, France, UK, Germany, US, Belgium & Spain.
 
+```{r}
+# Filter data for "Aigle-Leysin-Les Mosses"
+filtered_data <- data %>%
+  filter(F105_OrgCode == "Aigle-Leysin-Les Mosses")
+
+# Reshape data from wide to long format and rename categories
+data_long <- filtered_data %>%
+  pivot_longer(
+    cols = F81_01:F81_06,
+    names_to = "Spending_Category",
+    values_to = "Amount"
+  ) %>%
+  mutate(Spending_Category = recode(Spending_Category,
+    "F81_01" = "Overnight Stay",
+    "F81_02" = "Transports",
+    "F81_03" = "Food & Drink",
+    "F81_04" = "Souvenirs",
+    "F81_05" = "Other Shopping",
+    "F81_06" = "Other Expenses"
+  ))
+
+# Generate the plotly interactive plot
+plot <- plot_ly(data_long, x = ~Spending_Category, y = ~Amount, type = 'bar', name = 'Spending',
+                marker = list(color = 'rgba(55, 128, 191, 0.7)', line = list(color = 'rgba(55, 128, 191, 1.0)', width = 1.5))) %>%
+  layout(title = "Spending by Category in Aigle-Leysin-Les Mosses",
+         xaxis = list(title = "Category"),
+         yaxis = list(title = "Spending Amount"),
+         barmode = 'group')
+
+# Display the plot
+plot
+```
+
