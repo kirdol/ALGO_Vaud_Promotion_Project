@@ -1,3 +1,9 @@
+---
+format:
+  html:
+    code-fold: true
+---
+
 # EDA
 
 # Partie Stefan 
@@ -20,7 +26,6 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 OccurencesCountry <- data %>% 
   group_by(data$F05_02_ENG) %>% 
   count(sort = TRUE)
-
 OccurencesContinent <- data %>% 
   group_by(data$F05_01_ENG) %>% 
   count(sort = TRUE)
@@ -79,6 +84,35 @@ ggplot(combined_data, aes(x=reorder(F05_01_ENG, -Percentage.y), y=Percentage.y, 
         plot.title = element_text(hjust = 0.5), # Center the plot title
         axis.text.y = element_text(angle = 0, hjust = 1)) + # Adjust text angle and justification
   geom_text(aes(label=sprintf("%.2f%%", Percentage.y)), position=position_stack(vjust=0.5))  # Add percentage labels inside the bars
+```
+
+```{r, fig.width=10, fig.height=10}
+### F05_02_ENG ###
+#plot with continents 
+F05_02_PCT <- data %>%
+  group_by(F05_02_ENG, F05_01_ENG) %>%  # Group by both country and continent
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Percentage = Count / sum(Count) * 100) %>%
+  arrange(desc(Percentage))
+
+#concatenate all countries except " 7 best " 
+F05_02_PCT <- F05_02_PCT %>% add_row(F05_01_ENG = "Other Continents", F05_02_ENG = "Other Countries", Count = sum(F05_02_PCT$Count[7:104]), Percentage = sum(F05_02_PCT$Percentage[7:104]))
+
+#get rid of the rest of the rows
+F05_02_PCT <- F05_02_PCT[-(8:104),]
+
+#plot
+ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
+  geom_bar(stat = "identity") +
+  coord_flip() +  # Make the plot horizontal
+  scale_fill_brewer(palette = "Set3", name = "Continent") +  # Use a color palette for continents
+  theme_minimal() +
+  labs(x = "Country", y = "Percentage", title = "Percentage of Responses by Country and Continent") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 9), 
+        axis.text.y = element_text(angle = 45, hjust = 1, size = 9),
+        plot.title = element_text(hjust = 0.5),
+        legend.position = "right") +  # Adjust legend position
+  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_stack(vjust=0.5))
 ```
 
 ```{r}
@@ -350,28 +384,6 @@ datatable(nationality_ratio_per_city, options = list(pageLength = 10,
 
 ```
 
-
-```{r, fig.width=10, fig.height=20}
-### F05_02_ENG ###
-#plot with continents 
-F05_02_PCT <- data %>%
-  group_by(F05_02_ENG, F05_01_ENG) %>%  # Group by both country and continent
-  summarise(Count = n(), .groups = 'drop') %>%
-  mutate(Percentage = Count / sum(Count) * 100) %>%
-  arrange(desc(Percentage))
-
-ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
-  geom_bar(stat = "identity") +
-  coord_flip() +  # Make the plot horizontal
-  scale_fill_brewer(palette = "Set3", name = "Continent") +  # Use a color palette for continents
-  theme_minimal() +
-  labs(x = "Country", y = "Percentage", title = "Percentage of Responses by Country and Continent") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 9), 
-        axis.text.y = element_text(angle = 45, hjust = 1, size = 9),
-        plot.title = element_text(hjust = 0.5),
-        legend.position = "right") +  # Adjust legend position
-  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_stack(vjust=0.5))
-```
 
 ```{r, message = FALSE, warning = FALSE}
 ### F12 & F13 ###

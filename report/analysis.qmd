@@ -6,7 +6,7 @@
 ### F20 ###
 # Careful here: some people have 0 nightstay and only passed by switzerland for a day. 
 # but answered the question 16, asking about the number of nights.
-# also when f16 answered and F20 blanc, drop observations? 
+# also when f16 answered and F20 blanc ---> change NAs by 1 
 F20_freq <- data %>%
   group_by(F20) %>%
   summarize(Count = n(), .groups = 'drop') %>%
@@ -23,7 +23,8 @@ ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
 # frequency nightstays distribution per city 
 distr_nightstays_per_district <- data %>% 
   select(F105_OrgCode, F20) %>%
-  group_by(F105_OrgCode) # %>% drop_na()
+  group_by(F105_OrgCode) %>% 
+  
 
 distr_nightstays_per_district$F20[is.na(distr_nightstays_per_district$F20)] <- 0
 
@@ -76,28 +77,6 @@ ggplot(F20_freq, aes(x = F20, y = Count, fill = F105_OrgCode)) +
 
 ```
 
-```{r}
-library(ggplot2)
-library(dplyr)
-
-# Assuming 'data' is your data frame, 'F20' is the number of nights, and 'F105_orgCode' is the district code
-F20_freq <- data %>%
-  group_by(F20, F105_OrgCode) %>%
-  summarize(Count = n(), .groups = 'drop') %>%
-  arrange(F105_OrgCode, desc(Count))  # Arranges primarily by district and then in descending order of frequency
-
-# Plotting with ggplot2 using facet_wrap to create a separate plot for each district
-ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~ F105_OrgCode, scales = "free_y") +  # Free scales can adjust if district frequencies vary significantly
-  theme_minimal() +
-  labs(x = "Number of nights", y = "Frequency", title = "Frequency of the number of nights in Switzerland by District") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
-        legend.title = element_blank()) # Hide the legend title if it's not needed
-
-# Adjust further to improve plot appearance or readability as necessary
-
-```
 
 ```{r, message = FALSE, warning = FALSE}
 ### F21 ###
