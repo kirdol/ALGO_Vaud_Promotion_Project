@@ -251,7 +251,7 @@ leaflet(vaud) %>%
 # Now we will plot the proportion of children for each district in %
 vaud$children_proportion <- round((vaud$children_sum / vaud$sum) * 100, 2)
 
-# Couples proportion plot
+# Children proportion plot
 children_palette <- colorNumeric(palette = "Purples", domain = vaud$children_proportion)
 
 leaflet(vaud) %>%

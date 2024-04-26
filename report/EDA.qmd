@@ -919,5 +919,3 @@ nrow(data[data$swiss_german == 1,])/nrow(data)*100
 # Percent of total tourists that are Swiss
 nrow(data[data$F05_02 == "Schweiz",])/nrow(data)*100
 ```
-
-## testt test

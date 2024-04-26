@@ -1,0 +1,133 @@
+# Maps
+
+```{r}
+# Import and setup data
+
+data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
+
+df <- data[, 18:33]
+
+# Keep english columns only
+seq(2, 17, 2)
+df <- df[, seq(2, 17, 2)]
+
+# Set responses to binary values
+for (i in 1:ncol(df)) {
+  df[, i] <- ifelse(df[, i] == "Applies", 1, ifelse(df[, i] == "Not applicable", 0, NA))
+}
+
+# We add a column to separate couples from families. Here people only traveled with their partner.
+
+df$couples <- ifelse(df$F31_02_ENG == 1 & df$F31_03_ENG == 0 & df$F31_04_ENG == 0 & df$F31_05_ENG == 0, 1, 0)
+
+
+# Data from https://labs.karavia.ch/swiss-boundaries-geojson/
+districts <- read_sf("../data/swiss_districts.geojson")
+districts
+
+# Keep only Vaud
+vaud <- districts |>
+  filter(KANTONSNUM == 22)
+
+# We will transform data to include corresponding leaflet district. 
+unique(data$F105_Code)
+
+# Create a new column 'leaflet_region' with NA values
+data$leaflet_districts <- NA
+
+# Assign cities to districts based on conditions
+data$leaflet_districts[data$F105_Code == "Lausanne"] <- "Lausanne"
+data$leaflet_districts[data$F105_Code %in% c("Montreux", "Vevey", "La Tour-de-Peilz", "Rougemont", "Château-d'Oex", "Veytaux", "Rossinière", "Corsier-sur-Vevey", "Saint-Légier-La-Chiésaz", "Blonay", "Chardonne", "Chernex")] <- "Riviera-Pays-d'Enhaut"
+data$leaflet_districts[data$F105_Code %in% c("Morges", "Yens", "Aubonne")] <- "Morges"
+data$leaflet_districts[data$F105_Code %in% c("Yverdon-les-Bains", "L'Abbaye", "Vallorbe", "Orbe", "Yvonand", "La Praz", "Le Chenit", "Bullet", "Montagny-près-Yverdon", "Saint Croix", "Le Rocheray", "Le Pont", "Le Sentier", "Le Brassus", "Les Rasses", "Les Charbonnieres")] <- "Jura-Nord vaudois"
+data$leaflet_districts[data$F105_Code %in% c("Aigle", "Leysin", "Villeneuve (VD)", "Ormont-Dessus", "Bex", "Lavey-Morcles", "Gryon", "Ormont-Dessous", "Les Diablerets", "Villars-sur-Ollon")] <- "Aigle"
+data$leaflet_districts[data$F105_Code %in% c("Nyon", "Prangins", "Chavannes-de-Bogis", "Coppet", "Rolle", "Commugny", "Duillier", "Gilly", "Founex")] <- "Nyon"
+data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "Payerne", "Cudrefin", "St. Aubin", "Estavayer-le-Lac")] <- "Broye-Vully"
+data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)", "Renens", "Saint-Sulpice (VD)")] <- "Ouest lausannois"
+data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cully")] <- "Lavaux-Oron"
+data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
+
+# Count districts in data and add to vaud
+vaud$sum <- NA
+
+vaud$sum[vaud$NAME == "Jura-Nord vaudois"] <- sum(data$leaflet_districts == "Jura-Nord vaudois")
+vaud$sum[vaud$NAME == "Aigle"] <- sum(data$leaflet_districts == "Aigle")
+vaud$sum[vaud$NAME == "Morges"] <- sum(data$leaflet_districts == "Morges")
+vaud$sum[vaud$NAME == "Nyon"] <- sum(data$leaflet_districts == "Nyon")
+vaud$sum[vaud$NAME == "Riviera-Pays-d'Enhaut"] <- sum(data$leaflet_districts == "Riviera-Pays-d'Enhaut")
+vaud$sum[vaud$NAME == "Gros-de-Vaud"] <- sum(data$leaflet_districts == "Gros-de-Vaud")
+vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
+vaud$sum[vaud$NAME == "Lavaux-Oron"] <- sum(data$leaflet_districts == "Lavaux-Oron")
+vaud$sum[vaud$NAME == "Lausanne"] <- sum(data$leaflet_districts == "Lausanne")
+vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
+vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Ouest lausannois")
+
+```
+
+## Group types of travelers
+
+::: panel-tabset
+# Couples
+This is a plot of the proportion of visitors for each district traveling as a couple, which means only with their partner, without friends or other family.
+```{r}
+# Couples
+
+# Add couples column to data
+data$couples <- df$couples
+
+# Function to calculate sums for couples
+calculate_couples_sum <- function(data, vaud) {
+  vaud$couples_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$couples_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$couples == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_couples_sum(data, vaud)
+
+# Now we will plot the proportion of couples for each district in %
+vaud$couples_proportion <- round((vaud$couples_sum / vaud$sum) * 100, 2)
+
+# Couples proportion plot
+couples_palette <- colorNumeric(palette = "Purples", domain = vaud$couples_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~couples_palette(vaud$couples_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$couples_proportion, "%"))
+# High proportion of couples without children in Broye-Vully and Lavaux-Oron
+```
+
+# Children
+This is a plot of the proportion of visitors for each district traveling with children.
+```{r}
+# Add children column to data
+data$children <- df$F31_04_ENG
+
+# Function to calculate sums for children
+calculate_children_sum <- function(data, vaud) {
+  vaud$children_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$children_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$children == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_children_sum(data, vaud)
+
+# Now we will plot the proportion of children for each district in %
+vaud$children_proportion <- round((vaud$children_sum / vaud$sum) * 100, 2)
+
+# Children proportion plot
+children_palette <- colorNumeric(palette = "Purples", domain = vaud$children_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~children_palette(vaud$children_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_proportion, "%"))
+# High proportion of children in Aigle discrict, maybe for ski holidays.
+
+```
