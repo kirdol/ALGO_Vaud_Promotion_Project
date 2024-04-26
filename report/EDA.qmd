@@ -839,9 +839,9 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
 
 ## Responses in % to the question "Who did you travel with?"
 ```{r}
-data <- read.csv("data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
+data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
 
-explanations <- read.csv("data/explanations.csv")
+explanations <- read.csv("../data/explanations.csv")
 
 which(colnames(data) == "F31_01")
 which(colnames(data) == "F32")
