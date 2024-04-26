@@ -463,7 +463,8 @@ trip_percentages <- trip_percentages %>%
   select(-c(F05_02_ENG)) %>% 
   group_by(F05_01_ENG, F16_ENG) %>%
   summarise(Percentages = sum(percentage, na.rm = TRUE)) %>%
-  ungroup()
+  ungroup() %>%
+  mutate(Percentages = round(Percentages, 1))
 
 
 datatable(trip_percentages, options = list(pageLength = 10,
@@ -484,15 +485,22 @@ trip_percentages_Eu <- trip_percentages %>% filter(F05_01_ENG == "Europe")
 trip_percentages_NCA <- trip_percentages %>% filter(F05_01_ENG == "North and Central America")
 trip_percentages_SA <- trip_percentages %>% filter(F05_01_ENG == "South America")
 
+
+library(ggrepel)
 # the pie chart
-p1 <- ggplot(trip_percentages_Af, aes(x = "", y = Percentages, fill = F16_ENG)) +
+p1 <- ggplot(trip_percentages_Af, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar("y", start = 0) + 
+  coord_polar(theta = "y", start = 0) + 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
-  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5)) +
-  ggtitle("Percentage of Type of Trips - Africa") 
+  # scale_fill_brewer(palette = "Set3", direction = -4) +
+  geom_label_repel(aes(label = paste0(Percentages, "%")), size=4, show.legend = F, nudge_x = 1) +
+  guides(fill = guide_legend(title = "F16_ENG")) +
+  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
+  ggtitle("Africa") 
+
+p1
 
 p2 <- ggplot(trip_percentages_As, aes(x = "", y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity", width = 1) +
@@ -500,8 +508,8 @@ p2 <- ggplot(trip_percentages_As, aes(x = "", y = Percentages, fill = F16_ENG)) 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
-  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5)) +
-  ggtitle("Global Percentage Distribution of Type of Trips") 
+  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
+  ggtitle("Asia") 
 
 p3 <- ggplot(trip_percentages_AO, aes(x = "", y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity", width = 1) +
@@ -509,8 +517,8 @@ p3 <- ggplot(trip_percentages_AO, aes(x = "", y = Percentages, fill = F16_ENG)) 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
-  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5)) +
-  ggtitle("Global Percentage Distribution of Type of Trips") 
+  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
+  ggtitle("Australia & Oceania") 
 
 p4 <- ggplot(trip_percentages_Eu, aes(x = "", y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity", width = 1) +
@@ -518,8 +526,8 @@ p4 <- ggplot(trip_percentages_Eu, aes(x = "", y = Percentages, fill = F16_ENG)) 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
-  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5)) +
-  ggtitle("Global Percentage Distribution of Type of Trips") 
+  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
+  ggtitle("Europe ") 
 
 p5 <- ggplot(trip_percentages_NCA, aes(x = "", y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity", width = 1) +
@@ -527,8 +535,8 @@ p5 <- ggplot(trip_percentages_NCA, aes(x = "", y = Percentages, fill = F16_ENG))
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
-  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5)) +
-  ggtitle("Global Percentage Distribution of Type of Trips") 
+  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
+  ggtitle("North & Central America") 
 
 p6 <- ggplot(trip_percentages_SA, aes(x = "", y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity", width = 1) +
@@ -536,24 +544,21 @@ p6 <- ggplot(trip_percentages_SA, aes(x = "", y = Percentages, fill = F16_ENG)) 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
-  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5)) +
-  ggtitle("Global Percentage Distribution of Type of Trips") 
+  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
+  ggtitle("South America") 
 
 ```
 
-```{r}
+```{r, message=FALSE}
 #merge plots
 library(cowplot)
 library(gridExtra)
-plot_grid(p1, p2, p3, p4, p5, p6, align = c("v", "h"), labels = NULL) # Horizontal alignment
-
-# Combine the plots
-grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 1) # Arrange in 1 row
+plot_grid(p1, p2, p3, p4, p5, p6, align = c("v", "h"), cols = 2) # Horizontal alignment
 
 
 ```
 
-```{r, fig.width=15, fig.height=10}
+```{r, fig.width=15, fig.height=10, message=FALSE}
 
 ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity") +
