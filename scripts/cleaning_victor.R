@@ -198,11 +198,11 @@ vaud <- calculate_couples_sum(data, vaud)
 vaud$couples_percentage <- round((vaud$couples_sum)/sum(data$couples)*100, 2)
 
 # Couples plot
-couples_palette <- colorNumeric(palette = "Oranges", domain = vaud$couples_percentage)
+couples_palette <- colorNumeric(palette = "Reds", domain = vaud$couples_percentage)
 
 leaflet(vaud) %>%
   addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~couples_palette(vaud$couples_percentage), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$couples_percentage, "%"))
 
@@ -260,6 +260,33 @@ leaflet(vaud) %>%
   addPolygons(fillOpacity = 0.75, color = ~children_palette(vaud$children_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_proportion, "%"))
 # High proportion of children in Aigle discrict, maybe for ski holidays.
+
+## Add friends 
+# Add friends column to data
+data$friends <- df$F31_03_ENG
+
+# Function to calculate sums for friends
+calculate_friends_sum <- function(data, vaud) {
+  vaud$friends_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$friends_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$friends == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_friends_sum(data, vaud)
+
+# Now we will plot the proportion of friends for each district in %
+vaud$friends_proportion <- round((vaud$friends_sum / vaud$sum) * 100, 2)
+
+# Friends proportion plot
+friends_palette <- colorNumeric(palette = "Purples", domain = vaud$friends_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~friends_palette(vaud$friends_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$friends_proportion, "%"))
 
 
 # Save data to new dataset

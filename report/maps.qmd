@@ -1,6 +1,39 @@
+---
+format:
+  html:
+    code-fold: true
+---
+
 # Maps
 
-```{r}
+```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
+# load the required packages and install them if they are not.
+packages_loaded <- c(
+  "here",
+  "dplyr",
+  "ggplot2",
+  "tidyverse",
+  "lubridate",
+  "DT",
+  "plotly",
+  "ggridges",
+  "leaflet",
+  "sf",
+  "treemap",
+  "tidyr"
+)
+
+# Function that install the packages if not already installed on your computer
+for (pkg in packages_loaded) {
+  if (!pkg %in% installed.packages()) {
+    install.packages(pkg)}}
+
+# load the packages
+for (pkg in packages_loaded) {
+  library(pkg, character.only = TRUE)}
+
+# cleaning of the environment
+rm(pkg)
 # Import and setup data
 
 data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
@@ -22,15 +55,23 @@ df$couples <- ifelse(df$F31_02_ENG == 1 & df$F31_03_ENG == 0 & df$F31_04_ENG == 
 
 
 # Data from https://labs.karavia.ch/swiss-boundaries-geojson/
-districts <- read_sf("../data/swiss_districts.geojson")
-districts
+districts <- sf::read_sf("../data/swiss_districts.geojson")
+#districts
 
-# Keep only Vaud
+```
+
+```{r}
+
+#districts$KANTONSNUM <- as.vector(districts$KANTONSNUM)
 vaud <- districts |>
-  filter(KANTONSNUM == 22)
+  dplyr::filter(KANTONSNUM == 22)
+
+```
+
+```{r}
 
 # We will transform data to include corresponding leaflet district. 
-unique(data$F105_Code)
+#unique(data$F105_Code)
 
 # Create a new column 'leaflet_region' with NA values
 data$leaflet_districts <- NA
@@ -64,7 +105,7 @@ vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Oues
 
 ```
 
-## Group types of travelers
+## Group types
 
 ::: panel-tabset
 # Couples
@@ -90,13 +131,13 @@ vaud <- calculate_couples_sum(data, vaud)
 vaud$couples_proportion <- round((vaud$couples_sum / vaud$sum) * 100, 2)
 
 # Couples proportion plot
-couples_palette <- colorNumeric(palette = "Purples", domain = vaud$couples_proportion)
+couples_palette <- leaflet::colorNumeric(palette = "Purples", domain = vaud$couples_proportion)
 
 leaflet(vaud) %>%
-  addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(fillOpacity = 0.75, color = ~couples_palette(vaud$couples_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$couples_proportion, "%"))
+  leaflet::addTiles() %>%
+  leaflet::setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  leaflet::addPolygons(fillOpacity = 0.75, color = ~couples_palette(vaud$couples_proportion), weight = 0) %>%
+  leaflet::addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$couples_proportion, "%"))
 # High proportion of couples without children in Broye-Vully and Lavaux-Oron
 ```
 
@@ -124,10 +165,125 @@ vaud$children_proportion <- round((vaud$children_sum / vaud$sum) * 100, 2)
 children_palette <- colorNumeric(palette = "Purples", domain = vaud$children_proportion)
 
 leaflet(vaud) %>%
-  addTiles() %>%
-  setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-  addPolygons(fillOpacity = 0.75, color = ~children_palette(vaud$children_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_proportion, "%"))
+  leaflet::addTiles() %>%
+  leaflet::setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  leaflet::addPolygons(fillOpacity = 0.75, color = ~children_palette(vaud$children_proportion), weight = 0) %>%
+  leaflet::addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_proportion, "%"))
 # High proportion of children in Aigle discrict, maybe for ski holidays.
 
 ```
+
+# Alone
+This is a plot of the proportion of visitors for each district traveling alone.
+```{r}
+# Add alone column to data
+data$alone <- df$F31_01_ENG
+
+# Function to calculate sums for alone
+calculate_alone_sum <- function(data, vaud) {
+  vaud$alone_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$alone_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$alone == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_alone_sum(data, vaud)
+
+# Now we will plot the proportion of alone for each district in %
+vaud$alone_proportion <- round((vaud$alone_sum / vaud$sum) * 100, 2)
+
+# Alone proportion plot
+alone_palette <- colorNumeric(palette = "Purples", domain = vaud$alone_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~alone_palette(vaud$alone_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$alone_proportion, "%"))
+# Highest proportion of lone travelers in La Côte region
+```
+:::
+
+## Swiss tourists
+```{r}
+# Swiss sub columns
+
+#unique(data[data$F05_02 == "Schweiz", ]$F05_03)
+
+swiss_german_cantons = c("Luzern", "Schwyz", "Bern", "Neuenburg", "Aargau",
+                         "Zürich", "Basel-Stadt", "Basel-Landschaft", "Obwalden",
+                         "Appenzell Innerrhoden", "Freiburg", "Schaffhausen", "Thurgau",
+                         "St. Gallen", "Solothurn", "Uri", "Zug", "Nidwalden",
+                         "Appenzell Ausserrhoden")
+
+swiss_french_cantons = c("Waadt", "Wallis", "Genf", "Freiburg", "Jura")
+
+swiss_italian_cantons = c("Tessin")
+```
+
+::: panel-tabset
+# Swiss-German
+Here we see the proportion of Swiss-German travelers for each district.
+```{r}
+# Binary column for swiss germans
+data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
+
+# Function to calculate sums for swiss-germans
+calculate_swiss_german_sum <- function(data, vaud) {
+  vaud$swiss_german_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$swiss_german_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$swiss_german == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_swiss_german_sum(data, vaud)
+
+# Now we will plot the proportion of swiss_german for each district in %
+vaud$swiss_german_proportion <- round((vaud$swiss_german_sum / vaud$sum) * 100, 2)
+
+# swiss_german proportion plot
+swiss_german_palette <- colorNumeric(palette = "Purples", domain = vaud$swiss_german_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~swiss_german_palette(vaud$swiss_german_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$swiss_german_proportion, "%"))
+
+```
+
+# Swiss-French
+Here we see the proportion of Swiss-French travelers for each district
+```{r}
+# Binary column for swiss french
+data$swiss_french <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_french_cantons, 1, 0)
+
+# Function to calculate sums for swiss-french
+calculate_swiss_french_sum <- function(data, vaud) {
+  vaud$swiss_french_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$swiss_french_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$swiss_french == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_swiss_french_sum(data, vaud)
+
+# Now we will plot the proportion of swiss_french for each district in %
+vaud$swiss_french_proportion <- round((vaud$swiss_french_sum / vaud$sum) * 100, 2)
+
+# swiss_french proportion plot
+swiss_french_palette <- colorNumeric(palette = "Purples", domain = vaud$swiss_french_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~swiss_french_palette(vaud$swiss_french_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$swiss_french_proportion, "%"))
+
+```
+
+:::
+The proportion of travelers from Ticino and Grisons is negligible (< 1% proportion for any district) so we don't include them on the map.
