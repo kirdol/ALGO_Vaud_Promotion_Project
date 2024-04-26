@@ -287,3 +287,69 @@ leaflet(vaud) %>%
 
 :::
 The proportion of travelers from Ticino and Grisons is negligible (< 1% proportion for any district) so we don't include them on the map.
+
+# French tourists
+
+::: panel-tabset
+# Île-de-France
+```{r}
+# Binary column for Île-de-France
+data$france_idf <- ifelse(data$F05_02 == "Frankreich" & data$F05_03 == "Île-de-France", 1, 0)
+
+# Function to calculate sums for Île-de-France
+calculate_france_idf_sum <- function(data, vaud) {
+  vaud$france_idf_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$france_idf_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$france_idf == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_france_idf_sum(data, vaud)
+
+# Now we will plot the proportion of france_idf for each district in %
+vaud$france_idf_proportion <- round((vaud$france_idf_sum / vaud$sum) * 100, 2)
+
+# france_idf proportion plot
+france_idf_palette <- colorNumeric(palette = "Purples", domain = vaud$france_idf_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~france_idf_palette(vaud$france_idf_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_idf_proportion, "%"))
+
+
+```
+
+# Auvergne-Rhône-Alpes
+```{r}
+# Binary column for Auvergne-Rhône-Alpes
+data$france_ara <- ifelse(data$F05_02 == "Frankreich" & data$F05_03 == "Auvergne-Rhône-Alpes", 1, 0)
+
+# Function to calculate sums for Auvergne-Rhône-Alpes
+calculate_france_ara_sum <- function(data, vaud) {
+  vaud$france_ara_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$france_ara_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$france_ara == 1)
+  }
+  return(vaud)
+}
+vaud <- calculate_france_ara_sum(data, vaud)
+
+# Now we will plot the proportion of france_ara for each district in %
+vaud$france_ara_proportion <- round((vaud$france_ara_sum / vaud$sum) * 100, 2)
+
+# france_ara proportion plot
+france_ara_palette <- colorNumeric(palette = "Purples", domain = vaud$france_ara_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~france_ara_palette(vaud$france_ara_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_ara_proportion, "%"))
+
+
+```
+:::

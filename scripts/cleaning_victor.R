@@ -289,6 +289,30 @@ leaflet(vaud) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$friends_proportion, "%"))
 
 
+
+#############################################################################################################################
+# French tourists
+
+
+unique(data[data$F05_02 == "Frankreich", ]$F05_03)
+
+table(data$F05_02_ENG)
+
+# Filter the data for rows where F05_02 is equal to "Frankreich"
+french_regions <- data[data$F05_02 == "Frankreich", ]$F05_03
+
+# Count the occurrences of each unique value of F05_03
+table(french_regions)
+
+
+
+
+#############################################################################################################################
+
+
+
+
+
 # Save data to new dataset
 #write.csv(data, file = "data/leaflet_dataset.csv", row.names = FALSE)
 
