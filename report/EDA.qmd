@@ -580,6 +580,8 @@ ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
 
 > Where did they stay? (For example: yes, they went to Montreux, but what type of accommodation, what price?
 
+### Most popular destinations in the canton Vaud
+
 ```{r Initialization and district creation, output = FALSE, echo = FALSE}
 # Importing the data and loading the necessary packages
 source(here::here("scripts", "setup.R"))
@@ -630,9 +632,10 @@ resort_counts_df$Proportion <- resort_counts_df$Freq / sum(resort_counts_df$Freq
 
 # Generate hover text for all cities
 resort_counts_df$HoverText <- paste("City name: ", resort_counts_df$Var1,
-                                    "<br>Number of people visiting this city:", resort_counts_df$Freq,
+                                    "<br>Number of people visiting this city: ",
+                                    resort_counts_df$Freq,
                                     "/", sum(resort_counts_df$Freq),
-                                    "<br>Proportion of people visiting this city:",
+                                    "<br>Proportion of people visiting this city: ",
                                     percent(resort_counts_df$Proportion, accuracy = 0.01))
 
 # Define a threshold for the smallest cities to be grouped
@@ -649,10 +652,10 @@ other_cities_df <- data.frame(Var1 = "Other Cities",
 
 # Generate hover text specifically for 'Other Cities'
 other_cities_df$HoverText <- paste("City name: Other Cities",
-                                   "<br>Number of people visiting these cities:",
+                                   "<br>Number of people visiting these cities: ",
                                    other_cities_df$Freq,
                                    "/", sum(resort_counts_df$Freq),
-                                   "<br>Proportion of people visiting these cities:",
+                                   "<br>Proportion of people visiting these cities: ",
                                    percent(other_cities_proportion, accuracy = 0.01))
 
 # Remove cities below the threshold
@@ -662,8 +665,9 @@ resort_counts_df <- resort_counts_df[resort_counts_df$Proportion >= threshold, ]
 resort_counts_df <- rbind(resort_counts_df, other_cities_df)
 
 # Adjust factor levels based on Proportion descending for the plot
-resort_counts_df$Var1 <- factor(resort_counts_df$Var1,
-                                levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+resort_counts_df$Var1 <-
+  factor(resort_counts_df$Var1,
+         levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
 
 # Plot as a bar plot using updated data frame
 plot_ly(resort_counts_df,
@@ -691,53 +695,7 @@ plot_ly(resort_counts_df,
          hovermode = 'x')
 ```
 
-From this plot, we can see that the most pupular city in the canton of Vaud is Lausanne. Let's now have a look at the type of accommodation where the visitor stayed in the canton of Vaud. We took the liberty to remove the `r data %>% filter(F125_ENG == "#N/A") %>% summarise(Count = n())` observation where the type of accommodation was not specified.
-
-```{r Type of accomodation, echo = FALSE}
-data_accomodation <- subset(data, F125_ENG != "#N/A")
-
-# Calculating the proportion of each accommodation type and ordering by those proportions
-accommodation_proportion <- data_accomodation %>%
-  group_by(F125_ENG) %>%
-  summarise(Count = n(), .groups = 'drop') %>%
-  mutate(Proportion = Count / sum(Count)) %>%
-  arrange(Proportion)
-
-# Adjust the factor levels of F125_ENG to ensure the order in the plot
-accommodation_proportion$F125_ENG <- factor(accommodation_proportion$F125_ENG, levels = accommodation_proportion$F125_ENG)
-
-# Custom hover text
-accommodation_proportion$HoverText <-
-  paste("Accommodation type: ", accommodation_proportion$F125_ENG,
-        "<br>Number of people staying in this type of accommodation:",
-        accommodation_proportion$Count,"/", sum(accommodation_proportion$Count),
-        "<br>Proportion of people staying in this type of accommodation:",
-        percent(accommodation_proportion$Proportion, accuracy = 0.01))
-
-# Creating the bar plot with ordered proportions
-plot_ly(accommodation_proportion,
-                y = ~F125_ENG,
-                x = ~Proportion,
-                type = 'bar',
-                text = "",
-                hoverinfo = 'text',
-                hovertext = ~HoverText,
-                textposition = 'auto',
-                orientation = 'h') %>%
-  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
-                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
-                                    'hoverClosestCartesian', 
-                                    'hoverCompareCartesian',
-                                    'toggleSpikelines', 'zoom')) %>%
-  layout(title = "Most Popular Accommodation Types",
-         xaxis = list(title = "",
-                      side = 'top',
-                      tickformat = ",.0%"),
-         yaxis = list(title = "Type of Accommodation",
-                      automargin = TRUE))
-```
-
-As we can see, the most popular type of accommodation in the canton of Vaud is Hotel/SPA House. It is interesting to note the proportion of people staying in Campsite.
+From this plot, we can see that the most pupular city in the canton of Vaud is Lausanne. Let's now have a look at the type of accommodation where the visitor stayed in the canton of Vaud. We took the liberty to remove the `r data %>% filter(F125_ENG == "#N/A") %>% summarise(Count = n())` observation where the type of accommodation was not specified. We can now concentrate more our attention on the district where the people stayed.
 
 ```{r Most Popular District destinations, echo = FALSE}
 resort_counts <- table(data$leaflet_districts)
@@ -751,11 +709,11 @@ resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Fre
 resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
 
 # Custom hover text
-resort_counts_df$HoverText <-
+resort_counts_df$HoverText <- 
   paste("District name: ", resort_counts_df$Var1,
-        "<br>Number of people visiting this district:", resort_counts_df$Freq,
-        "/", sum(resort_counts_df$Freq),
-        "<br>Proportion of people visiting this district:",
+        "<br>Number of people visiting this district: ",
+        resort_counts_df$Freq, "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this district: ",
         scales::percent(resort_counts_df$Proportion))
 
 # Plot as a bar plot
@@ -785,7 +743,60 @@ plot_ly(resort_counts_df,
 
 As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r n_distinct(data$leaflet_districts)` district, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller one. It is still interesting to have a look to keep this in mind.
 
-## Hotels Stars
+### Type of Accommodation
+
+```{r Type of accomodation, echo = FALSE}
+data_accomodation <- subset(data, F125_ENG != "#N/A")
+
+# Calculating the proportion of each accommodation type and ordering by those proportions
+accommodation_proportion <- data_accomodation %>%
+  group_by(F125_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  arrange(Proportion)
+
+# Adjust the factor levels of F125_ENG to ensure the order in the plot
+accommodation_proportion$F125_ENG <- factor(accommodation_proportion$F125_ENG, levels = accommodation_proportion$F125_ENG)
+
+# Custom hover text
+accommodation_proportion$HoverText <-
+  paste("Accommodation type: ", accommodation_proportion$F125_ENG,
+        "<br>Number of people staying in this type of accommodation: ",
+        accommodation_proportion$Count,"/", sum(accommodation_proportion$Count),
+        "<br>Proportion of people staying in this type of accommodation: ",
+        percent(accommodation_proportion$Proportion, accuracy = 0.01))
+
+# Creating the bar plot with ordered proportions
+plot_ly(accommodation_proportion,
+                y = ~F125_ENG,
+                x = ~Proportion,
+                type = 'bar',
+                text = "",
+                hoverinfo = 'text',
+                hovertext = ~HoverText,
+                textposition = 'auto',
+                orientation = 'h') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = "Most Popular Accommodation Types",
+         xaxis = list(title = "",
+                      side = 'top',
+                      tickformat = ",.0%"),
+         yaxis = list(title = "Type of Accommodation",
+                      automargin = TRUE))
+```
+
+As we can see, the most popular type of accommodation in the canton of Vaud is Hotel/SPA House. It is interesting to note the proportion of people staying in Campsite. We can see below on the word cloud the most popular other type of accommodation.
+
+```{r wordcloud, echo = FALSE, warning = FALSE}
+# Running the wordcloud script
+source(here("scripts", "word_cloud_for_eda.R"))
+```
+
+### Hotels Stars
 
 Now, let's have a look at the hotel standing of the places where the people stayed. This will highlight the quality of the stay per district.
 
@@ -797,11 +808,10 @@ data <- data %>%
     F130 == "***" ~ 3,
     F130 == "**" ~ 2,
     F130 == "*" ~ 1,
-    TRUE ~ NA_real_
-  ))
+    TRUE ~ NA_real_))
 ```
 
-### Average Stars per District
+#### Average Stars per District
 
 ```{r Average Stars per City, echo = FALSE, warning = FALSE}
 # Calculation of the average of F130_num by F105_OrgCode, ordered by average
@@ -826,8 +836,8 @@ combined_data <- left_join(average_per_city,
 # Custom hover text
 combined_data$HoverText <-
   paste("District name: ", combined_data$leaflet_districts,
-        "<br>Average Stars:", combined_data$Average_F130_num,
-        "<br>Number of people visiting this district:", combined_data$Count,
+        "<br>Average Stars: ", combined_data$Average_F130_num, "★",
+        "<br>Number of people visiting this district: ", combined_data$Count,
         "/", sum(combined_data$Count))
 
 # Creation of the plotly
@@ -845,7 +855,7 @@ plot_ly(combined_data,
                                     'hoverCompareCartesian',
                                     'toggleSpikelines', 'zoom')) %>%
   layout(title = "Average Stars per District",
-         xaxis = list(title = "City",
+         xaxis = list(title = "District",
                       type = "category",
                       categoryorder = "array",
                       categoryarray = ordered_cities),
@@ -854,35 +864,6 @@ plot_ly(combined_data,
 ```
 
 As we can see on the graph above, the best average is optain in `r combined_data$leaflet_districts[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But this statistics is not very representative to the reality. Only `r combined_data$Count[1]` people answered the survey in this district which is not enough to have a good idea of the quality of the hotels in this district. The second best region after `r combined_data$leaflet_districts[1]` is `r combined_data$leaflet_districts[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district got with `r combined_data$Count[2]` observation which is more representative. This high score for the Region of `r combined_data$leaflet_districts[2]` is not really surprising given the fact that this place is well know for its luxury hotels.
-
-### Distribution of Stars by District
-
-```{r Distribution of Stars by City, echo = FALSE, warning = FALSE}
-# Filtering to exclude cities with no valid data in F130_num
-data_filtered <- data %>%
-  filter(!is.na(F130_num)) %>%
-  group_by(leaflet_districts) %>%
-  # Calculate the average to ensure we only include cities with data
-  summarise(Average_F130_num = mean(F130_num, na.rm = TRUE)) %>%
-  filter(!is.na(Average_F130_num)) %>%
-  arrange(desc(Average_F130_num))
-
-# Reorder the F105_Code factor in the filtered dataframe according to the calculated averages
-data$F105_Code <- factor(data$leaflet_districts, levels = data_filtered$leaflet_districts)
-
-# Ensure that the original dataframe is filtered to match the selected cities
-data <- data %>%
-  filter(leaflet_districts %in% data_filtered$leaflet_districts)
-
-# Create the chart with geom_density_ridges_gradient for cities with valid data in F130_num
-ggplot(data, aes(x = F130_num, y = leaflet_districts, fill = ..x..)) +
-  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
-  scale_fill_viridis_c(option = "C") +
-  labs(title = "Distribution of F130_num by City with Gradient",
-       x = "F130_num",
-       y = "District") +
-  theme_ridges() + theme(legend.position = "none")
-```
 
 # Partie Jeff
 

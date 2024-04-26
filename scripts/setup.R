@@ -12,8 +12,10 @@ packages_loaded <- c(
   "sf",
   "treemap",
   "tidyr",
-  "scales"
-)
+  "scales",
+  "ggwordcloud",
+  "tm",
+  "wordcloud2")
 
 # Function that install the packages if not already installed on your computer
 for (pkg in packages_loaded) {
