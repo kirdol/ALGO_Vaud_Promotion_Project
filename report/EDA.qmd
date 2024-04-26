@@ -1,3 +1,9 @@
+---
+format:
+  html:
+    code-fold: true
+---
+
 # EDA
 
 # Partie Stefan 
@@ -17,6 +23,7 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 ```{r}
 ### F05_01.ENG ###
 #nb of occurrences by country and continents 
+try
 OccurencesCountry <- data %>% 
   group_by(data$F05_02_ENG) %>% 
   count(sort = TRUE)
