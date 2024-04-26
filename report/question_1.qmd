@@ -22,118 +22,6 @@ library(plotly)
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 ```
 
-## Average Spending by category (no package tour)
-
-```{r}
-spending_data <- data.frame(
-  Spending_Type = c("Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
-  Amount = c(mean(data$F81_01, na.rm = TRUE), 
-             mean(data$F81_02, na.rm = TRUE),
-             mean(data$F81_03, na.rm = TRUE),
-             mean(data$F81_04, na.rm = TRUE),
-             mean(data$F81_05, na.rm = TRUE),
-             mean(data$F81_06, na.rm = TRUE))
-)
-
-ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
-  geom_bar(stat = "identity", color = "black") +
-  labs(title = "Average Spending by Category (no package tour)", x = "Category", y = "Average Amount") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
-```
-
-## Average Spending by Category (with package)
-
-```{r}
-spending_data_package <- data.frame(
-  Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
-  Amount = c(mean(data$F82_01, na.rm = TRUE), 
-             mean(data$F82_02, na.rm = TRUE),
-             mean(data$F82_03, na.rm = TRUE),
-             mean(data$F82_04, na.rm = TRUE),
-             mean(data$F82_05, na.rm = TRUE),
-             mean(data$F82_06, na.rm = TRUE),
-             mean(data$F82_07, na.rm = TRUE))
-)
-
-ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
-  geom_bar(stat = "identity", color = "black") +
-  labs(title = "Average Spending by Category", x = "Category", y = "Average Amount") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-### Comparison of Spending with & without package
-
-```{r}
-# Data for spending without package
-spending_data <- data.frame(
-  Spending_Type = c("Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
-  Amount = c(mean(data$F81_01, na.rm = TRUE), 
-             mean(data$F81_02, na.rm = TRUE),
-             mean(data$F81_03, na.rm = TRUE),
-             mean(data$F81_04, na.rm = TRUE),
-             mean(data$F81_05, na.rm = TRUE),
-             mean(data$F81_06, na.rm = TRUE))
-)
-
-# Data for spending with package
-spending_data_package <- data.frame(
-  Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
-  Amount = c(mean(data$F82_01, na.rm = TRUE), 
-             mean(data$F82_02, na.rm = TRUE),
-             mean(data$F82_03, na.rm = TRUE),
-             mean(data$F82_04, na.rm = TRUE),
-             mean(data$F82_05, na.rm = TRUE),
-             mean(data$F82_06, na.rm = TRUE),
-             mean(data$F82_07, na.rm = TRUE))
-)
-
-# Create plotly objects for each spending type
-p1 <- plot_ly(spending_data, x = ~Spending_Type, y = ~Amount, type = 'bar', name = 'No Package',
-              marker = list(color = 'rgba(50, 171, 96, 0.6)', line = list(color = 'rgba(50, 171, 96, 1.0)', width = 1))) %>%
-  layout(title = "Average Spending by Category (No Package Tour)",
-         xaxis = list(title = "Category", tickangle = 45),
-         yaxis = list(title = "Average Amount"),
-         barmode = 'group')
-
-p2 <- plot_ly(spending_data_package, x = ~Spending_Type, y = ~Amount, type = 'bar', name = 'With Package',
-              marker = list(color = 'rgba(128, 0, 128, 0.6)', line = list(color = 'rgba(128, 0, 128, 1.0)', width = 1))) %>%
-  layout(title = "Average Spending by Category (With Package)",
-         xaxis = list(title = "Category", tickangle = 45),
-         yaxis = list(title = "Average Amount"),
-         barmode = 'group')
-
-# Combine plots into a single plot with a dropdown menu
-subplot(p1, p2, nrows = 1) %>%
-  layout(
-    title = "Comparison of Spending With and Without Package",
-    updatemenus = list(
-      list(
-        y = 0.7,
-        buttons = list(
-          list(method = "relayout", args = list("visible", c(TRUE, FALSE)), label = "No Package"),
-          list(method = "relayout", args = list("visible", c(FALSE, TRUE)), label = "With Package")
-        )
-      )
-    )
-  )
-```
-
-## Spending by Nationality
-
-```{r}
-filtered_data <- data %>%
-  rename(Continent = F05_01_ENG) %>%
-  filter(F81_Total <= 100000)
-
-ggplot(filtered_data, aes(x = F05_02_ENG, y = F81_Total, fill = Continent)) +
-  geom_boxplot() +
-  labs(title = "Spending by Nationality", x = "Nationality", y = "Spending") +
-  scale_fill_brewer(palette = "Set3") + # Adds a color palette for the continents
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "bottom")
-```
 
 ## Spending by city
 
@@ -189,7 +77,247 @@ p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', color = ~
 p
 ```
 
-It is more interesting to only look at the data with no package, as the one with package is mainly composed of a long bar for the package variable.
+
+################################################################################# 
+
+# EDA (suite)
+
+::: panel-tabset
+## Average Spending by category (no package tour)
+
+```{r}
+spending_data <- data.frame(
+  Spending_Type = c("Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F81_01, na.rm = TRUE), 
+             mean(data$F81_02, na.rm = TRUE),
+             mean(data$F81_03, na.rm = TRUE),
+             mean(data$F81_04, na.rm = TRUE),
+             mean(data$F81_05, na.rm = TRUE),
+             mean(data$F81_06, na.rm = TRUE))
+)
+
+ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Average Spending by Category (no package tour)", x = "Category", y = "Average Amount") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
+```
+
+## Average Spending by Category (with package)
+
+```{r}
+spending_data_package <- data.frame(
+  Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F82_01, na.rm = TRUE), 
+             mean(data$F82_02, na.rm = TRUE),
+             mean(data$F82_03, na.rm = TRUE),
+             mean(data$F82_04, na.rm = TRUE),
+             mean(data$F82_05, na.rm = TRUE),
+             mean(data$F82_06, na.rm = TRUE),
+             mean(data$F82_07, na.rm = TRUE))
+)
+
+ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Average Spending by Category", x = "Category", y = "Average Amount") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+:::
+
+## Percentage of people with package & without package
+
+```{r}
+# Calculate the number of non-NA entries for each type of spending
+spending_counts <- data %>%
+  summarize(
+    Package = sum(!is.na(F82_Total)),
+    WithoutPackage = sum(!is.na(F81_Total))
+  ) %>%
+  gather(key = "PackageType", value = "Count")
+
+# Calculate percentages
+total_records <- sum(spending_counts$Count)
+spending_counts <- spending_counts %>%
+  mutate(Percentage = (Count / total_records) * 100)
+
+# Plot the percentages with the percentage shown on the bars
+ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = sprintf("%.1f%%", Percentage)),  # Format the labels to one decimal place
+            position = position_stack(vjust = 0.5),  # Adjust text to be inside the bars
+            color = "white") +
+  labs(title = "Percentage of Observations With and Without Package",
+       x = "Type of Spending",
+       y = "Percentage (%)") +
+  scale_fill_brewer(palette = "Pastel1") + # Aesthetically pleasing color palette
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+::: panel-tabset
+#### Total spending per country (no package)
+
+```{r}
+# Aggregate total spending for F81_Total and include continents
+total_spending_F81 <- data %>%
+  group_by(F05_02_ENG, F05_01_ENG) %>%
+  summarize(Total_Spending_F81 = sum(F81_Total, na.rm = TRUE)) %>%
+  arrange(desc(Total_Spending_F81))
+
+# Plot for F81_Total with continent colors
+ggplot(total_spending_F81, aes(x = reorder(F05_02_ENG, -Total_Spending_F81), y = Total_Spending_F81, fill = F05_01_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spending by Country for F81_Total", x = "Country", y = "Total Spending") +
+  scale_fill_brewer(palette = "Set3", name = "Continent") + # Color based on continent
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = "bottom")  # Position the legend at the bottom
+```
+
+#### Total spending per country (with package)
+
+```{r}
+# Aggregate total spending for F82_Total and include continents
+total_spending_F82 <- data %>%
+  group_by(F05_02_ENG, F05_01_ENG) %>%
+  summarize(Total_Spending_F82 = sum(F82_Total, na.rm = TRUE)) %>%
+  arrange(desc(Total_Spending_F82))
+
+# Plot for F82_Total with continent colors
+ggplot(total_spending_F82, aes(x = reorder(F05_02_ENG, -Total_Spending_F82), y = Total_Spending_F82, fill = F05_01_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spending by Country for F82_Total", x = "Country", y = "Total Spending") +
+  scale_fill_brewer(palette = "Set3", name = "Continent") + # Color based on continent
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = "bottom")  # Position the legend at the bottom
+```
+
+#### Average spending (no package)
+
+```{r}
+# Reshape data from wide to long format
+data_long <- data %>%
+  pivot_longer(
+    cols = F81_01:F81_06,
+    names_to = "Spending_Category",
+    values_to = "Amount"
+  )
+
+# Calculate the average spending for each country and each category
+average_spending <- data_long %>%
+  group_by(F05_02_ENG, F05_01_ENG) %>%
+  summarize(Average_Spending = mean(Amount, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(Average_Spending))
+
+# Optional: Aggregate to country level without distinguishing by category
+average_spending_by_country <- average_spending %>%
+  group_by(F05_02_ENG, F05_01_ENG) %>%
+  summarize(Average_Spending = mean(Average_Spending, na.rm = TRUE)) %>%
+  arrange(desc(Average_Spending))
+
+# Plot the average spending by country in descending order
+ggplot(average_spending_by_country, aes(x = reorder(F05_02_ENG, -Average_Spending), y = Average_Spending, fill = F05_01_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Average Spending by Country", x = "Country", y = "Average Spending") +
+  scale_fill_brewer(palette = "Set3", name = "Continent") + # Color based on continent
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = "bottom")  # Position the legend at the bottom
+```
+
+#### Average spending (with package)
+
+```{r}
+# Reshape data from wide to long format for package spending variables
+data_long_package <- data %>%
+  pivot_longer(
+    cols = F82_01:F82_07,
+    names_to = "Spending_Category",
+    values_to = "Amount"
+  )
+
+# Calculate the average spending for each country and each category
+average_spending_package <- data_long_package %>%
+  group_by(F05_02_ENG, F05_01_ENG) %>%
+  summarize(Average_Spending = mean(Amount, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(Average_Spending))
+
+# Optional: Aggregate to country level without distinguishing by category
+average_spending_by_country_package <- average_spending_package %>%
+  group_by(F05_02_ENG, F05_01_ENG) %>%
+  summarize(Average_Spending = mean(Average_Spending, na.rm = TRUE)) %>%
+  arrange(desc(Average_Spending))
+
+# Plot the average spending by country for package tours in descending order
+ggplot(average_spending_by_country_package, aes(x = reorder(F05_02_ENG, -Average_Spending), y = Average_Spending, fill = F05_01_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Average Spending on Package Tours by Country", x = "Country", y = "Average Spending") +
+  scale_fill_brewer(palette = "Set3", name = "Continent") + # Color based on continent
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = "bottom")  # Position the legend at the bottom
+```
+:::
+
+## Spending by Nationality
+Checking for outliers?
+
+```{r}
+filtered_data <- data %>%
+  rename(Continent = F05_01_ENG) %>%
+  filter(F81_Total <= 100000)
+
+ggplot(filtered_data, aes(x = F05_02_ENG, y = F81_Total, fill = Continent)) +
+  geom_boxplot() +
+  labs(title = "Spending by Nationality", x = "Nationality", y = "Spending") +
+  scale_fill_brewer(palette = "Set3") + # Adds a color palette for the continents
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom")
+```
+
+## Percentage of package by continent
+
+```{r}
+# Prepare the data by adding a binary column for package and non-package tours
+data <- data %>%
+  mutate(
+    With_Package = ifelse(!is.na(F82_Total), 1, 0),  # 1 if there's a package, 0 otherwise
+    Without_Package = ifelse(!is.na(F81_Total), 1, 0)  # 1 if there's no package, 0 otherwise
+  )
+
+# Summarize data to count the number of package and non-package tours by continent
+continent_summary <- data %>%
+  group_by(F05_01_ENG) %>%
+  summarize(
+    Total_Tours = n(),  # Total number of tours
+    Package_Tours = sum(With_Package, na.rm = TRUE),  # Total package tours
+    Non_Package_Tours = sum(Without_Package, na.rm = TRUE)  # Total non-package tours
+  ) %>%
+  mutate(
+    Package_Tour_Percentage = (Package_Tours / Total_Tours) * 100  # Calculate the percentage
+  ) %>%
+  arrange(desc(Package_Tour_Percentage))  # Arrange continents in descending order of package tour percentage
+
+# Plot the percentage of package tours by continent in descending order
+p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percentage), y = Package_Tour_Percentage, fill = F05_01_ENG)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = sprintf("%.1f%%", Package_Tour_Percentage)),  # Adding percentage labels
+            position = position_stack(vjust = 0.5), color = "black", size = 3.5) +
+  labs(title = "Percentage of Package Tours by Continent",
+       x = "Continent",
+       y = "Percentage of Package Tours (%)") +
+  scale_fill_brewer(palette = "Set3") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")  # Removing the legend for clarity
+
+# Display the plot
+print(p)
+```
 
 ## Distribution of Currency
 
@@ -207,8 +335,39 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Adjust text angle for better readability
 ```
 
-## Ratio
+# ANALYSE
+Top 7 countries are: Switzerland, France, UK, Germany, US, Belgium & Spain.
 
 ```{r}
+# Filter data for "Aigle-Leysin-Les Mosses"
+filtered_data <- data %>%
+  filter(F105_OrgCode == "Aigle-Leysin-Les Mosses")
 
+# Reshape data from wide to long format and rename categories
+data_long <- filtered_data %>%
+  pivot_longer(
+    cols = F81_01:F81_06,
+    names_to = "Spending_Category",
+    values_to = "Amount"
+  ) %>%
+  mutate(Spending_Category = recode(Spending_Category,
+    "F81_01" = "Overnight Stay",
+    "F81_02" = "Transports",
+    "F81_03" = "Food & Drink",
+    "F81_04" = "Souvenirs",
+    "F81_05" = "Other Shopping",
+    "F81_06" = "Other Expenses"
+  ))
+
+# Generate the plotly interactive plot
+plot <- plot_ly(data_long, x = ~Spending_Category, y = ~Amount, type = 'bar', name = 'Spending',
+                marker = list(color = 'rgba(55, 128, 191, 0.7)', line = list(color = 'rgba(55, 128, 191, 1.0)', width = 1.5))) %>%
+  layout(title = "Spending by Category in Aigle-Leysin-Les Mosses",
+         xaxis = list(title = "Category"),
+         yaxis = list(title = "Spending Amount"),
+         barmode = 'group')
+
+# Display the plot
+plot
 ```
+
