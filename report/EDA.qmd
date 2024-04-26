@@ -35,7 +35,8 @@ F05_01_PCT <- data %>%
   group_by(F05_01_ENG) %>%
   summarise(Count = n()) %>%
   mutate(Percentage = Count / sum(Count) * 100) %>% 
-  arrange(desc(Percentage))
+  arrange(desc(Percentage)) %>%
+  mutate(Percentages = round(Percentage, 2))
 
 datatable(F05_01_PCT, options = list(pageLength = 10,
                                    class = "hover",
@@ -67,7 +68,8 @@ F05_02_PCT <- data %>%
   group_by(F05_01_ENG, F05_02_ENG) %>%  # Group by both continent and country
   summarise(Count = n(), .groups = "drop") %>%
   mutate(Percentage = Count / sum(Count) * 100) %>%
-  arrange(desc(Percentage))
+  arrange(desc(Percentage)) %>%
+  mutate(Percentages = round(Percentage, 2))
 
 # Merge country data back to continent data
 combined_data <- merge(F05_01_PCT, F05_02_PCT, by="F05_01_ENG", all.x = TRUE)
@@ -85,36 +87,6 @@ ggplot(combined_data, aes(x=reorder(F05_01_ENG, -Percentage.y), y=Percentage.y, 
         axis.text.y = element_text(angle = 0, hjust = 1)) + # Adjust text angle and justification
   geom_text(aes(label=sprintf("%.2f%%", Percentage.y)), position=position_stack(vjust=0.5))  # Add percentage labels inside the bars
 ```
-
-```{r, fig.width=10, fig.height=10}
-### F05_02_ENG ###
-#plot with continents 
-F05_02_PCT <- data %>%
-  group_by(F05_02_ENG, F05_01_ENG) %>%  # Group by both country and continent
-  summarise(Count = n(), .groups = 'drop') %>%
-  mutate(Percentage = Count / sum(Count) * 100) %>%
-  arrange(desc(Percentage))
-
-#concatenate all countries except " 7 best " 
-F05_02_PCT <- F05_02_PCT %>% add_row(F05_01_ENG = "Other Continents", F05_02_ENG = "Other Countries", Count = sum(F05_02_PCT$Count[7:104]), Percentage = sum(F05_02_PCT$Percentage[7:104]))
-
-#get rid of the rest of the rows
-F05_02_PCT <- F05_02_PCT[-(8:104),]
-
-#plot
-ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
-  geom_bar(stat = "identity") +
-  coord_flip() +  # Make the plot horizontal
-  scale_fill_brewer(palette = "Set3", name = "Continent") +  # Use a color palette for continents
-  theme_minimal() +
-  labs(x = "Country", y = "Percentage", title = "Percentage of Responses by Country and Continent") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 9), 
-        axis.text.y = element_text(angle = 45, hjust = 1, size = 9),
-        plot.title = element_text(hjust = 0.5),
-        legend.position = "right") +  # Adjust legend position
-  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_stack(vjust=0.5))
-```
-
 ```{r}
 # # trying the shiny for this plot
 
@@ -157,6 +129,38 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
 # shinyApp(ui = ui, server = server)
 ```
 
+```{r, fig.width=10, fig.height=10}
+### F05_02_ENG ###
+#plot with continents 
+F05_02_PCT <- data %>%
+  group_by(F05_02_ENG, F05_01_ENG) %>%  # Group by both country and continent
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Percentage = Count / sum(Count) * 100) %>%
+  arrange(desc(Percentage)) %>%
+  mutate(Percentages = round(Percentage, 2))
+
+#concatenate all countries except " 7 best " 
+F05_02_PCT <- F05_02_PCT %>% add_row(F05_01_ENG = "Other Continents", F05_02_ENG = "Other Countries", Count = sum(F05_02_PCT$Count[7:104]), Percentage = sum(F05_02_PCT$Percentage[7:104]))
+
+#get rid of the rest of the rows
+F05_02_PCT <- F05_02_PCT[-(8:104),]
+
+#plot
+ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
+  geom_bar(stat = "identity") +
+  coord_flip() +  # Make the plot horizontal
+  scale_fill_brewer(palette = "Set3", name = "Continent") +  # Use a color palette for continents
+  theme_minimal() +
+  labs(x = "Country", y = "Percentage", title = "Percentage of Responses by Country and Continent") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 9), 
+        axis.text.y = element_text(angle = 45, hjust = 1, size = 9),
+        plot.title = element_text(hjust = 0.5),
+        legend.position = "right") +  # Adjust legend position
+  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_stack(vjust=0.5))
+```
+
+
+
 **Global percentage of people coming in Switzerland per country of origin**
 
 ```{r}
@@ -166,7 +170,8 @@ F05_02_PCT <- data %>%
   group_by(F05_02_ENG) %>%
   summarise(Count = n()) %>%
   mutate(Percentage = Count / sum(Count) * 100) %>% 
-  arrange(desc(Percentage))
+  arrange(desc(Percentage)) %>%
+  mutate(Percentages = round(Percentage, 2))
 
 datatable(F05_02_PCT, options = list(pageLength = 10,
                                    class = "hover",
@@ -205,7 +210,7 @@ total_tourists_per_city <- tourists_by_nationality %>%
 nationality_ratio_per_city <- tourists_by_nationality %>%
   left_join(total_tourists_per_city, by = "F105_Code") %>%
   mutate(Ratio = Count / TotalCount) %>%
-  select(F105_Code, F05_02_ENG, Ratio)
+  select(F105_Code, F05_02_ENG, Ratio) 
 
 datatable(nationality_ratio_per_city, options = list(pageLength = 10,
                                    class = "hover",
@@ -488,88 +493,138 @@ trip_percentages_SA <- trip_percentages %>% filter(F05_01_ENG == "South America"
 
 library(ggrepel)
 # the pie chart
+
+trip_percentages_Af <- trip_percentages_Af %>% 
+  mutate(
+    cs = rev(cumsum(rev(Percentages))), 
+    pos = Percentages/2 + lead(cs, 1),
+    pos = if_else(is.na(pos), Percentages/2, pos))
+trip_percentages_As <- trip_percentages_As %>% 
+  mutate(
+    cs = rev(cumsum(rev(Percentages))), 
+    pos = Percentages/2 + lead(cs, 1),
+    pos = if_else(is.na(pos), Percentages/2, pos))
+trip_percentages_AO <- trip_percentages_AO %>% 
+  mutate(
+    cs = rev(cumsum(rev(Percentages))), 
+    pos = Percentages/2 + lead(cs, 1),
+    pos = if_else(is.na(pos), Percentages/2, pos))
+trip_percentages_Eu <- trip_percentages_Eu %>% 
+  mutate(
+    cs = rev(cumsum(rev(Percentages))), 
+    pos = Percentages/2 + lead(cs, 1),
+    pos = if_else(is.na(pos), Percentages/2, pos))
+trip_percentages_NCA <- trip_percentages_NCA %>% 
+  mutate(
+    cs = rev(cumsum(rev(Percentages))), 
+    pos = Percentages/2 + lead(cs, 1),
+    pos = if_else(is.na(pos), Percentages/2, pos))
+trip_percentages_SA <- trip_percentages_SA %>% 
+  mutate(
+    cs = rev(cumsum(rev(Percentages))), 
+    pos = Percentages/2 + lead(cs, 1),
+    pos = if_else(is.na(pos), Percentages/2, pos))
+
+
+
 p1 <- ggplot(trip_percentages_Af, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar(theta = "y", start = 0) + 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
-  # scale_fill_brewer(palette = "Set3", direction = -4) +
-  geom_label_repel(aes(label = paste0(Percentages, "%")), size=4, show.legend = F, nudge_x = 1) +
+  geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=4, show.legend = F, nudge_x = 1) +
   guides(fill = guide_legend(title = "F16_ENG")) +
   geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
   ggtitle("Africa") 
 
-p1
-
-p2 <- ggplot(trip_percentages_As, aes(x = "", y = Percentages, fill = F16_ENG)) +
+p2 <- ggplot(trip_percentages_As, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar("y", start = 0) + 
+  coord_polar(theta = "y", start = 0) + 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
+  geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=4, show.legend = F, nudge_x = 1) +
+  guides(fill = guide_legend(title = "F16_ENG")) +
   geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
-  ggtitle("Asia") 
+  ggtitle("Asia")
 
-p3 <- ggplot(trip_percentages_AO, aes(x = "", y = Percentages, fill = F16_ENG)) +
+
+p3 <- ggplot(trip_percentages_AO, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar("y", start = 0) + 
+  coord_polar(theta = "y", start = 0) + 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
+  geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=4, show.legend = F, nudge_x = 1) +
+  guides(fill = guide_legend(title = "F16_ENG")) +
   geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
   ggtitle("Australia & Oceania") 
 
-p4 <- ggplot(trip_percentages_Eu, aes(x = "", y = Percentages, fill = F16_ENG)) +
+p4 <- ggplot(trip_percentages_Eu, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar("y", start = 0) + 
+  coord_polar(theta = "y", start = 0) + 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
+  geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=4, show.legend = F, nudge_x = 1) +
+  guides(fill = guide_legend(title = "F16_ENG")) +
   geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
   ggtitle("Europe ") 
 
-p5 <- ggplot(trip_percentages_NCA, aes(x = "", y = Percentages, fill = F16_ENG)) +
+p5 <- ggplot(trip_percentages_NCA, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar("y", start = 0) + 
+  coord_polar(theta = "y", start = 0) + 
   theme_void() +
   theme(legend.position = "none") + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
+  geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=4, show.legend = F, nudge_x = 1) +
+  guides(fill = guide_legend(title = "F16_ENG")) +
   geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
   ggtitle("North & Central America") 
 
-p6 <- ggplot(trip_percentages_SA, aes(x = "", y = Percentages, fill = F16_ENG)) +
+p6 <- ggplot(trip_percentages_SA, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar("y", start = 0) + 
+  coord_polar(theta = "y", start = 0) + 
   theme_void() +
-  theme(legend.position = "none") + 
+  theme(legend.position = c(0.5, 0.2)) + 
   scale_fill_manual(values = my_colors) + # Use your defined colors here
+  geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=4, show.legend = F, nudge_x = 1) +
+  guides(fill = guide_legend(title = "F16_ENG")) +
   geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 2) +
   ggtitle("South America") 
 
+
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE, fig.width=10, fig.height=15}
 #merge plots
 library(cowplot)
-library(gridExtra)
-plot_grid(p1, p2, p3, p4, p5, p6, align = c("v", "h"), cols = 2) # Horizontal alignment
+combined <- plot_grid(p1, p2, p3, p4, p5, p6,  align = c("v", "h"), cols = 2, rows = 3) # Horizontal alignment
 
+
+# To align the plots without the legends showing on each, you can extract the legend
+# from one plot and use it in the combined plot
+legend <- get_legend(p6)
+combined_plot_with_legend <- plot_grid(combined, legend, ncol = 1, nrow = 1)
+combined_plot_with_legend
 
 ```
 
-```{r, fig.width=15, fig.height=10, message=FALSE}
+
+```{r, fig.width=15, fig.height=12, message=FALSE}
 
 ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity") +
-  labs(x = "Country", y = "Percentage", fill = "Type of Trip") +
+  labs(x = "Country", y = "Percentages", fill = "Type of Trip") +
   ggtitle("Stacked Bar Plot of Type of Trip by Country") +
   scale_fill_manual(values = my_colors) + # Use your defined colors here
+  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 6) +
   theme_minimal() + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
-        axis.text.y = element_text(hjust = 1, size = 8),
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+        axis.text.y = element_text(hjust = 1, size = 10),
         legend.position = "top",
-        legend.text = element_text(size = 8),
+        legend.text = element_text(size = 10),
         legend.title = element_text(size = 0),
         legend.box = "vertical")
 
