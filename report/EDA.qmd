@@ -1,3 +1,9 @@
+---
+format:
+  html:
+    code-fold: true
+---
+
 # EDA
 
 # Partie Stefan 
