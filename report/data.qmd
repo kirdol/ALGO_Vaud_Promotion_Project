@@ -1,12 +1,14 @@
 # Data
-```{r, output = FALSE}
-source(here::here("scripts", "setup.R"))
 
+```{r, output = FALSE, echo=FALSE}
+source(here::here("scripts", "setup.R"))
 ```
 
-```{r}
+Find below the list of questions that were asked during the survey. The original questionnaire that we received was in German. The questions were translated before conducting our analysis. The version shown below is a simplified version of the original questions.
+
+```{r echo=FALSE}
 questions <- data.frame(
-  "Questions Asked" = c("id of the Observation",
+  "Questions" = c("id of the Observation",
                         "Continent",
                         "Land",
                         "Region",
@@ -63,7 +65,7 @@ questions <- data.frame(
                         "___",
                         "___",
                         "___"),
-  "Code Number" = c("Serial2",
+  "Codes" = c("Serial2",
                     "F05_01",
                     "F05_02",
                     "F05_03",
@@ -120,7 +122,7 @@ questions <- data.frame(
                     "___",
                     "___",
                     "___"),
-  "Data Type" = c("None",
+  "Types" = c("None",
                   "{1, Europe}...",
                   "{1, Australia}...",
                   "{1, Australian Capital Territory}...",
@@ -179,8 +181,123 @@ questions <- data.frame(
                   "___"))
 ```
 
+```{r echo=FALSE}
+questions_ready <- data.frame(
+  "Questions" = c("F05_01 your Continent",
+                        "F05_02 your Land",
+                        "F05_03 your Region",
+                        "F05_04 your Subregion",
+                        "F12: Start of holidays in Switzerland:",
+                        "F13: End of holidays in Switzerland:",
+                        "F15: What time of year was in Switzerland during your holidays?",
+                        "F16: Type of holiday:",
+                        "F20: Number of overnight stays in Switzerland:",
+                        "F21: How long did your tour of Europe take in total (including Switzerland)?",
+                        "F30: Have you booked a package tour (a bundling of arrival and departure, accommodation and/or other tourist services on site)?",
+                        "F31_01 Alone",
+                        "F31_02 With partner",
+                        "F31_03 With friends / acquaintances",
+                        "F31_04 With children",
+                        "F31_05 With other family members",
+                        "F31_06 In a group with unknown people",
+                        "F31_07 With one dog(s)",
+                        "F31_08 With one or more other pet(s)",
+                        "F32: Size of your group (number of people including yourself):",
+                        "F33: Size of your group (number of people including yourself but excluding people you don't know):",
+                        "Auxiliary variable: Difference of F13 end of holiday CH minus F12 start of holiday CH plus 1",
+                        "Auxiliary variable: Number of persons from F32 / F33 travel group",
+                        "F80: Please select a currency for your details:",
+                        "F80: Please select a currency for your details. - Others, namely:",
+                        "F81_01 For your overnight stay",
+                        "F81_02 For train, mountain railway, boat and other public transport (without arrival and departure)",
+                        "F81_03 For food & drink (in the accommodation, on the road, out and about)",
+                        "F81_04 For souvenirs, gifts, watches, jewellery",
+                        "F81_05 For other shopping",
+                        "F81_06 For other expenses",
+                        "F81_07 In Total",
+                        "F82_01 Package",
+                        "F82_02 For overnight stay",
+                        "F82_03 For train, mountain railway, boat and other public transport (without arrival and departure)",
+                        "F82_04 For food & drink (in the accommodation, on the road, out and about)",
+                        "F82_05 For souvenirs, gifts, watches, jewellery",
+                        "F82_06 For other shopping",
+                        "F82_07 For other expenses",
+                        "F82_08 Total expenditure excluding expenditure on package holidays",
+                        "Q83: Does the package include travel to and from the resort?",
+                        "Q85: You have therefore spent a total of [amount] (excluding package costs) during your stay in Switzerland. Is that right?",
+                        "Q105: Your resort where you were staying when your email address was collected for this survey:",
+                        "Q105: Your resort where you were staying when your email address was collected for this survey. - Other resort:",
+                        "Q105: Your resort where you were staying when your email address was collected for this survey. -Code:",
+                        "Q105: Your resort where you were staying when your email address was collected for this survey. - Organization Code:",
+                        "Q125: Your accommodation:",
+                        "Q125: Your accommodation: Other, namely:",
+                        "F130: Star category of the hotel / spa house visited:",
+                        "F130: Star category of the hotel / spa house visited: Other classification, namely:",
+                        "Q135: Number of nights in [Answer from F105]:",
+                        "Winter - Summer (average of arrival and departure date with limit end of April / beginning of May)",
+                        "___",
+                        "___",
+                        "___",
+                        "___"),
+  "Types" = c("{1, Europe}...",
+                  "{1, Australia}...",
+                  "{1, Australian Capital Territory}...",
+                  "{1, Barking and Dagenham}...",
+                  "None",
+                  "None",
+                  "{1, Winter}...",
+                  "{1, Holidays with only one overnight stay in Switzerland}...",
+                  "None",
+                  "None",
+                  "{1, Yes}...",
+                  "{1, True}...",
+                  "{1, True}...",
+                  "{1, True}...",
+                  "{1, True}...",
+                  "{1, True}...",
+                  "{1, True}...",
+                  "{1, True}...",
+                  "{1, True}...",
+                  "{1, 1}...",
+                  "{1, 1}...",
+                  "None",
+                  "None",
+                  "{1, CHF}...",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "None",
+                  "{1, Yes}...",
+                  "{1, Yes}...",
+                  "None",
+                  "None",
+                  "{1, Aarau}...",
+                  "{1, aarau-info}...",
+                  "{1, Hotel / Kurhaus}...",
+                  "None",
+                  "{1, *}...",
+                  "None",
+                  "None",
+                  "{0, Winter}...",
+                  "___",
+                  "___",
+                  "___",
+                  "___"))
+```
 
-```{r}
+```{r include=FALSE}
 library(knitr)
 library(kableExtra)
 
@@ -189,6 +306,21 @@ questions %>%
   kable_paper("striped", full_width = F) %>%
   pack_rows("Q5: Permanent residence", 2, 5) %>%
   pack_rows("Q31: Who did you travel with?", 13, 20)
+```
+
+```{r echo=FALSE}
+library(knitr)
+library(kableExtra)
+
+questions_ready %>%
+  kbl(caption = "Questions asked during the Survey") %>%
+  kable_paper("striped", full_width = F) %>%
+  pack_rows("F05: Your Permanent residence", 1, 4) %>%
+  pack_rows("F31: Who did you travel with?", 12, 19) %>%
+  pack_rows("F81: How much did you spend in total during your stay in Switzerland?", 26, 32) %>%
+  pack_rows("F82: How much did you spend in total during your stay in Switzerland? (if you took a package)", 34, 41)
+
+custom_css <- "<style> thead th {font-weight: normal !important;} </style>"
 ```
 
 ## Présentation des données
