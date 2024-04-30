@@ -153,3 +153,100 @@ ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02_ENG`, size = Cou
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+## Average spending by travel group type
+```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
+
+data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
+
+explanations <- read.csv("../data/explanations.csv")
+
+which(colnames(data) == "F31_01")
+which(colnames(data) == "F32")
+
+df <- data[, 18:33]
+
+# Keep english columns only
+seq(2, 17, 2)
+df <- df[, seq(2, 17, 2)]
+
+# Set responses to binary values
+for (i in 1:ncol(df)) {
+  df[, i] <- ifelse(df[, i] == "Applies", 1, ifelse(df[, i] == "Not applicable", 0, NA))
+}
+
+# We add a column to separate couples from families. Here people only traveled with their partner.
+
+df$couples <- ifelse(df$F31_02_ENG == 1 & df$F31_03_ENG == 0 & df$F31_04_ENG == 0 & df$F31_05_ENG == 0, 1, 0)
+
+# Sums of responses for frequency plot
+df_sums <- list()
+
+for (col in names(df)) {
+  df_sums[[col]] <- sum(df[[col]])
+}
+
+# ggplot of frequency of responses
+df_sums_df <- data.frame(Column = names(df_sums), Sum = unlist(df_sums))
+
+#Change column names in df_sums_df
+df_sums_df$Column <- c("Alone", "Partner", "Friends", "Children", "Other family", "Unknown people (group)", "Dog", "Other pet(s)", "Only with partner")
+colnames(df_sums_df)[colnames(df_sums_df) == "Traveled with"] <- "Column"
+
+# Sort by descending sum
+df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(-df_sums_df$Sum)])
+
+
+# make the plot in percentages
+
+df_sums_df$Percentage <- (df_sums_df$Sum)/nrow(df)*100
+
+
+
+# Compare traveled with and how much average CHF was spent per person
+
+# Create total spent column and add group size columns
+df$Total_spent <- ifelse(data$F81_Total != "", data$F81_Total, data$F82_Total)
+df$group_size <- ifelse(data$F32 != "", data$F32, data$F33)
+df$group_size <- as.numeric(df$group_size)
+
+#Reset column names in df_sums_df
+df_sums_df$Column <- c("Alone", "Partner", "Friends", "Children", "Other family", "Unknown people (group)", "Dog", "Other pet(s)", "Only with partner")
+
+# Average spending vector
+average_spending <- numeric(0)
+
+# Average spending for visitor Alone
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_01_ENG == 1] / df$group_size[df$F31_01_ENG == 1], na.rm = TRUE) / sum(df$F31_01_ENG))
+# With partner
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_02_ENG == 1] / df$group_size[df$F31_02_ENG == 1], na.rm = TRUE) / sum(df$F31_02_ENG))
+# With friends
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_03_ENG == 1] / df$group_size[df$F31_03_ENG == 1], na.rm = TRUE) / sum(df$F31_03_ENG))
+# With children
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_04_ENG == 1] / df$group_size[df$F31_04_ENG == 1], na.rm = TRUE) / sum(df$F31_04_ENG))
+# With other family
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_05_ENG == 1] / df$group_size[df$F31_05_ENG == 1], na.rm = TRUE) / sum(df$F31_05_ENG))
+# With unknown people
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_06_ENG == 1] / df$group_size[df$F31_06_ENG == 1], na.rm = TRUE) / sum(df$F31_06_ENG))
+# With dog
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_07_ENG == 1] / df$group_size[df$F31_07_ENG == 1], na.rm = TRUE) / sum(df$F31_07_ENG))
+# With other pet
+average_spending <- c(average_spending, sum(df$Total_spent[df$F31_08_ENG == 1] / df$group_size[df$F31_08_ENG == 1], na.rm = TRUE) / sum(df$F31_08_ENG))
+# Only partner
+average_spending <- c(average_spending, sum(df$Total_spent[df$couples == 1] / df$group_size[df$couples == 1], na.rm = TRUE) / sum(df$couples))
+
+
+# Add column to df_sums_df
+df_sums_df$Spent = average_spending
+
+# Plot average spending
+# Sort by descending sum
+df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(-df_sums_df$Spent)])
+```
+
+```{r}
+#Plot frequency
+ggplot(df_sums_df, aes(x = Column, y = Spent)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Average CHF spent by group type", x = "Traveled with", y = "Amount spent / person")
+
+```

@@ -16,11 +16,8 @@ packages_loaded <- c(
   "ggwordcloud",
   "tm",
   "wordcloud2",
-<<<<<<< Updated upstream
-  "ggrepel")
-=======
+  "ggrepel",
   "kableExtra")
->>>>>>> Stashed changes
 
 # Function that install the packages if not already installed on your computer
 for (pkg in packages_loaded) {
