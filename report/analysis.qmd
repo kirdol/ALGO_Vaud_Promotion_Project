@@ -106,6 +106,7 @@ df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(
 #Plot frequency
 ggplot(df_sums_df, aes(x = Column, y = Spent)) +
   geom_bar(stat = "identity", fill = "skyblue") +
+  geom_text(aes(label = paste0("CHF ", round(Spent, 0))), vjust = -0.5, size = 3, color = "black") +
   labs(title = "Average CHF spent by group type", x = "Traveled with", y = "Amount spent / person")
 
 ```
