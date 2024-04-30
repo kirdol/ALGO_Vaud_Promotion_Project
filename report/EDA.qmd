@@ -1037,7 +1037,7 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
 ```
 
 ## Responses in % to the question "Who did you travel with?"
-```{r}
+```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
 data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
 
 explanations <- read.csv("../data/explanations.csv")
@@ -1085,29 +1085,14 @@ df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(
 # make the plot in percentages
 
 df_sums_df$Percentage <- (df_sums_df$Sum)/nrow(df)*100
+```
 
+```{r}
 ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
   geom_bar(stat = "identity", fill = "skyblue") +
-  labs(title = "Frequency of responses", x = "Traveled with", y = "Percentage")
+  geom_text(aes(label = paste0(round(Percentage, 1), "%")), vjust = -0.5, size = 3, color = "black") +
+  labs(title = "Frequency of responses", x = "Traveled with", y = "Percentage") +
+  ylim(0, 100)
 
 ```
-
-## Percentage of tourists that are Swiss german and Swiss
-```{r}
-swiss_german_cantons = c("Luzern", "Schwyz", "Bern", "Neuenburg", "Aargau",
-                         "Zürich", "Basel-Stadt", "Basel-Landschaft", "Obwalden",
-                         "Appenzell Innerrhoden", "Schaffhausen", "Thurgau",
-                         "St. Gallen", "Solothurn", "Uri", "Zug", "Nidwalden",
-                         "Appenzell Ausserrhoden")
-
-
-# Binary column for swiss germans
-data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
-
-
-# Percent of total tourists that are Swiss-German
-nrow(data[data$swiss_german == 1,])/nrow(data)*100
-
-# Percent of total tourists that are Swiss
-nrow(data[data$F05_02 == "Schweiz",])/nrow(data)*100
-```
+We notice that more than 2/3 of overall visitors came to Vaud with their partner (68.7%). Of these, 43% came only with their partner, without friends, children or other family.
