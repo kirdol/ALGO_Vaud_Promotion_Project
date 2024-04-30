@@ -636,10 +636,10 @@ ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F10
 # if F20 and F21 not NAs --> take percentage of nightstays in Switzerland compared to the total length of the trip
 
 # Add a new column with the percentage of night stays in Switzerland over the total trip night stays
-data <- data %>%
+data2 <- data %>%
   mutate(Percentage_Night_Stays_Switzerland = ifelse(is.na(F20) | is.na(F21), NA, (F20 / F21) * 100))
 
-ratio_nightstays_CH_EU <- data %>% 
+ratio_nightstays_CH_EU <- data2 %>% 
     select(F20,F21, Percentage_Night_Stays_Switzerland) %>%
     group_by() %>% 
     drop_na()
@@ -653,20 +653,9 @@ ggplot(ratio_nightstays_CH_EU, aes(x = Percentage_Night_Stays_Switzerland)) +
     y = "Frequency"
   ) +
   theme_minimal()
-
-
-F21_EU_locations <- data %>%
-  group_by(F21) %>%
-  summarize(Count = n(), .groups = 'drop') %>%
-  arrange(desc(Count)) # Optional: arrange in descending order of frequency
-
-ggplot(F21_EU_locations, aes(x = F21, y = Count, fill = F21)) +
-  geom_bar(stat = "identity") +
-  theme_minimal() +
-  labs(x = "Number of nights in EU", y = "Frequency", title = "Frequency of the number of nights in EU") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
-        legend.title = element_blank()) # Hide the legend if not needed
 ```
+
+As this graph shows, we notice that over the whole trip, most of the people will stay around 20% of their trip in Switzerland
 
 ```{r}
 ### F30 ###
@@ -692,6 +681,21 @@ monthly_arrivals <- data %>%
   group_by(month_name_column, F05_02_ENG) %>%
   summarise(Count = n(), .groups = 'drop') %>%
   arrange(month_name_column, F05_02_ENG) # This will ensure the data is ordered, which might help in visualization
+
+#concatenate all countries except " 7 best " 
+
+# # Define a vector of countries to exclude
+# excluded_countries <- c("Switzerland", "United States of America
+# ", "United Kingdom", "Spain", "France", "Germany", "Belgium")
+# 
+# # Filter out the excluded countries and then summarise by month
+# monthly_arrivals <- monthly_arrivals %>%
+#   filter(!F05_02_ENG %in% excluded_countries) %>%  # Exclude the specified countries
+#   group_by(month_name_column) %>%                 # Group by month only
+#   summarise(Count = sum(Count), .groups = 'drop')  # Sum the occurrences for remaining countries
+
+#get rid of the rest of the rows
+
 
 # Visualize
 ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02_ENG`, size = Count)) +
