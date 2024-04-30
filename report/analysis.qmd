@@ -110,3 +110,4 @@ ggplot(df_sums_df, aes(x = Column, y = Spent)) +
   labs(title = "Average CHF spent by group type", x = "Traveled with", y = "Amount spent / person")
 
 ```
+Here we have calcuated the average total CHF spent during a trip to Vaud, per person, depending on who the respondent has traveled with.
