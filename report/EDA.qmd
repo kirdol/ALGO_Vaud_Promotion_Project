@@ -540,7 +540,7 @@ combined_plot_with_legend <- plot_grid(combined, legend, ncol = 1, nrow = 1)
 combined_plot_with_legend
 
 ```
-
+In general, we notice that most of the visitors coming from continent far away from Switzerland are coming in Switzerland for serveral nightstays during their trip in Europe. On another hand, living closer, are staying most of the time for one overnight stay in Switzerland. This is probably due to the large quantity of visitors surveyed coming from Switzerland but from other cantons or visitors coming from adjacent countries such as Germany in France, all these visitors accounting for a total of approx. 50% of the people surveyed. 
 
 ```{r, fig.width=15, fig.height=12, message=FALSE}
 
