@@ -1,3 +1,15 @@
+---
+format:
+  html:
+    code-fold: true
+---
+
+```{r output = FALSE}
+source(here::here("scripts", "setup.R"))
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
+                 sep = ",")
+```
+
 # Analysis
 
 ## Correlations entre variables, ce qui en resort
@@ -7,6 +19,7 @@
 # Careful here: some people have 0 nightstay and only passed by switzerland for a day. 
 # but answered the question 16, asking about the number of nights.
 # also when f16 answered and F20 blanc ---> change NAs by 1 
+
 F20_freq <- data %>%
   group_by(F20) %>%
   summarize(Count = n(), .groups = 'drop') %>%
@@ -23,7 +36,7 @@ ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
 # frequency nightstays distribution per city 
 distr_nightstays_per_district <- data %>% 
   select(F105_OrgCode, F20) %>%
-  group_by(F105_OrgCode) %>% 
+  group_by(F105_OrgCode) 
   
 
 distr_nightstays_per_district$F20[is.na(distr_nightstays_per_district$F20)] <- 0

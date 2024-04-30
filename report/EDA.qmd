@@ -542,6 +542,13 @@ combined_plot_with_legend
 ```
 In general, we notice that most of the visitors coming from continent far away from Switzerland are coming in Switzerland for serveral nightstays during their trip in Europe. On another hand, living closer, are staying most of the time for one overnight stay in Switzerland. This is probably due to the large quantity of visitors surveyed coming from Switzerland but from other cantons or visitors coming from adjacent countries such as Germany in France, all these visitors accounting for a total of approx. 50% of the people surveyed. 
 
+Now let's explore the percentage of trip category per continent. The categories are the following : 
+
+ -  Red: "Holidays with only one overnight stay in Switzerland"
+ -  Orange: "Round trip through Europe: several places to stay in Switzerland" 
+ -  Green: "Round trip through Europe: only one overnight stay in Switzerland" 
+ -  Blue: "Round trip only within Switzerland (several overnight locations in Switzerland)"
+ 
 ```{r, fig.width=15, fig.height=12, message=FALSE}
 
 ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
@@ -553,10 +560,148 @@ ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
   theme_minimal() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
         axis.text.y = element_text(hjust = 1, size = 10),
-        legend.position = "top",
+        legend.position = "None",
         legend.text = element_text(size = 10),
         legend.title = element_text(size = 0),
         legend.box = "vertical")
+
+```
+
+# Analysis
+
+**Global frenquency of nightstays in the canton of Vaud**
+
+```{r, message = FALSE, warning = FALSE}
+### F20 ###
+# Careful here: some people have 0 nightstay and only passed by switzerland for a day. 
+# but answered the question 16, asking about the number of nights.
+# also when f16 answered and F20 blanc ---> change NAs by 1 
+
+data_NAs <- data %>%
+  mutate(F20 = ifelse(is.na(F20), 1, F20))
+
+F20_freq <- data_NAs %>%
+  group_by(F20) %>%
+  summarize(Count = n(), .groups = 'drop') %>%
+  arrange(desc(Count)) # Optional: arrange in descending order of frequency
+
+ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(x = "Number of nights", y = "Frequency", title = "Frequency of the number of nights in Vaud") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
+        legend.title = element_blank()) # Hide the legend if not needed
+```
+
+As most of our data contained NAs because of the structure of the survey (according to the answer of the question F16, some people could not answer question F20, therefore their answer was reported as a NA). Thus, we have decided to count the NAs as 1 overnight stay, as it is not possible to know if they only stayed in Vaud for 1 day without staying overnight. 
+
+```{r, message = FALSE, warning = FALSE}
+
+# frequency nightstays distribution per city 
+distr_nightstays_per_district <- data_NAs %>% 
+  select(F105_OrgCode, F20) %>%
+  group_by(F105_OrgCode) 
+  
+
+distr_nightstays_per_district$F20[is.na(distr_nightstays_per_district$F20)] <- 0
+
+# Adjust the plot theme for better readability
+my_theme <- theme_minimal() +
+  theme(
+    text = element_text(size = 12),  # Adjust text size
+    panel.grid.major = element_blank(),  # Remove major gridlines
+    panel.grid.minor = element_blank(),  # Remove minor gridlines
+    panel.border = element_blank(),  # Remove plot border
+    axis.line = element_line(color = "black"),  # Add axis lines
+    legend.position = "bottom")  # Move legend to bottom
+    
+# Plotting the density ridgeline plot
+ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F105_OrgCode)) + 
+  geom_density_ridges(fill = "#00AFBB", color = "white", alpha = 0.8) + 
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    x = "Number of Nights",  # Adjust x-axis label
+    y = "City",  # Adjust y-axis label
+    title = "Density Plot of Night Stays per District",  # Add plot title
+    subtitle = "Distribution of night stays across different Districts",  # Add plot subtitle
+    caption = "Source: Your Dataset"  # Add data source caption
+  )
+```
+
+
+```{r, message = FALSE, warning = FALSE}
+### F21 ###
+#consider NA as 0 here. 
+
+# if F20 and F21 not NAs --> take percentage of nightstays in Switzerland compared to the total length of the trip
+
+# Add a new column with the percentage of night stays in Switzerland over the total trip night stays
+data <- data %>%
+  mutate(Percentage_Night_Stays_Switzerland = ifelse(is.na(F20) | is.na(F21), NA, (F20 / F21) * 100))
+
+ratio_nightstays_CH_EU <- data %>% 
+    select(F20,F21, Percentage_Night_Stays_Switzerland) %>%
+    group_by() %>% 
+    drop_na()
+
+# Create the distribution histogram
+ggplot(ratio_nightstays_CH_EU, aes(x = Percentage_Night_Stays_Switzerland)) +
+  geom_histogram(binwidth = 10, fill = "skyblue", color = "black") +
+  labs(
+    title = "Distribution of the percentage of nightstays in Switzerland over the whole trip",
+    x = "Percentage Night Stays",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+
+F21_EU_locations <- data %>%
+  group_by(F21) %>%
+  summarize(Count = n(), .groups = 'drop') %>%
+  arrange(desc(Count)) # Optional: arrange in descending order of frequency
+
+ggplot(F21_EU_locations, aes(x = F21, y = Count, fill = F21)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(x = "Number of nights in EU", y = "Frequency", title = "Frequency of the number of nights in EU") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
+        legend.title = element_blank()) # Hide the legend if not needed
+```
+
+```{r}
+### F30 ###
+F30_Q <- data %>% count(F30_ENG, name = "Total")
+F30_Q$percentage <- with(F30_Q, Total / sum(Total) * 100)
+
+ggplot(F30_Q, aes(x = F30_ENG, y = Total, label = paste(percentage, "%"))) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_text(vjust = -0.5, color = "black") +
+  theme_minimal() +
+  labs(title = "Q30: Have you booked a package tour?",
+       x = "Answers",
+       y = "Total")
+```
+
+```{r, fig.height=15}
+### Deeper reasoning ###
+
+# Where are coming from the people, per month
+
+# Summarize data: count arrivals per month and country
+monthly_arrivals <- data %>%
+  group_by(month_name_column, F05_02_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  arrange(month_name_column, F05_02_ENG) # This will ensure the data is ordered, which might help in visualization
+
+# Visualize
+ggplot(monthly_arrivals, aes(x = month_name_column, y = `F05_02_ENG`, size = Count)) +
+  geom_point(alpha = 0.7) + # Using alpha for better visibility if points overlap
+  theme_minimal() +
+  labs(title = "Monthly Arrivals in Switzerland by Country of Origin",
+       x = "Month",
+       y = "Country of Origin",
+       size = "Number of Arrivals") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
