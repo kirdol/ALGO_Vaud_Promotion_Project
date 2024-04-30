@@ -291,7 +291,7 @@ leaflet(vaud) %>%
 
 
 #############################################################################################################################
-# French tourists
+# Other nations tourists
 
 
 unique(data[data$F05_02 == "Frankreich", ]$F05_03)
@@ -304,9 +304,27 @@ french_regions <- data[data$F05_02 == "Frankreich", ]$F05_03
 # Count the occurrences of each unique value of F05_03
 table(french_regions)
 
+unique(data[data$F05_02_ENG == "United Kingdom", ]$F05_03)
 
+#brit regions
+brit_regions <- data[data$F05_02_ENG == "United Kingdom", ]$F05_03
 
+# Count the occurrences of each unique value of F05_03
+table(brit_regions)
 
+english_cities <- data[data$F05_02_ENG == "United Kingdom" & data$F05_03 == "England", ]$F05_04
+
+table(english_cities)
+
+german_regions <- data[data$F05_02 == "Deutschland", ]$F05_03
+
+# Count the occurrences of each unique value of F05_03
+table(german_regions)
+
+us_regions <- data[data$F05_02_ENG == "United States of America", ]$F05_03
+
+# Count the occurrences of each unique value of F05_03
+table(us_regions)
 #############################################################################################################################
 
 
