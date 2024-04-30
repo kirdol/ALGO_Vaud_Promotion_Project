@@ -18,7 +18,7 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 
 ### Data Exploration: Who is coming? 
 
-**Global percentage of people coming in Switzerland per continent**
+**Global percentage of people coming in the canton of Vaud per continent**
 
 ```{r}
 ### F05_01.ENG ###
@@ -36,97 +36,28 @@ F05_01_PCT <- data %>%
   summarise(Count = n()) %>%
   mutate(Percentage = Count / sum(Count) * 100) %>% 
   arrange(desc(Percentage)) %>%
-  mutate(Percentages = round(Percentage, 2))
+  mutate(Percentages = round(Percentage, 2)) %>%
+  select(-c(Percentage)) %>%
+  rename(Continents = F05_01_ENG)
 
 datatable(F05_01_PCT, options = list(pageLength = 10,
                                    class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE) 
+                                   searchHighlight = TRUE), rownames = FALSE)
 ```
 
 ```{r}
 #plot numbers continent 
-ggplot(F05_01_PCT, aes(x=reorder(F05_01_ENG, Percentage), y=Percentage, fill=F05_01_ENG)) +
+ggplot(F05_01_PCT, aes(x=reorder(Continents, Percentages), y=Percentages, fill=Continents)) +
   geom_bar(stat="identity") +
   coord_flip() +  # Flip coordinates for horizontal bars
   theme_minimal() +
-  labs(x="Continents", y="Percentage", title="Percentage of Each Unique Continent") +
+  labs(x="Continents", y="Percentages", title="Percentages of Each Unique Continent") +
   theme(legend.title = element_blank(), # Remove the legend title
         legend.position = "none", # Hide the legend as the colors are not necessary with labels
         plot.title = element_text(hjust = 0.5), # Center the plot title
         axis.text.x = element_text(angle = 45, hjust = 1)) + # Rotate x-axis labels for readability
-  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_dodge(width=0.9), vjust=-0.25) # Add percentage labels
+  geom_text(aes(label=sprintf("%.2f%%", Percentages)), position=position_dodge(width=-0.5), vjust=-0.01) # Add percentage labels
 
-```
-
-```{r}
-# Assuming 'F05_01_PCT' contains continent data and 'F05_02_PCT' contains country data
-# Let's merge the country percentages into the continent data frame.
-# Ensure that both data frames have a common identifier for continents. Adjust 'by' as needed.
-
-# Creating a country percentage by continent
-F05_02_PCT <- data %>%
-  group_by(F05_01_ENG, F05_02_ENG) %>%  # Group by both continent and country
-  summarise(Count = n(), .groups = "drop") %>%
-  mutate(Percentage = Count / sum(Count) * 100) %>%
-  arrange(desc(Percentage)) %>%
-  mutate(Percentages = round(Percentage, 2))
-
-# Merge country data back to continent data
-combined_data <- merge(F05_01_PCT, F05_02_PCT, by="F05_01_ENG", all.x = TRUE)
-
-# Now create the horizontal stacked bar plot
-ggplot(combined_data, aes(x=reorder(F05_01_ENG, -Percentage.y), y=Percentage.y, fill=F05_02_ENG)) +
-  geom_bar(stat="identity") +
-  coord_flip() +  # Flip coordinates for horizontal bars
-  theme_minimal() +
-  labs(x="Continents", y="Percentage", title="Percentage of Each Country by Continent") +
-  theme(legend.position = "none",
-    legend.title = element_text(size=0),
-        legend.text = element_text(size = 0),# Add legend title if needed
-        plot.title = element_text(hjust = 0.5), # Center the plot title
-        axis.text.y = element_text(angle = 0, hjust = 1)) + # Adjust text angle and justification
-  geom_text(aes(label=sprintf("%.2f%%", Percentage.y)), position=position_stack(vjust=0.5))  # Add percentage labels inside the bars
-```
-```{r}
-# # trying the shiny for this plot
-
-
-#Add a column continent to F05_02_ENG
-
-# # UI
-# ui <- fluidPage(
-#   titlePanel("Interactive Continent/Country Percentage Plot"),
-#   sidebarLayout(
-#     sidebarPanel(
-#       helpText("Displays the percentage of each country by continent.")
-#     ),
-#     mainPanel(
-#       plotOutput("stackedPlot")
-#     )
-#   )
-# )
-# 
-# # Server
-# server <- function(input, output) {
-# 
-#   output$stackedPlot <- renderPlot({
-#     # Merge the datasets on the continent identifier, F05_01_ENG
-#     combined_data <- merge(F05_01_PCT, F05_02_PCT, by="F05_01_ENG")
-# 
-#     ggplot(combined_data, aes(x=reorder(F05_01_ENG, -Country_Percentage), y=Country_Percentage, fill=F05_02_ENG)) +
-#       geom_bar(stat="identity") +
-#       coord_flip() +  # Flip coordinates for horizontal bars
-#       theme_minimal() +
-#       labs(x="Continents", y="Percentage", title="Percentage of Each Country by Continent") +
-#       theme(legend.position = "none", # Hide the legend
-#             plot.title = element_text(hjust = 0.5), # Center the plot title
-#             axis.text.y = element_text(angle = 0, hjust = 1)) + # Adjust text angle and justification
-#       geom_text(aes(label=sprintf("%.2f%%", Country_Percentage)), position=position_stack(vjust=0.5))  # Add percentage labels inside the bars
-#   })
-# }
-# 
-# # Run the application 
-# shinyApp(ui = ui, server = server)
 ```
 
 ```{r, fig.width=10, fig.height=10}
@@ -135,9 +66,10 @@ ggplot(combined_data, aes(x=reorder(F05_01_ENG, -Percentage.y), y=Percentage.y, 
 F05_02_PCT <- data %>%
   group_by(F05_02_ENG, F05_01_ENG) %>%  # Group by both country and continent
   summarise(Count = n(), .groups = 'drop') %>%
-  mutate(Percentage = Count / sum(Count) * 100) %>%
-  arrange(desc(Percentage)) %>%
-  mutate(Percentages = round(Percentage, 2))
+  mutate(Percentage = round((Count / sum(Count) * 100),2)) %>%
+  arrange(desc(Percentage)) 
+
+
 
 #concatenate all countries except " 7 best " 
 F05_02_PCT <- F05_02_PCT %>% add_row(F05_01_ENG = "Other Continents", F05_02_ENG = "Other Countries", Count = sum(F05_02_PCT$Count[7:104]), Percentage = sum(F05_02_PCT$Percentage[7:104]))
@@ -161,7 +93,7 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
 
 
 
-**Global percentage of people coming in Switzerland per country of origin**
+**Global percentage of people coming in canton of Vaud per country of origin**
 
 ```{r}
 
@@ -169,9 +101,9 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
 F05_02_PCT <- data %>% 
   group_by(F05_02_ENG) %>%
   summarise(Count = n()) %>%
-  mutate(Percentage = Count / sum(Count) * 100) %>% 
+  mutate(Percentage = round((Count / sum(Count) * 100),2)) %>% 
   arrange(desc(Percentage)) %>%
-  mutate(Percentages = round(Percentage, 2))
+  rename(Country = F05_02_ENG)
 
 datatable(F05_02_PCT, options = list(pageLength = 10,
                                    class = "hover",
@@ -181,7 +113,7 @@ datatable(F05_02_PCT, options = list(pageLength = 10,
 #or merge continent and country table. 1st column continents, 2nd countries, # of occurences then percentage
 ```
 
-**Ratio of each country of origin over the total number of visitors surveyed per city**
+**Per city, the percentage of each visitor's country of origin, relative to the number of visitor of the city**
 
 ```{r}
 # #total number of tourist per city
@@ -209,7 +141,7 @@ total_tourists_per_city <- tourists_by_nationality %>%
 # Joining the counts back to the detailed breakdown and calculating the ratio
 nationality_ratio_per_city <- tourists_by_nationality %>%
   left_join(total_tourists_per_city, by = "F105_Code") %>%
-  mutate(Ratio = Count / TotalCount) %>%
+  mutate(Ratio = round((Count / TotalCount),2)) %>%
   select(F105_Code, F05_02_ENG, Ratio) 
 
 datatable(nationality_ratio_per_city, options = list(pageLength = 10,
