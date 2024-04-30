@@ -15,7 +15,8 @@ packages_loaded <- c(
   "scales",
   "ggwordcloud",
   "tm",
-  "wordcloud2")
+  "wordcloud2",
+  "ggrepel")
 
 # Function that install the packages if not already installed on your computer
 for (pkg in packages_loaded) {
