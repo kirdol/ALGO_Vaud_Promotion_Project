@@ -6,6 +6,10 @@ format:
 
 # Maps
 
+Within this section, we present a series of maps showcasing the districts of canton Vaud, each illustrating the proportion of visitors from specific origins and demographic categories. These visualizations offer insights into the distribution of visitors across different regions, providing context for the diversity of visitors within the canton.
+
+Note that the proportions displayed on the map represent percentages relative to the total number of visitors per district. However, due to the small numbers of visitors to certain origins and nationalities, these proportions should not be taken at face value for all areas. For better context, the total number of visitors per district is displayed alongside the percentage.
+
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
 # load the required packages and install them if they are not.
 packages_loaded <- c(
@@ -108,7 +112,9 @@ vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Oues
 
 ::: panel-tabset
 # Couples
-This is a plot of the proportion of visitors for each district traveling as a couple, which means only with their partner, without friends or other family.
+
+This is a plot of the proportion of visitors for each district traveling as a couple, which means only with their partner, without friends or other family. We notice a high proportion of couples in Broye-Vully and Lavaux-Oron.
+
 ```{r}
 # Couples
 
@@ -136,12 +142,14 @@ leaflet(vaud) %>%
   leaflet::addTiles() %>%
   leaflet::setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   leaflet::addPolygons(fillOpacity = 0.75, color = ~couples_palette(vaud$couples_proportion), weight = 0) %>%
-  leaflet::addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$couples_proportion, "%"))
+  leaflet::addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$couples_proportion, "%", "Total: ", vaud$couples_sum))
 # High proportion of couples without children in Broye-Vully and Lavaux-Oron
 ```
 
 # Children
-This is a plot of the proportion of visitors for each district traveling with children.
+
+This plot shows the proportion of visitors traveling with children in each district. Notably, Jura-Nord Vaudois and Aigle districts exhibit a high proportion of children. We attribute this to the prevalence of ski holidays and family-friendly outdoor activities, such as hiking, in these regions.
+
 ```{r}
 # Add children column to data
 data$children <- df$F31_04_ENG
@@ -167,13 +175,15 @@ leaflet(vaud) %>%
   leaflet::addTiles() %>%
   leaflet::setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   leaflet::addPolygons(fillOpacity = 0.75, color = ~children_palette(vaud$children_proportion), weight = 0) %>%
-  leaflet::addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_proportion, "%"))
+  leaflet::addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_proportion, "%", "Total: ", vaud$children_sum))
 # High proportion of children in Aigle discrict, maybe for ski holidays.
 
 ```
 
 # Alone
-This is a plot of the proportion of visitors for each district traveling alone.
+
+This is a plot of the proportion of visitors for each district traveling alone. The highest proportion of solo visitors is in La Côte region, in districts of Morges and Nyon.
+
 ```{r}
 # Add alone column to data
 data$alone <- df$F31_01_ENG
@@ -199,12 +209,102 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~alone_palette(vaud$alone_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$alone_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$alone_proportion, "%", "Total: ", vaud$alone_sum))
 # Highest proportion of lone travelers in La Côte region
 ```
 :::
 
+## Seasonality
+These maps show us which districts are most visited in the 2 main yearly seasons, summer and winter. We see a clear change in the district of Aigle, which has many more visitors during the winter, due to it being a region that is home to many ski slopes and winter activities. The main district that seems to profit from the summer months is Jura-Nord vaudois, and the proportion of visitors to the capital is indifferent to the seasons.
+
+
+::: panel-tabset
+# Summer
+```{r}
+# Function to calculate sums for summer
+calculate_summer_sum <- function(data, vaud) {
+  vaud$summer_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$summer_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$F12_F13_Mittelwert_2Cat_final == "Summer")
+  }
+  return(vaud)
+}
+vaud <- calculate_summer_sum(data, vaud)
+
+# Now we will plot the proportion of summer for each district in %
+vaud$summer_proportion <- round((vaud$summer_sum / vaud$sum) * 100, 2)
+
+# Alone proportion plot
+summer_palette <- colorNumeric(palette = "Purples", domain = vaud$summer_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~summer_palette(vaud$summer_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$summer_proportion, "%", "Total: ", vaud$summer_sum))
+
+```
+
+# Winter
+```{r}
+# Function to calculate sums for winter
+calculate_winter_sum <- function(data, vaud) {
+  vaud$winter_sum <- NA
+  unique_values <- unique(data$leaflet_districts)
+  for (value in unique_values) {
+    vaud$winter_sum[vaud$NAME == value] <- sum(data$leaflet_districts == value & data$F12_F13_Mittelwert_2Cat_final == "Winter")
+  }
+  return(vaud)
+}
+vaud <- calculate_winter_sum(data, vaud)
+
+# Now we will plot the proportion of winter for each district in %
+vaud$winter_proportion <- round((vaud$winter_sum / vaud$sum) * 100, 2)
+
+# Alone proportion plot
+winter_palette <- colorNumeric(palette = "Purples", domain = vaud$winter_proportion)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~winter_palette(vaud$winter_proportion), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$winter_proportion, "%", "Total: ", vaud$winter_sum))
+
+```
+:::
+
+## Average spending
+Here is a map of the average and total spending by district. We can see that both the average and total spending is highest in the district of Riviera-Pays-d'Enhaut. We only take into account respondents with total expenses of under 30'000 CHF, in order to filter outliers.
+```{r}
+# Drop outliers
+data_spending <- subset(data, F81_Total < 30000)
+
+calculate_spending_sum <- function(data_spending, vaud) {
+  vaud$spending_sum <- NA
+  unique_values <- unique(data_spending$leaflet_districts)
+  for (value in unique_values) {
+    vaud$spending_sum[vaud$NAME == value] <- sum(data_spending[data_spending$leaflet_districts == value, "F81_Total"], na.rm = TRUE)
+  }
+  return(vaud)
+}
+vaud <- calculate_spending_sum(data_spending, vaud)
+
+vaud$average_spending <- round((vaud$spending_sum / vaud$sum), 0)
+
+# Average spending plot
+spending_palette <- colorNumeric(palette = "Purples", domain = vaud$average_spending)
+
+leaflet(vaud) %>%
+  addTiles() %>%
+  setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
+  addPolygons(fillOpacity = 0.75, color = ~spending_palette(vaud$average_spending), weight = 0) %>%
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$average_spending, "CHF", "Total: ", vaud$spending_sum, "CHF"))
+
+```
+
 ## Swiss tourists
+Maps of the most frequently visited districts by tourists of Swiss origin. 
 ```{r}
 # Swiss sub columns
 
@@ -223,7 +323,9 @@ swiss_italian_cantons = c("Tessin")
 
 ::: panel-tabset
 # Swiss-German
+
 Here we see the proportion of Swiss-German travelers for each district.
+
 ```{r}
 # Binary column for swiss germans
 data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
@@ -249,12 +351,14 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~swiss_german_palette(vaud$swiss_german_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$swiss_german_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$swiss_german_proportion, "%", "Total: ", vaud$swiss_german_sum))
 
 ```
 
 # Swiss-French
+
 Here we see the proportion of Swiss-French travelers for each district
+
 ```{r}
 # Binary column for swiss french
 data$swiss_french <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_french_cantons, 1, 0)
@@ -280,17 +384,18 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~swiss_french_palette(vaud$swiss_french_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$swiss_french_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$swiss_french_proportion, "%", "Total: ", vaud$swiss_french_sum))
 
 ```
-
 :::
+
 The proportion of travelers from Ticino and Grisons is negligible (< 1% proportion for any district) so we don't include them on the map.
 
 ## French tourists
 
 ::: panel-tabset
 # Île-de-France
+
 ```{r}
 # Binary column for Île-de-France
 data$france_idf <- ifelse(data$F05_02 == "Frankreich" & data$F05_03 == "Île-de-France", 1, 0)
@@ -316,13 +421,15 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~france_idf_palette(vaud$france_idf_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_idf_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_idf_proportion, "%", "Total: ", vaud$france_idf_sum))
 
 
 ```
+
 Tourists from Île-de-France are mainly interested in visiting Lausanne.
 
 # Auvergne-Rhône-Alpes
+
 ```{r}
 # Binary column for Auvergne-Rhône-Alpes
 data$france_ara <- ifelse(data$F05_02 == "Frankreich" & data$F05_03 == "Auvergne-Rhône-Alpes", 1, 0)
@@ -348,12 +455,13 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~france_ara_palette(vaud$france_ara_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_ara_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_ara_proportion, "%", "Total: ", vaud$france_ara_sum))
 
 
 ```
 
 # Rest of France
+
 ```{r}
 # Binary column for Rest of France
 data$france_rest <- ifelse(data$F05_02 == "Frankreich" &
@@ -381,16 +489,17 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~france_rest_palette(vaud$france_rest_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_rest_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_rest_proportion, "%", "Total: ", vaud$france_rest_sum))
 
 
 ```
 :::
 
 ## British tourists
-::: panel-tabset
 
+::: panel-tabset
 # London
+
 ```{r}
 # Binary column for uk_london
 data$uk_london <- ifelse(data$F05_02_ENG == "United Kingdom" & data$F05_03 == "England" & data$F05_04 == "London City of", 1, 0)
@@ -416,12 +525,14 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~uk_london_palette(vaud$uk_london_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_london_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_london_proportion, "%", "Total: ", vaud$uk_london_sum))
 
 ```
-There was a high proportion of visitors from London in the district Lavaux-Oron.
+
+There was a high proportion of visitors from London in the district Lavaux-Oron. We can't confirm that visitors from London are more interested in this district than other UK tourists, since the sample is so small.
 
 # Rest of England
+
 ```{r}
 # Binary column for uk_england
 data$uk_england <- ifelse(data$F05_02_ENG == "United Kingdom" & data$F05_03 == "England" & data$F05_04 != "London City of", 1, 0)
@@ -447,11 +558,12 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~uk_england_palette(vaud$uk_england_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_england_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_england_proportion, "%", "Total: ", vaud$uk_england_sum))
 
 ```
 
 # Scotland
+
 ```{r}
 # Binary column for uk_scotland
 data$uk_scotland <- ifelse(data$F05_02_ENG == "United Kingdom" & data$F05_03 == "Scotland", 1, 0)
@@ -477,17 +589,18 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~uk_scotland_palette(vaud$uk_scotland_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_scotland_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_scotland_proportion, "%", "Total: ", vaud$uk_scotland_sum))
 
 ```
-
 :::
+
 There were too few visitors from Northern Ireland and Wales to be included in the map.
 
 ## German tourists
 
 ::: panel-tabset
 # Baden-Württemberg
+
 ```{r}
 # Binary column for de_baden
 data$de_baden <- ifelse(data$F05_02 == "Deutschland" & data$F05_03 == "Baden-Württemberg", 1, 0)
@@ -513,13 +626,14 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~de_baden_palette(vaud$de_baden_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_baden_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_baden_proportion, "%", "Total: ", vaud$de_baden_sum))
 
 ```
-Baden-Württemberg is the German region that is closest to Vaud geographically. It was also the region with the highest number of visitors. There was a high proportion of visitors from Baden-Württemberg in the district Lavaux-Oron.
 
+Baden-Württemberg is the German region that is closest to Vaud geographically.
 
 # Bayern
+
 ```{r}
 # Binary column for de_bayern
 data$de_bayern <- ifelse(data$F05_02 == "Deutschland" & data$F05_03 == "Bayern", 1, 0)
@@ -545,11 +659,12 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~de_bayern_palette(vaud$de_bayern_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_bayern_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_bayern_proportion, "%", "Total: ", vaud$de_bayern_sum))
 
 ```
 
 # Nordrhein-Westfalen
+
 ```{r}
 # Binary column for de_nordrhein
 data$de_nordrhein <- ifelse(data$F05_02 == "Deutschland" & data$F05_03 == "Nordrhein-Westfalen", 1, 0)
@@ -575,12 +690,13 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~de_nordrhein_palette(vaud$de_nordrhein_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_nordrhein_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_nordrhein_proportion, "%", "Total: ", vaud$de_nordrhein_sum))
 
 ```
-There was a high proportion of tourists from Nordrhein-Westfalen in the district Lavaux-Oron.
+
 
 # Rest of Germany
+
 ```{r}
 # Binary column for de_rest
 data$de_rest <- ifelse(data$F05_02 == "Deutschland" & data$F05_03 != "Baden-Württemberg" & data$F05_03 != "Bayern" & data$F05_03 != "Nordrhein-Westfalen", 1, 0)
@@ -606,7 +722,7 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~de_rest_palette(vaud$de_rest_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_rest_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_rest_proportion, "%", "Total: ", vaud$de_rest_sum))
 
 ```
 :::
@@ -615,6 +731,7 @@ leaflet(vaud) %>%
 
 ::: panel-tabset
 # California
+
 ```{r}
 # Binary column for us_california
 data$us_california <- ifelse(data$F05_02_ENG == "United States of America" & data$F05_03 == "California", 1, 0)
@@ -640,11 +757,12 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~us_california_palette(vaud$us_california_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$us_california_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$us_california_proportion, "%", "Total: ", vaud$us_california_sum))
 
 ```
 
 # Rest of US
+
 ```{r}
 # Binary column for us_rest
 data$us_rest <- ifelse(data$F05_02_ENG == "United States of America" & data$F05_03 != "California", 1, 0)
@@ -670,14 +788,16 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~us_rest_palette(vaud$us_rest_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$us_rest_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$us_rest_proportion, "%", "Total: ", vaud$us_rest_sum))
 
 ```
 :::
 
 ## Other main countries
+
 ::: panel-tabset
 # Belgium
+
 ```{r}
 # Binary column for belgium
 data$belgium <- ifelse(data$F05_02_ENG == "Belgium", 1, 0)
@@ -703,12 +823,14 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~belgium_palette(vaud$belgium_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$belgium_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$belgium_proportion, "%", "Total: ", vaud$belgium_sum))
 
 ```
+
 A high proportion of visitors of the Aigle district are from Belgium.
 
 # Spain
+
 ```{r}
 # Binary column for spain
 data$spain <- ifelse(data$F05_02_ENG == "Spain", 1, 0)
@@ -734,12 +856,12 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~spain_palette(vaud$spain_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$spain_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$spain_proportion, "%", "Total: ", vaud$spain_sum))
 
 ```
-A high proportion of visitors of the Broye-Vully district are from Spain
 
 # Netherlands
+
 ```{r}
 # Binary column for netherlands
 data$netherlands <- ifelse(data$F05_02_ENG == "Netherlands", 1, 0)
@@ -765,11 +887,12 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~netherlands_palette(vaud$netherlands_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$netherlands_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$netherlands_proportion, "%", "Total: ", vaud$netherlands_sum))
 
 ```
 
 # Canada
+
 ```{r}
 # Binary column for canada
 data$canada <- ifelse(data$F05_02_ENG == "Canada", 1, 0)
@@ -795,12 +918,13 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~canada_palette(vaud$canada_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$canada_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$canada_proportion, "%", "Total: ", vaud$canada_sum))
 
 ```
-A high proportion of visitors of the Broye-Vully district are from Canada.
+
 
 # Italy
+
 ```{r}
 # Binary column for italy
 data$italy <- ifelse(data$F05_02_ENG == "Italy", 1, 0)
@@ -826,7 +950,7 @@ leaflet(vaud) %>%
   addTiles() %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~italy_palette(vaud$italy_proportion), weight = 0) %>%
-  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$italy_proportion, "%"))
+  addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$italy_proportion, "%", "Total: ", vaud$italy_sum))
 
 ```
 :::
