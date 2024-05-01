@@ -1004,7 +1004,7 @@ As we can see on the graph above, the best average is optain in `r combined_data
 ::: panel-tabset
 ## Average Spending by category (no package tour)
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 spending_data <- data.frame(
   Spending_Type = c("Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
   Amount = c(mean(data$F81_01, na.rm = TRUE), 
@@ -1024,7 +1024,7 @@ ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) 
 
 ## Average Spending by Category (with package)
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 spending_data_package <- data.frame(
   Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
   Amount = c(mean(data$F82_01, na.rm = TRUE), 
@@ -1046,7 +1046,7 @@ ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending
 
 ## Percentage of people with package & without package
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Calculate the number of non-NA entries for each type of spending
 spending_counts <- data %>%
   summarize(
@@ -1077,7 +1077,7 @@ ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)
 ::: panel-tabset
 #### Total spending per country (no package)
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Aggregate total spending for F81_Total and include continents
 total_spending_F81 <- data %>%
   group_by(F05_02_ENG, F05_01_ENG) %>%
@@ -1096,7 +1096,7 @@ ggplot(total_spending_F81, aes(x = reorder(F05_02_ENG, -Total_Spending_F81), y =
 
 #### Total spending per country (with package)
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Aggregate total spending for F82_Total and include continents
 total_spending_F82 <- data %>%
   group_by(F05_02_ENG, F05_01_ENG) %>%
@@ -1115,7 +1115,7 @@ ggplot(total_spending_F82, aes(x = reorder(F05_02_ENG, -Total_Spending_F82), y =
 
 #### Average spending (no package)
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Reshape data from wide to long format
 data_long <- data %>%
   pivot_longer(
@@ -1149,7 +1149,7 @@ ggplot(average_spending_by_country, aes(x = reorder(F05_02_ENG, -Average_Spendin
 
 #### Average spending (with package)
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Reshape data from wide to long format for package spending variables
 data_long_package <- data %>%
   pivot_longer(
@@ -1185,7 +1185,7 @@ ggplot(average_spending_by_country_package, aes(x = reorder(F05_02_ENG, -Average
 ## Spending by Nationality
 Checking for outliers?
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 filtered_data <- data %>%
   rename(Continent = F05_01_ENG) %>%
   filter(F81_Total <= 100000)
@@ -1200,7 +1200,7 @@ ggplot(filtered_data, aes(x = F05_02_ENG, y = F81_Total, fill = Continent)) +
 
 ## Percentage of package by continent
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Prepare the data by adding a binary column for package and non-package tours
 data <- data %>%
   mutate(
@@ -1240,7 +1240,7 @@ print(p)
 
 ## Distribution of Currency
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Calculate the frequency and percentage of each currency value
 currency_data <- data %>%
   count(F80) %>%
