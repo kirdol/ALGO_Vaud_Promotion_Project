@@ -371,3 +371,22 @@ plot <- plot_ly(data_long, x = ~Spending_Category, y = ~Amount, type = 'bar', na
 plot
 ```
 
+## Highest Continent spending in Vaud
+
+```{r}
+# Calculate the total spending by continent
+total_spending_by_continent <- data %>%
+  group_by(F05_01_ENG) %>%
+  summarise(Total_Spending = sum(F81_Total, na.rm = TRUE)) %>%
+  arrange(desc(Total_Spending))
+
+# Print the calculated data
+print(total_spending_by_continent)
+
+# Plot the total spending by continent as a bar chart
+ggplot(total_spending_by_continent, aes(x = F05_01_ENG, y = Total_Spending, fill = F05_01_ENG)) +
+  geom_bar(stat = "identity", color = "black", show.legend = FALSE) +
+  labs(x = "Continent", y = "Total Spending", title = "Total Spending by Continent") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
