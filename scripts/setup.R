@@ -18,7 +18,8 @@ packages_loaded <- c(
   "wordcloud2",
   "ggrepel",
   "kableExtra",
-  "knitr")
+  "knitr",
+  "visdat")
 
 # Function that install the packages if not already installed on your computer
 for (pkg in packages_loaded) {

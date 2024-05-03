@@ -11,36 +11,11 @@ Within this section, we present a series of maps showcasing the districts of can
 Note that the proportions displayed on the map represent percentages relative to the total number of visitors per district. However, due to the small numbers of visitors to certain origins and nationalities, these proportions should not be taken at face value for all areas. For better context, the total number of visitors per district is displayed alongside the percentage.
 
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
-# load the required packages and install them if they are not.
-packages_loaded <- c(
-  "here",
-  "dplyr",
-  "ggplot2",
-  "tidyverse",
-  "lubridate",
-  "DT",
-  "plotly",
-  "ggridges",
-  "leaflet",
-  "sf",
-  "treemap",
-  "tidyr"
-)
-
-# Function that install the packages if not already installed on your computer
-for (pkg in packages_loaded) {
-  if (!pkg %in% installed.packages()) {
-    install.packages(pkg)}}
-
-# load the packages
-for (pkg in packages_loaded) {
-  library(pkg, character.only = TRUE)}
-
-# cleaning of the environment
-rm(pkg)
+# Load the packages
+source(here::here("scripts", "setup.R"))
 # Import and setup data
 
-data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
+data <- read.csv(here("data","TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 
 df <- data[, 18:33]
 

@@ -296,6 +296,27 @@ Round trip through Europe: only one overnight stay in Switzerland, ...</td>
 </div>
 <section id="analysis-of-the-nas" class="level2">
 <h2 class="anchored" data-anchor-id="analysis-of-the-nas">Analysis of the NAs</h2>
+<p>Now that we have a better understanding of the questions asked during the survey, let’s look at the missing values of our dataset. Find below the visualization of the entire dataset. The gray cells represent the missing values.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_files/figure-html/Vis%20dat%20plot%20of%20all%20the%20data-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Let’s now have a closer look at the column with missing values. We will order the columns by the percentage of missing values.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_files/figure-html/Vis_miss%20Missing%20values-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can clearly see that some columns have a high percentage of missing values. Some of these missing values are due to questions that are answered only if the person completing the survey does not find the correct answer among the proposed multiple-choice options. Therefore, they need to input their own custom answer. F82_0x columns are about the expsenses of the tourists if they took a package. F81_0x columns are linked to the expenses of the tourists that did not took a package. These column are thus complementary (92% + 8% = 100%). This needs to be kept in mind when interpreting the results of our analysis</p>
 </section>
 </section>
 

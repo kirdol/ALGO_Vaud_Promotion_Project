@@ -1,7 +1,8 @@
 # Overview of the questions of the survey
 
-```{r loadin the packages, output = FALSE, echo=FALSE}
+```{r loading the packages and data, output = FALSE, echo=FALSE}
 source(here::here("scripts", "setup.R"))
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 ```
 
 Find below the list of questions that were asked during the survey. The original questionnaire that we received was in German. The questions were translated before conducting our analysis. The version shown below is a simplified version of the original questions. Fin the original German and English explanation in [Annex -@sec-Annex].
@@ -135,3 +136,39 @@ questions %>%
 ```
 
 ## Analysis of the NAs
+Now that we have a better understanding of the questions asked during the survey, let's look at the missing values of our dataset. Find below the visualization of the entire dataset. The gray cells represent the missing values.
+
+```{r Vis dat plot of all the data, echo=FALSE}
+# Function to replace empty strings with NA in character columns
+convert_blanks_to_NA <- function(x) {
+  x[x == ""] <- NA
+  return(x)
+}
+
+# Apply the function to character columns
+data[sapply(data, is.character)] <-
+  lapply(data[sapply(data, is.character)], convert_blanks_to_NA)
+
+# Generate the plot
+plot <- vis_dat(data) +
+  theme(legend.position = "bottom")
+plot
+```
+
+Let's now have a closer look at the column with missing values. We will order the columns by the percentage of missing values.
+
+```{r Vis_miss Missing values, echo=FALSE}
+# Filter columns with missing values
+missing_percentages <- sapply(data, function(x) sum(is.na(x)) / length(x))
+columns_with_missing <- which(missing_percentages > 0)
+data_with_missing <- data[, columns_with_missing]
+
+# Order columns by the percentage of missing values
+ordered_indices <- order(missing_percentages[columns_with_missing], decreasing = TRUE)
+data_ordered <- data_with_missing[, ordered_indices]
+
+# plot
+vis_miss(data_ordered)
+```
+
+We can clearly see that some columns have a high percentage of missing values. Some of these missing values are due to questions that are answered only if the person completing the survey does not find the correct answer among the proposed multiple-choice options. Therefore, they need to input their own custom answer. F82_0x columns are about the expsenses of the tourists if they took a package. F81_0x columns are linked to the expenses of the tourists that did not took a package. These column are thus complementary (`r round(sum(is.na(data$F82_01)) / nrow(data) * 100)`% + `r round(sum(is.na(data$F81_01)) / nrow(data) * 100)`% = `r (sum(is.na(data$F82_01)) / nrow(data) * 100) + (sum(is.na(data$F81_01)) / nrow(data) * 100)`%). This needs to be kept in mind when interpreting the results of our analysis
