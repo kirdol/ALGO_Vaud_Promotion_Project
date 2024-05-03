@@ -1,11 +1,6 @@
 # Introduction
 
-## Context (qui, quoi,...)
-
-## Obejctif de notre travail
- - Présentation de Swiss Tourism entre autre
-
-The object of this report is the tourism survey conducted by Tourismus Monitor Schweiz, focusing on tourists visiting the canton of Vaud, Switzerland, from 2023 to March 2024. The survey aims to identify key information about tourists visiting Vaud, including information about their stay in Switzerland (length of stay, amount spent, etc.) and information identifying the tourists (Country of origin, type of visit, etc.). The survey also provides information on the specific destination within the canton (City, hotel, etc.).
+The object of this report is the tourism survey conducted by Tourismus Monitor Schweiz, focusing on tourists visiting the canton of Vaud, Switzerland, from November 2022 to March 2024. The survey aims to identify key information about tourists visiting Vaud, including information about their stay in Switzerland (length of stay, amount spent, etc.) and information identifying the tourists (Country of origin, type of visit, etc.). The survey also provides information on the specific destination within the canton (City, hotel, etc.).
 
 Our report aims to simplify the comprehension of this raw data through data visualization techniques and plots. Additionally, we aim to categorize the types of tourists visiting Vaud and their regions of origin. This will help Vaud Plus in understanding the demographics of visitors to the canton and possibly help with targeted marketing efforts.
 
