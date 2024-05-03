@@ -217,6 +217,49 @@ datatable(nationality_ratio_per_city, options = list(pageLength = 10,
  datatable(Inside_Switzerland, options = list(pageLength = 10,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE)
+ 
+ #Now how much percentage do swiss germans represent in this
+
+Swiss_germans_percentage <- Inside_Switzerland %>%
+  filter(Canton %in% swiss_german_cantons) %>%
+  mutate(Percentage = round((Count/sum(Count)) * 100, 1))
+        
+datatable(Swiss_germans_percentage, options = list(pageLength = 10,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE)
+
+# sum(Swiss_germans_percentage$Percentage)
+ 
+#plot swiss german vs other 
+# Percentage_Swissgerman_vs_other <- Inside_Switzerland %>%
+#     ifelse(Canton %in% swiss_german_cantons, sum(Count) if Canton %in% swiss_german_cantons, sum(Count) %notin%  swiss_german_cantons)
+
+
+# Calculate counts for Swiss-German cantons and others
+swiss_canton_summary <- data %>% 
+  group_by(swiss_german) %>%
+  summarise(Count = n()) %>%
+  mutate(Total = sum(Count),
+         Percentage = (Count / Total) * 100) %>%
+  ungroup() %>%
+  mutate(Type = ifelse(swiss_german == 1, "Swiss German Cantons", "Other Cantons")) %>%
+  select(Type, Count, Percentage)
+
+# Plotting the data
+ggplot(swiss_canton_summary, aes(x = Type, y = Percentage, fill = Type)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  theme() + 
+  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_stack(vjust=0.5)) + 
+  labs(title = "Percentage of Swiss German Cantons vs Other Cantons",
+       x = "Canton Type",
+       y = "Percentage") +
+  ylim(0, 90)  # Extend y-axis range
+
+
+
+
+
 
 ```
 

@@ -30,5 +30,6 @@ for (pkg in packages_loaded) {
   library(pkg, character.only = TRUE)}
 
 # cleaning of the environment
-rm(pkg)
+rm(pkg,
+   packages_loaded)
 
