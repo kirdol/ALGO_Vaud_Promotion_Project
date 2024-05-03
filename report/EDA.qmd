@@ -374,6 +374,7 @@ Now let's explore the percentage of trip category per continent. The categories 
  -  Green: "Round trip through Europe: only one overnight stay in Switzerland" 
  -  Blue: "Round trip only within Switzerland (several overnight locations in Switzerland)"
  
+ 
 ```{r, message=FALSE, fig.width=8, fig.height=8, warning=FALSE}
 ### F16 ### 
 
@@ -1254,6 +1255,7 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Adjust text angle for better readability
 ```
 
+## Partie Victor
 ## Responses in % to the question "Who did you travel with?"
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
 data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
