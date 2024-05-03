@@ -1,9 +1,8 @@
 ---
 title: "Question 1"
-format: html
-editor: visual
-editor_options: 
-  chunk_output_type: console
+format:
+  html:
+    code-fold: true
 ---
 
 # Question 1 - Expenses and where they come from, when, where and for which sector?
@@ -23,6 +22,38 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 ```
 
 # EDA
+
+## Percentage of people with package & without package
+
+```{r}
+# Calculate the number of non-NA entries for each type of spending
+spending_counts <- data %>%
+  summarize(
+    Package = sum(!is.na(F82_Total)),
+    WithoutPackage = sum(!is.na(F81_Total))
+  ) %>%
+  gather(key = "PackageType", value = "Count")
+
+# Calculate percentages
+total_records <- sum(spending_counts$Count)
+spending_counts <- spending_counts %>%
+  mutate(Percentage = (Count / total_records) * 100)
+
+# Plot the percentages with the percentage shown on the bars
+ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = sprintf("%.1f%%", Percentage)),  # Format the labels to one decimal place
+            position = position_stack(vjust = 0.5),  # Adjust text to be inside the bars
+            color = "black") +
+  labs(title = "Percentage of Observations With and Without Package",
+       x = "Type of Spending",
+       y = "Percentage (%)") +
+  scale_fill_brewer(palette = "Pastel1") + # Aesthetically pleasing color palette
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+A majority of people travelling in Vaud come without a package.
 
 ::: panel-tabset
 ## Average Spending by category (no package tour)
@@ -67,40 +98,12 @@ ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending
 ```
 :::
 
-## Percentage of people with package & without package
-
-```{r}
-# Calculate the number of non-NA entries for each type of spending
-spending_counts <- data %>%
-  summarize(
-    Package = sum(!is.na(F82_Total)),
-    WithoutPackage = sum(!is.na(F81_Total))
-  ) %>%
-  gather(key = "PackageType", value = "Count")
-
-# Calculate percentages
-total_records <- sum(spending_counts$Count)
-spending_counts <- spending_counts %>%
-  mutate(Percentage = (Count / total_records) * 100)
-
-# Plot the percentages with the percentage shown on the bars
-ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)) +
-  geom_bar(stat = "identity") +
-  geom_text(aes(label = sprintf("%.1f%%", Percentage)),  # Format the labels to one decimal place
-            position = position_stack(vjust = 0.5),  # Adjust text to be inside the bars
-            color = "white") +
-  labs(title = "Percentage of Observations With and Without Package",
-       x = "Type of Spending",
-       y = "Percentage (%)") +
-  scale_fill_brewer(palette = "Pastel1") + # Aesthetically pleasing color palette
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
+With these plots, we can clearly observe that there is a difference in spendings for people who travelled with a package compared to the ones travelling without a spending package. Overall, the main expenses of people with a package is the package itself, meaning that most of the other variables are already included in the package. On the other hand, without the package, it is interesting to see that the main spending is on the overnight stay, then the food & drinks and finally the souvenirs.
 
 ::: panel-tabset
 #### Total spending per country (no package)
 
-```{r}
+```{r, message = FALSE}
 # Aggregate total spending for F81_Total and include continents
 total_spending_F81 <- data %>%
   group_by(F05_02_ENG, F05_01_ENG) %>%
@@ -110,16 +113,18 @@ total_spending_F81 <- data %>%
 # Plot for F81_Total with continent colors
 ggplot(total_spending_F81, aes(x = reorder(F05_02_ENG, -Total_Spending_F81), y = Total_Spending_F81, fill = F05_01_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spending by Country for F81_Total", x = "Country", y = "Total Spending") +
+  labs(title = "Total Spending by Country (No Package)", x = "Country", y = "Total Spending") +
   scale_fill_brewer(palette = "Set3", name = "Continent") + # Color based on continent
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.position = "bottom")  # Position the legend at the bottom
 ```
 
+We can observe here that the main spenders are from Asia, Europe and the Americas.
+
 #### Total spending per country (with package)
 
-```{r}
+```{r, message = FALSE}
 # Aggregate total spending for F82_Total and include continents
 total_spending_F82 <- data %>%
   group_by(F05_02_ENG, F05_01_ENG) %>%
@@ -129,16 +134,18 @@ total_spending_F82 <- data %>%
 # Plot for F82_Total with continent colors
 ggplot(total_spending_F82, aes(x = reorder(F05_02_ENG, -Total_Spending_F82), y = Total_Spending_F82, fill = F05_01_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spending by Country for F82_Total", x = "Country", y = "Total Spending") +
+  labs(title = "Total Spending by Country (With Package)", x = "Country", y = "Total Spending") +
   scale_fill_brewer(palette = "Set3", name = "Continent") + # Color based on continent
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.position = "bottom")  # Position the legend at the bottom
 ```
 
+The tendency stays the same and we observe a peak with Thailand.
+
 #### Average spending (no package)
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Reshape data from wide to long format
 data_long <- data %>%
   pivot_longer(
@@ -170,9 +177,11 @@ ggplot(average_spending_by_country, aes(x = reorder(F05_02_ENG, -Average_Spendin
         legend.position = "bottom")  # Position the legend at the bottom
 ```
 
+Taking the average, Asia keeps the top spot followed by Australia and Europe.
+
 #### Average spending (with package)
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Reshape data from wide to long format for package spending variables
 data_long_package <- data %>%
   pivot_longer(
@@ -203,23 +212,11 @@ ggplot(average_spending_by_country_package, aes(x = reorder(F05_02_ENG, -Average
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.position = "bottom")  # Position the legend at the bottom
 ```
+
+In the case of package, Africa seems to take the first spot.
 :::
 
-## Spending by Nationality
-Checking for outliers?
-
-```{r}
-filtered_data <- data %>%
-  rename(Continent = F05_01_ENG) %>%
-  filter(F81_Total <= 100000)
-
-ggplot(filtered_data, aes(x = F05_02_ENG, y = F81_Total, fill = Continent)) +
-  geom_boxplot() +
-  labs(title = "Spending by Nationality", x = "Nationality", y = "Spending") +
-  scale_fill_brewer(palette = "Set3") + # Adds a color palette for the continents
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "bottom")
-```
+In all the cases, it is important to see if there aren't any outliers, particularly looking at the top spenders.
 
 ## Percentage of package by continent
 
@@ -261,6 +258,23 @@ p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percent
 print(p)
 ```
 
+## Spending by Nationality
+
+Checking for outliers
+
+```{r}
+filtered_data <- data %>%
+  rename(Continent = F05_01_ENG) %>%
+  filter(F81_Total <= 100000)
+
+ggplot(filtered_data, aes(x = F05_02_ENG, y = F81_Total, fill = Continent)) +
+  geom_boxplot() +
+  labs(title = "Spending by Nationality", x = "Nationality", y = "Spending") +
+  scale_fill_brewer(palette = "Set3") + # Adds a color palette for the continents
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom")
+```
+
 ## Distribution of Currency
 
 ```{r}
@@ -282,9 +296,10 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
 ```
 
 # ANALYSE
+
 Top 7 countries are: Switzerland, France, UK, Germany, US, Belgium & Spain.
 
-```{r}
+```{r, warning = FALSE}
 # Filter data for "Aigle-Leysin-Les Mosses"
 filtered_data <- data %>%
   filter(F105_OrgCode == "Aigle-Leysin-Les Mosses")
@@ -339,7 +354,7 @@ ggplot(total_spending_by_continent, aes(x = F05_01_ENG, y = Total_Spending, fill
 
 ## Spending by city
 
-```{r}
+```{r, warning = FALSE}
 # Convert data to long format and rename categories
 data_long <- data %>%
   pivot_longer(
@@ -421,7 +436,6 @@ ggplot(spendings_top7, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_EN
 ## Spendings of top 7 countries in districts
 
 ::: panel-tabset
-
 #### Aigle
 
 ```{r}
@@ -686,3 +700,32 @@ ggplot(spendings_yverdon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02
         plot.title = element_text(hjust = 0.5))
 ```
 :::
+
+## Percentage of spending category for the top 7 countries
+
+```{r}
+# Filter the data and prepare for stacking
+data %>%
+  filter(F05_02_ENG %in% top7) %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    F81_Total = sum(F81_Total, na.rm = TRUE),
+    F82_Total = sum(F82_Total, na.rm = TRUE),
+    Total = F81_Total + F82_Total,
+    .groups = 'drop'
+  ) %>%
+  pivot_longer(cols = c("F81_Total", "F82_Total"), names_to = "Spending_Type", values_to = "Amount") %>%
+  mutate(Percentage = Amount / Total * 100) -> spendings_prepared
+
+ggplot(spendings_prepared, aes(x = F05_02_ENG, y = Percentage, fill = Spending_Type)) +
+  geom_bar(stat = "identity", position = "stack") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(title = "Percentage Distribution of Spending Types by Country",
+       x = "Country",
+       y = "Percentage of Total Spendings",
+       fill = "Type of Spending") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+i want a stacked bar chart, les categories sont stacked sur les bars par pays
