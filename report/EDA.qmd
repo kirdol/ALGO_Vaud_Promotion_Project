@@ -18,7 +18,10 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 
 ### Data Exploration: Who is coming? 
 
+
 **Global percentage of people coming in the canton of Vaud per continent**
+
+With the data gathered from the survey, we have first explored the overall distribution of nationalities of the visitors. Therefore, you will find here a table and a graph providing the frequency per nationality and the percentage of nationality it represents. 
 
 ```{r}
 ### F05_01.ENG ###
@@ -44,9 +47,9 @@ datatable(F05_01_PCT, options = list(pageLength = 10,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE)
 ```
-
-```{r}
+```{r, warning=FALSE, out.height="100%", out.width="100%", fig.width=7 }
 #plot numbers continent 
+
 ggplot(F05_01_PCT, aes(x=reorder(Continent_of_origin, Percentages), y=Percentages, fill=Continent_of_origin)) +
   geom_bar(stat="identity") +
   coord_flip() +  # Flip coordinates for horizontal bars
@@ -55,9 +58,33 @@ ggplot(F05_01_PCT, aes(x=reorder(Continent_of_origin, Percentages), y=Percentage
   theme(legend.title = element_blank(), # Remove the legend title
         legend.position = "none", # Hide the legend as the colors are not necessary with labels
         plot.title = element_text(hjust = 0.5), # Center the plot title
-        axis.text.x = element_text(angle = 45, hjust = 1)) + # Rotate x-axis labels for readability
-  geom_text(aes(label=sprintf("%.2f%%", Percentages)), position=position_dodge(width=-0.5), vjust=-0.01) # Add percentage labels
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(aes(label=sprintf("%.2f%%", Percentages)), position=position_dodge(width=-0.5), vjust=-0.01, hjust=-0.1, size = 3) + # Add percentage labels
+  ylim(0, 90)  # Extend y-axis range
 
+```
+
+We notice that a large part of the people surveyed were coming from Europe (approx. 78%), followed by people coming from Asia (approx. 8%), North and Central America (approx. 8%), South America (approx. 3%) Australia and Oceania (approx. 2%) and finally Africa (approx. 1%).
+
+Again, these results were concerning the whole canton. We have then decided to explore the distribution, in frequency and percentage, of the nationalities per continent. You will find here again a table and a graph, summarizing this information:
+
+**Global percentage of people coming in canton of Vaud per country of origin**
+```{r}
+
+# Countries in percentages 
+F05_02_PCT <- data %>% 
+  group_by(F05_02_ENG) %>%
+  summarise(Count = n()) %>%
+  mutate(Percentage = round((Count / sum(Count) * 100),2)) %>% 
+  arrange(desc(Percentage)) %>%
+  rename(Country_of_origin = F05_02_ENG)
+
+datatable(F05_02_PCT, options = list(pageLength = 10,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE)
+
+#add continent next to each country
+#or merge continent and country table. 1st column continents, 2nd countries, # of occurences then percentage
 ```
 
 ```{r, fig.width=10, fig.height=10}
@@ -90,28 +117,10 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
         legend.position = "right") +  # Adjust legend position
   geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_stack(vjust=0.5))
 ```
+For visibility purpose, we have decided to represent here in the graph the top 7 countries of the table, representing all above 3% of the nationalities found in the survey. We have then decided to group the  remaining countries in the category "Other Countries". 
 
+We notice that Switzerland is the nationality the most represented among all the visitor (approx. 31.5%). Therefore, there are a lot of Swiss citizens travelling in their own country for various purpose to the canton of Vaud. Also, we see again that the most represented nationalities are Europeans, such as France (approx. 14.5%), United Kingdom (appox. 7.5%), Germany (approx. 5.5%), Belgium (approx. 3.5%) and finally Spain (approx. 3%). The only other nationality coming from a other continent represented here is the United States of America (approx. 5.5%). Proximity could be for instance one of the main factor explaining these results. 
 
-
-**Global percentage of people coming in canton of Vaud per country of origin**
-
-```{r}
-
-# Countries in percentages 
-F05_02_PCT <- data %>% 
-  group_by(F05_02_ENG) %>%
-  summarise(Count = n()) %>%
-  mutate(Percentage = round((Count / sum(Count) * 100),2)) %>% 
-  arrange(desc(Percentage)) %>%
-  rename(Country_of_origin = F05_02_ENG)
-
-datatable(F05_02_PCT, options = list(pageLength = 10,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE)
-
-#add continent next to each country
-#or merge continent and country table. 1st column continents, 2nd countries, # of occurences then percentage
-```
 
 **Per city, the percentage of each visitor's country of origin, relative to the number of visitor of the city**
 
@@ -365,14 +374,6 @@ ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fil
   labs(x = "Months", y = "Sum Holiday Durations", title = "Total Holiday Duration by Month", fill = "Season") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-
-
-Now let's explore the percentage of trip category per continent. The categories are the following : 
-
- -  Red: "Holidays with only one overnight stay in Switzerland"
- -  Orange: "Round trip through Europe: several places to stay in Switzerland" 
- -  Green: "Round trip through Europe: only one overnight stay in Switzerland" 
- -  Blue: "Round trip only within Switzerland (several overnight locations in Switzerland)"
  
 ```{r, message=FALSE, fig.width=8, fig.height=8, warning=FALSE}
 ### F16 ### 
@@ -421,53 +422,53 @@ trip_percentages_NCA <- trip_percentages %>% filter(F05_01_ENG == "North and Cen
 trip_percentages_SA <- trip_percentages %>% filter(F05_01_ENG == "South America")
 
 # the pie chart
-trip_percentages_Af <- trip_percentages_Af %>% 
+trip_percentages_Af <- trip_percentages_Af %>%
   mutate(
-    cs = rev(cumsum(rev(Percentages))), 
+    cs = rev(cumsum(rev(Percentages))),
     pos = Percentages/2 + lead(cs, 1),
     pos = if_else(is.na(pos), Percentages/2, pos))
-trip_percentages_As <- trip_percentages_As %>% 
+trip_percentages_As <- trip_percentages_As %>%
   mutate(
-    cs = rev(cumsum(rev(Percentages))), 
+    cs = rev(cumsum(rev(Percentages))),
     pos = Percentages/2 + lead(cs, 1),
     pos = if_else(is.na(pos), Percentages/2, pos))
-trip_percentages_AO <- trip_percentages_AO %>% 
+trip_percentages_AO <- trip_percentages_AO %>%
   mutate(
-    cs = rev(cumsum(rev(Percentages))), 
+    cs = rev(cumsum(rev(Percentages))),
     pos = Percentages/2 + lead(cs, 1),
     pos = if_else(is.na(pos), Percentages/2, pos))
-trip_percentages_Eu <- trip_percentages_Eu %>% 
+trip_percentages_Eu <- trip_percentages_Eu %>%
   mutate(
-    cs = rev(cumsum(rev(Percentages))), 
+    cs = rev(cumsum(rev(Percentages))),
     pos = Percentages/2 + lead(cs, 1),
     pos = if_else(is.na(pos), Percentages/2, pos))
-trip_percentages_NCA <- trip_percentages_NCA %>% 
+trip_percentages_NCA <- trip_percentages_NCA %>%
   mutate(
-    cs = rev(cumsum(rev(Percentages))), 
+    cs = rev(cumsum(rev(Percentages))),
     pos = Percentages/2 + lead(cs, 1),
     pos = if_else(is.na(pos), Percentages/2, pos))
-trip_percentages_SA <- trip_percentages_SA %>% 
+trip_percentages_SA <- trip_percentages_SA %>%
   mutate(
-    cs = rev(cumsum(rev(Percentages))), 
+    cs = rev(cumsum(rev(Percentages))),
     pos = Percentages/2 + lead(cs, 1),
     pos = if_else(is.na(pos), Percentages/2, pos))
 
 
 p1 <- ggplot(trip_percentages_Af, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar(theta = "y", start = 0) + 
+  coord_polar(theta = "y", start = 0) +
   theme_void() +
   theme(legend.position = "None") +
   scale_fill_manual(values = my_colors) + # Use your defined colors here
   geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=6, show.legend = F, nudge_x = 1) +
   guides(fill = guide_legend(title = "F16_ENG")) +
   geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 0) +
-  ggtitle("Africa") + 
+  ggtitle("Africa") +
   theme(plot.title = element_text(size = 24))
 
 p2 <- ggplot(trip_percentages_As, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar(theta = "y", start = 0) + 
+  coord_polar(theta = "y", start = 0) +
   theme_void() +
   theme(legend.position = "None") +
   scale_fill_manual(values = my_colors) + # Use your defined colors here
@@ -480,9 +481,9 @@ p2 <- ggplot(trip_percentages_As, aes(x = "", y = Percentages, fill = fct_inorde
 
 p3 <- ggplot(trip_percentages_AO, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar(theta = "y", start = 0) + 
+  coord_polar(theta = "y", start = 0) +
   theme_void() +
-  theme(legend.position = "None") + 
+  theme(legend.position = "None") +
         #plot.title = element_text(size = 5)) +
   scale_fill_manual(values = my_colors) + # Use your defined colors here
   geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=6, show.legend = F, nudge_x = 1) +
@@ -493,9 +494,9 @@ p3 <- ggplot(trip_percentages_AO, aes(x = "", y = Percentages, fill = fct_inorde
 
 p4 <- ggplot(trip_percentages_Eu, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar(theta = "y", start = 0) + 
+  coord_polar(theta = "y", start = 0) +
   theme_void() +
-  theme(legend.position = "None") + 
+  theme(legend.position = "None") +
   scale_fill_manual(values = my_colors) + # Use your defined colors here
   geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=6, show.legend = F, nudge_x = 1) +
   guides(fill = guide_legend(title = "F16_ENG")) +
@@ -505,9 +506,9 @@ p4 <- ggplot(trip_percentages_Eu, aes(x = "", y = Percentages, fill = fct_inorde
 
 p5 <- ggplot(trip_percentages_NCA, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar(theta = "y", start = 0) + 
+  coord_polar(theta = "y", start = 0) +
   theme_void() +
-  theme(legend.position = "None") + 
+  theme(legend.position = "None") +
   scale_fill_manual(values = my_colors) + # Use your defined colors here
   geom_label_repel(aes(y = pos, label = paste0(Percentages, "%")), size=6, show.legend = F, nudge_x = 1) +
   guides(fill = guide_legend(title = "F16_ENG")) +
@@ -517,7 +518,7 @@ p5 <- ggplot(trip_percentages_NCA, aes(x = "", y = Percentages, fill = fct_inord
 
 p6 <- ggplot(trip_percentages_SA, aes(x = "", y = Percentages, fill = fct_inorder(F16_ENG))) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar(theta = "y", start = 0) + 
+  coord_polar(theta = "y", start = 0) +
   theme_void() +
   #theme(legend.position = c(0.5, 0.2)) +
   theme(legend.position = "None") +
@@ -537,7 +538,7 @@ combined <- plot_grid(p1, p2, p3, p4, p5, p6,  align = c("v", "h"), cols = 2, ro
 # from one plot and use it in the combined plot
 legend <- get_legend(p6)
 combined_plot_with_legend <- plot_grid(combined, legend, ncol = 1, nrow = 1)
-combined_plot_with_legend
+# combined_plot_with_legend
 
 ```
 In general, we notice that most of the visitors coming from continent far away from Switzerland are coming in Switzerland for serveral nightstays during their trip in Europe. On another hand, living closer, are staying most of the time for one overnight stay in Switzerland. This is probably due to the large quantity of visitors surveyed coming from Switzerland but from other cantons or visitors coming from adjacent countries such as Germany in France, all these visitors accounting for a total of approx. 50% of the people surveyed. 
@@ -549,21 +550,23 @@ Now let's explore the percentage of trip category per continent. The categories 
  -  Green: "Round trip through Europe: only one overnight stay in Switzerland" 
  -  Blue: "Round trip only within Switzerland (several overnight locations in Switzerland)"
  
-```{r, fig.width=15, fig.height=12, message=FALSE}
+```{r, echo = TRUE, message=FALSE, out.height="100%", out.width="100%", fig.width= 10, fig.height=8}
 
 ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity") +
   labs(x = "Country", y = "Percentages", fill = "Type of Trip") +
   ggtitle("Stacked Bar Plot of Type of Trip by Country") +
   scale_fill_manual(values = my_colors) + # Use your defined colors here
-  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 6) +
+  geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 5) +
   theme_minimal() + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
         axis.text.y = element_text(hjust = 1, size = 10),
-        legend.position = "None",
-        legend.text = element_text(size = 10),
+        legend.text = element_text(size = 9),
         legend.title = element_text(size = 0),
-        legend.box = "vertical")
+        #legend.box = "vertical",
+        legend.position = "bottom",
+        legend.key.size = unit(0.4, "cm")) + 
+        guides(fill = guide_legend(nrow = 2, title = "Options"))
 
 ```
 
