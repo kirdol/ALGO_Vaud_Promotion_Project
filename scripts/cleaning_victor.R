@@ -98,6 +98,72 @@ ggplot(df_sums_df, aes(x = Column, y = Spent)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   labs(title = "Average CHF spent by group type", x = "Traveled with", y = "Amount spent / person")
 #######################################################################################################################################
+# Type of groups x Country of origin
+# Create bin columns for top 5 countries
+data$swiss <- ifelse(data$F05_02 == "Schweiz", 1, 0)
+data$french <- ifelse(data$F05_02 == "Frankreich", 1, 0)
+data$british <- ifelse(data$F05_02_ENG == "United Kingdom", 1, 0)
+data$german <- ifelse(data$F05_02 == "Deutschland", 1, 0)
+data$american <- ifelse(data$F05_02_ENG == "United States of America", 1, 0)
+
+# Add columns to df
+df$swiss <- data$swiss
+df$french <- data$french
+df$british <- data$british
+df$german <- data$german
+df$american <- data$american
+
+# Create new df
+column_names <- c("column_name", "group_name", "swiss", "french", "british", "german", "american")
+rows <- c("Alone", "Partner", "Friends", "Children", "Other family", 
+          "Unknown people (group)", "Dog", "Other pet(s)", "Only with partner")
+nations_groups <- data.frame(matrix(ncol=length(column_names), nrow = length(rows)))
+colnames(nations_groups) <- column_names
+nations_groups$group_name <- rows
+nations_groups$column_name <- colnames(df)[1:nrow(nations_groups)]
+
+# Initialize a list to store sums for each nation
+sums_list <- list()
+
+# Iterate over each row in nations_groups dataframe
+for (i in 1:nrow(nations_groups)) {
+  # Get the column name and group name from the current row
+  column_name <- nations_groups[i, "column_name"]
+  group_name <- nations_groups[i, "group_name"]
+  
+  # Calculate sum for each nation
+  sums <- c(
+    sum(df[df$swiss == 1, column_name], na.rm = TRUE),
+    sum(df[df$french == 1, column_name], na.rm = TRUE),
+    sum(df[df$british == 1, column_name], na.rm = TRUE),
+    sum(df[df$german == 1, column_name], na.rm = TRUE),
+    sum(df[df$american == 1, column_name], na.rm = TRUE)
+  )
+  
+  # Add sums to the list
+  sums_list[[i]] <- c(group_name, column_name, sums)
+}
+
+# Convert the list to a dataframe
+sums_df <- as.data.frame(do.call(rbind, sums_list))
+
+# Add column names to the dataframe
+colnames(sums_df) <- c("group_name", "column_name", "swiss", "french", "british", "german", "american")
+
+# Print the resulting dataframe
+#print(sums_df)
+
+total_row = c("total", "total", sum(df$swiss == 1), sum(df$french == 1), sum(df$british == 1), sum(df$german == 1), sum(df$american == 1))
+sums_df <- rbind(sums_df, total_row)
+
+total_swiss <- sums_df[sums_df$group_name == "total", "swiss"]
+total_swiss
+# Perform division for every row except the last in the swiss column
+sums_df$swiss[-nrow(sums_df)] <- sums_df$swiss[-nrow(sums_df)] / total_swiss
+sums_df$swiss[-nrow(sums_df)]
+# Print the updated dataframe
+print(sums_df)
+  #######################################################################################################################################
 # Swiss german column
 
 unique(data[data$F05_02 == "Schweiz", ]$F05_03)
