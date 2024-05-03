@@ -1,10 +1,10 @@
-# Overview of the questions asked
+# Overview of the questions of the survey
 
 ```{r loadin the packages, output = FALSE, echo=FALSE}
 source(here::here("scripts", "setup.R"))
 ```
 
-Find below the list of questions that were asked during the survey. The original questionnaire that we received was in German. The questions were translated before conducting our analysis. The version shown below is a simplified version of the original questions. More details are available in Section \@ref(sec:Annex). [Appendix -@sec-Annex]
+Find below the list of questions that were asked during the survey. The original questionnaire that we received was in German. The questions were translated before conducting our analysis. The version shown below is a simplified version of the original questions. Fin the original German and English explanation in [Annex -@sec-Annex].
 
 ```{r dataframe with the questions, echo=FALSE}
 questions <- data.frame(

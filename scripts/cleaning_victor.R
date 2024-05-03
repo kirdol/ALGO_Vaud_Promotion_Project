@@ -150,19 +150,25 @@ sums_df <- as.data.frame(do.call(rbind, sums_list))
 # Add column names to the dataframe
 colnames(sums_df) <- c("group_name", "column_name", "swiss", "french", "british", "german", "american")
 
+# Transform to percentages
+sums_df$swiss <- round(100*as.numeric(sums_df[, "swiss"])/sum(df$swiss == 1), 2)
+sums_df$french <- round(100*as.numeric(sums_df[, "french"])/sum(df$french == 1), 2)
+sums_df$british <- round(100*as.numeric(sums_df[, "british"])/sum(df$british == 1), 2)
+sums_df$german <- round(100*as.numeric(sums_df[, "german"])/sum(df$german == 1), 2)
+sums_df$american <- round(100*as.numeric(sums_df[, "american"])/sum(df$american == 1), 2)
+
 # Print the resulting dataframe
-#print(sums_df)
-
-total_row = c("total", "total", sum(df$swiss == 1), sum(df$french == 1), sum(df$british == 1), sum(df$german == 1), sum(df$american == 1))
-sums_df <- rbind(sums_df, total_row)
-
-total_swiss <- sums_df[sums_df$group_name == "total", "swiss"]
-total_swiss
-# Perform division for every row except the last in the swiss column
-sums_df$swiss[-nrow(sums_df)] <- sums_df$swiss[-nrow(sums_df)] / total_swiss
-sums_df$swiss[-nrow(sums_df)]
-# Print the updated dataframe
 print(sums_df)
+
+# Plot group types by nation
+
+# Swiss
+ggplot(sums_df, aes(x = group_name, y = swiss)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  ylim(0, 100) +
+  labs(title = "Group types for Swiss tourists", x = "Traveled with", y = "Percentage") +
+  geom_text(aes(label = paste0(swiss, "%")), vjust = -0.5, size = 3)
+
   #######################################################################################################################################
 # Swiss german column
 

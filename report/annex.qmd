@@ -4,16 +4,17 @@
 source(here::here("scripts", "setup.R"))
 ```
 
-## Raw questions description in english
-Find below the raw description translated in english:
-```{r raw questions in english, echo = FALSE}
-questions <- read.csv(here("data", "questions_export_20240430.csv"), sep = ";")
-questions <- questions %>%
-  select(Code = Name, Description = Lettering, Type = Values) %>%
+## Raw questions description in German
+Find below the raw description translated in German:
+
+```{r raw questions in german, echo = FALSE}
+questions_ger <- read.csv(here("data", "questions_ger_export_20240503.csv"), sep = ";")
+questions_ger <- questions_ger %>%
+  select(Code = Name, Description = Beschriftung, Type = Werte) %>%
   na.omit() %>%
   slice(1:54)
 
-questions %>%
+questions_ger %>%
   kable("html", escape = FALSE) %>%
   kable_styling(bootstrap_options = c("striped",
                                       "hover",
@@ -21,5 +22,20 @@ questions %>%
                                       "responsive"))
 ```
 
-## Raw questions description in german
-Find below the raw description translated in german:
+## Raw questions description in English
+Find below the raw description translated in English:
+
+```{r raw questions in english, echo = FALSE}
+questions_eng <- read.csv(here("data", "questions_eng_export_20240430.csv"), sep = ";")
+questions_eng <- questions_eng %>%
+  select(Code = Name, Description = Lettering, Type = Values) %>%
+  na.omit() %>%
+  slice(1:54)
+
+questions_eng %>%
+  kable("html", escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped",
+                                      "hover",
+                                      "condensed",
+                                      "responsive"))
+```
