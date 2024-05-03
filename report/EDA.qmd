@@ -46,7 +46,9 @@ F05_01_PCT <- data %>%
 datatable(F05_01_PCT, options = list(pageLength = 10,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE)
+
 ```
+
 ```{r, warning=FALSE, out.height="100%", out.width="100%", fig.width=7 }
 #plot numbers continent 
 
@@ -64,11 +66,13 @@ ggplot(F05_01_PCT, aes(x=reorder(Continent_of_origin, Percentages), y=Percentage
 
 ```
 
-We notice that a large part of the people surveyed were coming from Europe (approx. 78%), followed by people coming from Asia (approx. 8%), North and Central America (approx. 8%), South America (approx. 3%) Australia and Oceania (approx. 2%) and finally Africa (approx. 1%).
+We notice that a large part of the people surveyed were coming from Europe (approx. 78%), followed by people coming from Asia (approx. 8%), North and Central America (approx. 8%), South America (approx. 3%) Australia and Oceania (approx. 2%) and finally Africa (approx. 1%). Again, these results were concerning the whole canton.
 
-Again, these results were concerning the whole canton. We have then decided to explore the distribution, in frequency and percentage, of the nationalities per continent. You will find here again a table and a graph, summarizing this information:
 
 **Global percentage of people coming in canton of Vaud per country of origin**
+
+We have then decided to explore the distribution, in frequency and percentage, of the nationalities per continent. You will find here again a table and a graph, summarizing this information:
+
 ```{r}
 
 # Countries in percentages 
@@ -117,12 +121,15 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
         legend.position = "right") +  # Adjust legend position
   geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_stack(vjust=0.5))
 ```
+
 For visibility purpose, we have decided to represent here in the graph the top 7 countries of the table, representing all above 3% of the nationalities found in the survey. We have then decided to group the  remaining countries in the category "Other Countries". 
 
 We notice that Switzerland is the nationality the most represented among all the visitor (approx. 31.5%). Therefore, there are a lot of Swiss citizens travelling in their own country for various purpose to the canton of Vaud. Also, we see again that the most represented nationalities are Europeans, such as France (approx. 14.5%), United Kingdom (appox. 7.5%), Germany (approx. 5.5%), Belgium (approx. 3.5%) and finally Spain (approx. 3%). The only other nationality coming from a other continent represented here is the United States of America (approx. 5.5%). Proximity could be for instance one of the main factor explaining these results. 
 
 
 **Per city, the percentage of each visitor's country of origin, relative to the number of visitor of the city**
+
+Then, In order to know more about the precise destination of the visitors, we have decided to gather by city the percentage of country of origin. 
 
 ```{r}
 
@@ -139,7 +146,7 @@ total_tourists_per_city <- tourists_by_nationality %>%
 # Joining the counts back to the detailed breakdown and calculating the ratio
 nationality_ratio_per_city <- tourists_by_nationality %>%
   left_join(total_tourists_per_city, by = "F105_Code") %>%
-  mutate(Ratio = round((Count / TotalCount),2)) %>%
+  mutate(Ratio = round((Count / TotalCount),3)) %>%
   select(F105_Code, F05_02_ENG, Ratio) %>%
   rename(City = F105_Code, Country_of_origin = F05_02_ENG)
 
@@ -148,6 +155,8 @@ datatable(nationality_ratio_per_city, options = list(pageLength = 10,
                                    searchHighlight = TRUE), rownames = FALSE)
 
 ```
+
+The percentage here was in fact a ratio representing the number of people from one particular nationality over the total number of visitors in each city. Unfortunately, as very few data has been collected in some cities, the ratio of visitor from one nationality over all the visitor surveyed can be really large (up to 1, in point of percentage). On the other hand, as data from some other city gathered a lot of answers, we observe that some country of origin (e.g. Austria in Lausanne) were only accounting for 0.2% of the total visitors. 
 
 **Ratio of each country of origin relatively to the number of tourist surveyed in each district**
 
@@ -181,145 +190,46 @@ datatable(nationality_ratio_per_city, options = list(pageLength = 10,
 
 ## Séparation cantons suisse-allemands
 
-# # Swiss german column
-#
-# unique(data[data$F05_02 == "Schweiz", ]$F05_03)
-#
-# swiss_german_cantons = c("Luzern", "Schwyz", "Bern", "Neuenburg", "Aargau",
-#                          "Zürich", "Basel-Stadt", "Basel-Landschaft", "Obwalden",
-#                          "Appenzell Innerrhoden", "Schaffhausen", "Thurgau",
-#                          "St. Gallen", "Solothurn", "Uri", "Zug", "Nidwalden",
-#                          "Appenzell Ausserrhoden")
-#
-#
-# # Binary column for swiss germans
-# data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
+ # Swiss german column
+
+ unique(data[data$F05_02 == "Schweiz", ]$F05_03)
+
+ swiss_german_cantons = c("Luzern", "Schwyz", "Bern", "Neuenburg", "Aargau",
+                          "Zürich", "Basel-Stadt", "Basel-Landschaft", "Obwalden",
+                          "Appenzell Innerrhoden", "Schaffhausen", "Thurgau",
+                          "St. Gallen", "Solothurn", "Uri", "Zug", "Nidwalden",
+                          "Appenzell Ausserrhoden")
+
+ # Binary column for swiss germans
+ data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
+ 
+ #count ratio from each german canton over the data
+ Inside_Switzerland <- data %>% 
+  select(F05_02_ENG, F05_03, swiss_german) %>%
+  filter(F05_02_ENG == "Switzerland") %>%
+  group_by(F05_03) %>%
+  summarise(Count = n()) %>%
+  mutate(Percentage = round((Count/sum(Count)) * 100, 1)) %>%
+  #round(Percentage, 2) %>%
+  rename(Canton = F05_03)
+
+ 
+ datatable(Inside_Switzerland, options = list(pageLength = 10,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE)
+
 ```
-
-
 
 ```{r}
 
-# stacked bar plot with cities on y and % on x and fill = % nationalities per city relatively to the number of tourist who visited the city 
+#Now how much percentage do swiss germans represent in this
 
-# Create the bar chart
-# Create the bar chart
-# ggplot(nationality_ratio_per_city, aes(x = Ratio, y = F105_Code)) +
-#   geom_bar(stat = "identity") +
-#   labs(x = "Percentage", y = "City", title = "Percentage of Tourists by City") +
-#   theme_minimal()
-
-
+Swiss_germans_percentage <- Inside_Switzerland %>%
+  filter(Canton %in% swiss_german_cantons) %>%
+  mutate(Percentage = round((Count/sum(Count)) * 100, 1))
+        
+# sum(Swiss_germans_percentage$Percentage)
 ```
-
-```{r}
-
-## trying to add percentage country of origin visitors relatively to each district on leaflet
-
-
-# # Assume 'F105_Code' is your city code and maps directly to 'leaflet_districts'
-# # Add district info to nationality ratios
-# nationality_with_districts <- nationality_ratio_per_city %>%
-#   left_join(data %>% select(F105_Code, leaflet_districts), by = "F105_Code")
-# 
-# # Aggregate nationality data by district
-# district_nationality_ratios <- nationality_with_districts %>%
-#   group_by(leaflet_districts, F05_02_ENG) %>%
-#   summarise(AverageRatio = mean(Ratio), .groups = 'drop') %>%
-#   mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
-#   group_by(leaflet_districts) %>%
-#   summarise(AllLabels = paste(Label, collapse = "\n"))
-# 
-# # Join with geographic data
-# vaud <- vaud %>%
-#   left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
-# 
-# # Assuming AverageRatio is correctly calculated and added
-# palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
-# 
-# # Create a Leaflet map
-# leaflet(vaud) %>%
-#   addTiles() %>%
-#   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-#   addPolygons(
-#     fillOpacity = 0.75, color = ~palette(AverageRatio),
-#     weight = 1,
-#     popup = ~AllLabels
-#   )
-# 
-# 
-# 
-# 
-# # If AverageRatio is not listed, ensure it is being calculated correctly
-# district_nationality_ratios <- nationality_with_districts %>%
-#   group_by(leaflet_districts, F05_02_ENG) %>%
-#   summarise(AverageRatio = mean(Ratio, na.rm = TRUE), .groups = 'drop') %>%
-#   mutate(Label = paste(F05_02_ENG, ":", round(AverageRatio * 100, 2), "%")) %>%
-#   group_by(leaflet_districts) %>%
-#   summarise(AllLabels = paste(Label, collapse = "\n"))
-# 
-# # Make sure that the column names used in the join are correct
-# colnames(vaud)
-# colnames(district_nationality_ratios)
-# 
-# # Correct the join statement
-# vaud <- vaud %>%
-#   left_join(district_nationality_ratios, by = c("NAME" = "leaflet_districts"))
-# 
-# # Check for AverageRatio in vaud
-# if("AverageRatio" %in% colnames(vaud)) {
-#   print("AverageRatio is present")
-# } else {
-#   print("AverageRatio is missing")
-# }
-# 
-# # Adjust palette creation
-# if("AverageRatio" %in% colnames(vaud)) {
-#   palette <- colorNumeric(palette = "Blues", domain = range(vaud$AverageRatio, na.rm = TRUE))
-# } else {
-#   palette <- colorNumeric(palette = "Blues", domain = c(0, 1))  # Default or fallback range
-# }
-# 
-# # Create the Leaflet map
-# leaflet(vaud) %>%
-#   addTiles() %>%
-#   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-#   addPolygons(
-#     fillOpacity = 0.75, color = ~palette(AverageRatio),
-#     weight = 1,
-#     popup = ~AllLabels
-#   )
-# 
-# 
-# 
-# # Example to combine columns if necessary (adjust as needed based on content)
-# vaud$AllLabels <- apply(vaud[, grep("AllLabels", colnames(vaud))], 1, function(x) paste(na.omit(x), collapse = " "))
-# 
-# # Drop the old AllLabels.x.x columns
-# vaud <- vaud %>%
-#   select(-matches("AllLabels.[0-9]+"))
-# 
-# # Check the new AllLabels column
-# head(vaud$AllLabels)
-# 
-# # Set up a simple color palette if no AverageRatio is available
-# palette <- colorNumeric(palette = "Blues", domain = c(0, 1))
-# 
-# # Create the Leaflet map using vaud2
-# leaflet(vaud) %>%
-#   addTiles() %>%
-#   setView(lng = 6.63, lat = 46.51, zoom = 9) %>%
-#   addPolygons(
-#     fillOpacity = 0.75, color = ~palette(1),  # Uniform color as no AverageRatio is available
-#     weight = 1,
-#     popup = ~AllLabels
-#   )
-# 
-
-
-
-```
-
 
 ```{r, message = FALSE, warning = FALSE}
 ### F12 & F13 ###
