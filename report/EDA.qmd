@@ -17,7 +17,6 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 
 ### Data Exploration: Who is coming? 
 
-
 **Global percentage of people coming in the canton of Vaud per continent**
 
 With the data gathered from the survey, we have first explored the overall distribution of nationalities of the visitors. Therefore, you will find here a table and a graph providing the frequency per nationality and the percentage of nationality it represents. 
@@ -38,7 +37,7 @@ F05_01_PCT <- data %>%
   summarise(Count = n()) %>%
   mutate(Percentage = Count / sum(Count) * 100) %>% 
   arrange(desc(Percentage)) %>%
-  mutate(Percentages = round(Percentage, 2)) %>%
+  mutate(Percentages = paste0(round(Percentage, 2), "%")) %>% 
   select(-c(Percentage)) %>%
   rename(Continent_of_origin = F05_01_ENG)
 
@@ -78,7 +77,7 @@ We have then decided to explore the distribution, in frequency and percentage, o
 F05_02_PCT <- data %>% 
   group_by(F05_02_ENG) %>%
   summarise(Count = n()) %>%
-  mutate(Percentage = round((Count / sum(Count) * 100),2)) %>% 
+  mutate(Percentage = paste0(round((Count / sum(Count) * 100),2),"%")) %>% 
   arrange(desc(Percentage)) %>%
   rename(Country_of_origin = F05_02_ENG)
 
@@ -211,7 +210,7 @@ As Swiss citizens accounted for more than 30% of the visitors surveyed, we have 
   filter(F05_02_ENG == "Switzerland") %>%
   group_by(F05_03) %>%
   summarise(Count = n()) %>%
-  mutate(Percentage = round((Count/sum(Count)) * 100, 1)) %>%
+  mutate(Percentage = paste0(round((Count/sum(Count)) * 100, 1), "%")) %>%
   #round(Percentage, 2) %>%
   rename(Canton = F05_03)
 
@@ -219,6 +218,34 @@ As Swiss citizens accounted for more than 30% of the visitors surveyed, we have 
  datatable(Inside_Switzerland, options = list(pageLength = 10,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE)
+```
+```{r}
+##trying to merg
+
+
+population_data <- data.frame(Canton = c("Aargau", "Appenzell Ausserrhoden", "Appenzell Innerrhoden", "Basel-Landschaft", "Basel-Stadt", "Bern", "Freiburg", "Genf", "Graubünden", "Jura", "Luzern", "Neuenburg", "Nidwalden", "Obwalden", "Schaffhausen", "Schwyz", "Solothurn", "St. Gallen", "Tessin", "Thurgau", "Uri", "Waadt", "Wallis", "Zug", "Zürich"), Population = c("704,000", "56,200", "16,200", "292,000", "204,000", "1,045,000", "338,000", "499,000", "200,000", "74,400", "433,000", "176,000", "44,300", "38,600", "84,000", "166,000", "278,000", "515,000", "353,000", "282,000", "37,000", "817,000", "350,000", "130,000", "1,605,000"))
+
+# Merge the population data with your original data
+
+
+
+data_truc <- merge(Inside_Switzerland, population_data, by.x = "Canton", by.y = "Canton", all.x = TRUE)
+# 
+# # Calculating the ratio of occurrences per population for each canton
+Inside_Switzerland <- Inside_Switzerland %>%
+  select(F05_02_ENG, F05_03, swiss_german, Population) %>%
+  filter(F05_02_ENG == "Switzerland") %>%
+  group_by(F05_03) %>%
+  summarise(Count = n(), Population = first(Population)) %>%
+  mutate(Ratio = Count / Population) %>%
+  mutate(Scaled_Ratio = Ratio / sum(Ratio)) %>%
+  rename(Canton = F05_03)
+
+# Now output the table with your custom settings
+datatable(Inside_Switzerland, options = list(pageLength = 10,
+                                   class = "hover",
+                                   searchHighlight = TRUE), rownames = FALSE)
+
 ```
 
 ```{r, fig.width=10, fig.height=6}
@@ -246,7 +273,7 @@ Now among the swiss german cantons, let's explore the distribution of the canton
 # Now how much percentage do swiss germans represent in this
 Swiss_germans_percentage <- Inside_Switzerland %>%
   filter(Canton %in% swiss_german_cantons) %>%
-  mutate(Percentage = round((Count/sum(Count)) * 100, 1))
+  mutate(Percentage = paste0(round((Count/sum(Count)) * 100, 1), "%"))
 
 # sum(Swiss_germans_percentage$Percentage)
         
