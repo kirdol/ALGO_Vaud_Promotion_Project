@@ -793,6 +793,61 @@ ggplot(spendings_top7, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_EN
         plot.title = element_text(hjust = 0.5))  # Center the title for aesthetics
 ```
 
+## Spendings of top 7 (Victor)
+
+```{r}
+# Define the list of countries to include
+top7 <- c("Switzerland", "France", "United Kingdom", "Germany", "United States of America", "Belgium", "Spain")
+
+# Filter the dataset for selected countries and calculate total spendings
+spendings_top7 <- data %>%
+  filter(F05_02_ENG %in% top7) %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+# Create spending / person
+spendings_top7$per_person = spendings_top7$Total_Spendings/c(nrow(data[data$F05_02_ENG == "Belgium",]), nrow(data[data$F05_02_ENG == "France",]), nrow(data[data$F05_02_ENG == "Germany",]), nrow(data[data$F05_02_ENG == "Spain",]), nrow(data[data$F05_02_ENG == "Switzerland",]), nrow(data[data$F05_02_ENG == "United Kingdom",]), nrow(data[data$F05_02_ENG == "United States of America",]))
+
+```
+
+::: panel-tabset
+# Total spendings
+
+```{r}
+
+# Create a bar plot of spendings by nationality
+ggplot(spendings_top7, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust text angle for better readability
+        plot.title = element_text(hjust = 0.5))  # Center the title for aesthetics
+```
+
+# Spendings per person
+
+```{r}
+
+# Create a bar plot of spendings by nationality
+ggplot(spendings_top7, aes(x = F05_02_ENG, y = per_person, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality",
+       x = "Nationality",
+       y = "Spendings per person",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust text angle for better readability
+        plot.title = element_text(hjust = 0.5))  # Center the title for aesthetics
+```
+
+:::
+
 ## Spendings of top 7 countries in districts
 
 ::: panel-tabset

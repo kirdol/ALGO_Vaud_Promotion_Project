@@ -451,7 +451,12 @@ plot_ly(resort_counts_df,
 
 As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r n_distinct(data$leaflet_districts)` district, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller one. It is still interesting to have a look to keep this in mind.
 
-### Type of Accommodation
+
+### Type of Accommodation by country
+
+::: panel-tabset
+
+# Total
 
 ```{r Type of accomodation, echo = FALSE}
 data_accomodation <- subset(data, F125_ENG != "#N/A")
@@ -496,6 +501,337 @@ plot_ly(accommodation_proportion,
          yaxis = list(title = "Type of Accommodation",
                       automargin = TRUE))
 ```
+
+# Switzerland
+
+```{r Type of accomodation swiss, echo = FALSE}
+swiss_data_accomodation <- subset(data, F125_ENG != "#N/A" & F05_02_ENG == "Switzerland")
+
+# Calculating the proportion of each accommodation type and ordering by those proportions
+swiss_accommodation_proportion <- swiss_data_accomodation %>%
+  group_by(F125_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  arrange(Proportion)
+
+# Adjust the factor levels of F125_ENG to ensure the order in the plot
+swiss_accommodation_proportion$F125_ENG <- factor(swiss_accommodation_proportion$F125_ENG, levels = swiss_accommodation_proportion$F125_ENG)
+
+# Custom hover text
+swiss_accommodation_proportion$HoverText <-
+  paste("Accommodation type: ", swiss_accommodation_proportion$F125_ENG,
+        "<br>Number of people staying in this type of accommodation: ",
+        swiss_accommodation_proportion$Count,"/", sum(swiss_accommodation_proportion$Count),
+        "<br>Proportion of people staying in this type of accommodation: ",
+        percent(swiss_accommodation_proportion$Proportion, accuracy = 0.01))
+
+# Creating the bar plot with ordered proportions
+plot_ly(swiss_accommodation_proportion,
+                y = ~F125_ENG,
+                x = ~Proportion,
+                type = 'bar',
+                text = "",
+                hoverinfo = 'text',
+                hovertext = ~HoverText,
+                textposition = 'auto',
+                orientation = 'h') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = "Most Popular Accommodation Types for Swiss tourists",
+         xaxis = list(title = "",
+                      side = 'top',
+                      tickformat = ",.0%"),
+         yaxis = list(title = "Type of Accommodation",
+                      automargin = TRUE))
+```
+
+
+# France
+
+```{r Type of accomodation french, echo = FALSE}
+french_data_accomodation <- subset(data, F125_ENG != "#N/A" & F05_02_ENG == "France")
+
+# Calculating the proportion of each accommodation type and ordering by those proportions
+french_accommodation_proportion <- french_data_accomodation %>%
+  group_by(F125_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  arrange(Proportion)
+
+# Adjust the factor levels of F125_ENG to ensure the order in the plot
+french_accommodation_proportion$F125_ENG <- factor(french_accommodation_proportion$F125_ENG, levels = french_accommodation_proportion$F125_ENG)
+
+# Custom hover text
+french_accommodation_proportion$HoverText <-
+  paste("Accommodation type: ", french_accommodation_proportion$F125_ENG,
+        "<br>Number of people staying in this type of accommodation: ",
+        french_accommodation_proportion$Count,"/", sum(french_accommodation_proportion$Count),
+        "<br>Proportion of people staying in this type of accommodation: ",
+        percent(french_accommodation_proportion$Proportion, accuracy = 0.01))
+
+# Creating the bar plot with ordered proportions
+plot_ly(french_accommodation_proportion,
+                y = ~F125_ENG,
+                x = ~Proportion,
+                type = 'bar',
+                text = "",
+                hoverinfo = 'text',
+                hovertext = ~HoverText,
+                textposition = 'auto',
+                orientation = 'h') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = "Most Popular Accommodation Types for French tourists",
+         xaxis = list(title = "",
+                      side = 'top',
+                      tickformat = ",.0%"),
+         yaxis = list(title = "Type of Accommodation",
+                      automargin = TRUE))
+```
+
+
+# UK
+
+```{r Type of accomodation uk, echo = FALSE}
+british_data_accomodation <- subset(data, F125_ENG != "#N/A" & F05_02_ENG == "United Kingdom")
+
+# Calculating the proportion of each accommodation type and ordering by those proportions
+british_accommodation_proportion <- british_data_accomodation %>%
+  group_by(F125_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  arrange(Proportion)
+
+# Adjust the factor levels of F125_ENG to ensure the order in the plot
+british_accommodation_proportion$F125_ENG <- factor(british_accommodation_proportion$F125_ENG, levels = british_accommodation_proportion$F125_ENG)
+
+# Custom hover text
+british_accommodation_proportion$HoverText <-
+  paste("Accommodation type: ", british_accommodation_proportion$F125_ENG,
+        "<br>Number of people staying in this type of accommodation: ",
+        british_accommodation_proportion$Count,"/", sum(british_accommodation_proportion$Count),
+        "<br>Proportion of people staying in this type of accommodation: ",
+        percent(british_accommodation_proportion$Proportion, accuracy = 0.01))
+
+# Creating the bar plot with ordered proportions
+plot_ly(british_accommodation_proportion,
+                y = ~F125_ENG,
+                x = ~Proportion,
+                type = 'bar',
+                text = "",
+                hoverinfo = 'text',
+                hovertext = ~HoverText,
+                textposition = 'auto',
+                orientation = 'h') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = "Most Popular Accommodation Types for British tourists",
+         xaxis = list(title = "",
+                      side = 'top',
+                      tickformat = ",.0%"),
+         yaxis = list(title = "Type of Accommodation",
+                      automargin = TRUE))
+```
+
+# Germany
+
+```{r Type of accomodation germany, echo = FALSE}
+german_data_accomodation <- subset(data, F125_ENG != "#N/A" & F05_02_ENG == "Germany")
+
+# Calculating the proportion of each accommodation type and ordering by those proportions
+german_accommodation_proportion <- german_data_accomodation %>%
+  group_by(F125_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  arrange(Proportion)
+
+# Adjust the factor levels of F125_ENG to ensure the order in the plot
+german_accommodation_proportion$F125_ENG <- factor(german_accommodation_proportion$F125_ENG, levels = german_accommodation_proportion$F125_ENG)
+
+# Custom hover text
+german_accommodation_proportion$HoverText <-
+  paste("Accommodation type: ", german_accommodation_proportion$F125_ENG,
+        "<br>Number of people staying in this type of accommodation: ",
+        german_accommodation_proportion$Count,"/", sum(german_accommodation_proportion$Count),
+        "<br>Proportion of people staying in this type of accommodation: ",
+        percent(german_accommodation_proportion$Proportion, accuracy = 0.01))
+
+# Creating the bar plot with ordered proportions
+plot_ly(german_accommodation_proportion,
+                y = ~F125_ENG,
+                x = ~Proportion,
+                type = 'bar',
+                text = "",
+                hoverinfo = 'text',
+                hovertext = ~HoverText,
+                textposition = 'auto',
+                orientation = 'h') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = "Most Popular Accommodation Types for German tourists",
+         xaxis = list(title = "",
+                      side = 'top',
+                      tickformat = ",.0%"),
+         yaxis = list(title = "Type of Accommodation",
+                      automargin = TRUE))
+```
+
+
+# USA
+
+```{r Type of accomodation usa, echo = FALSE}
+american_data_accomodation <- subset(data, F125_ENG != "#N/A" & F05_02_ENG == "United States of America")
+
+# Calculating the proportion of each accommodation type and ordering by those proportions
+american_accommodation_proportion <- american_data_accomodation %>%
+  group_by(F125_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  arrange(Proportion)
+
+# Adjust the factor levels of F125_ENG to ensure the order in the plot
+american_accommodation_proportion$F125_ENG <- factor(american_accommodation_proportion$F125_ENG, levels = american_accommodation_proportion$F125_ENG)
+
+# Custom hover text
+american_accommodation_proportion$HoverText <-
+  paste("Accommodation type: ", american_accommodation_proportion$F125_ENG,
+        "<br>Number of people staying in this type of accommodation: ",
+        american_accommodation_proportion$Count,"/", sum(american_accommodation_proportion$Count),
+        "<br>Proportion of people staying in this type of accommodation: ",
+        percent(american_accommodation_proportion$Proportion, accuracy = 0.01))
+
+# Creating the bar plot with ordered proportions
+plot_ly(american_accommodation_proportion,
+                y = ~F125_ENG,
+                x = ~Proportion,
+                type = 'bar',
+                text = "",
+                hoverinfo = 'text',
+                hovertext = ~HoverText,
+                textposition = 'auto',
+                orientation = 'h') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = "Most Popular Accommodation Types for American tourists",
+         xaxis = list(title = "",
+                      side = 'top',
+                      tickformat = ",.0%"),
+         yaxis = list(title = "Type of Accommodation",
+                      automargin = TRUE))
+```
+
+
+# Belgium
+
+```{r Type of accomodation belgium, echo = FALSE}
+belgian_data_accomodation <- subset(data, F125_ENG != "#N/A" & F05_02_ENG == "Belgium")
+
+# Calculating the proportion of each accommodation type and ordering by those proportions
+belgian_accommodation_proportion <- belgian_data_accomodation %>%
+  group_by(F125_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  arrange(Proportion)
+
+# Adjust the factor levels of F125_ENG to ensure the order in the plot
+belgian_accommodation_proportion$F125_ENG <- factor(belgian_accommodation_proportion$F125_ENG, levels = belgian_accommodation_proportion$F125_ENG)
+
+# Custom hover text
+belgian_accommodation_proportion$HoverText <-
+  paste("Accommodation type: ", belgian_accommodation_proportion$F125_ENG,
+        "<br>Number of people staying in this type of accommodation: ",
+        belgian_accommodation_proportion$Count,"/", sum(belgian_accommodation_proportion$Count),
+        "<br>Proportion of people staying in this type of accommodation: ",
+        percent(belgian_accommodation_proportion$Proportion, accuracy = 0.01))
+
+# Creating the bar plot with ordered proportions
+plot_ly(belgian_accommodation_proportion,
+                y = ~F125_ENG,
+                x = ~Proportion,
+                type = 'bar',
+                text = "",
+                hoverinfo = 'text',
+                hovertext = ~HoverText,
+                textposition = 'auto',
+                orientation = 'h') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = "Most Popular Accommodation Types for Belgian tourists",
+         xaxis = list(title = "",
+                      side = 'top',
+                      tickformat = ",.0%"),
+         yaxis = list(title = "Type of Accommodation",
+                      automargin = TRUE))
+```
+
+
+# Spain
+
+```{r Type of accomodation spain, echo = FALSE}
+spanish_data_accomodation <- subset(data, F125_ENG != "#N/A" & F05_02_ENG == "Spain")
+
+# Calculating the proportion of each accommodation type and ordering by those proportions
+spanish_accommodation_proportion <- spanish_data_accomodation %>%
+  group_by(F125_ENG) %>%
+  summarise(Count = n(), .groups = 'drop') %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  arrange(Proportion)
+
+# Adjust the factor levels of F125_ENG to ensure the order in the plot
+spanish_accommodation_proportion$F125_ENG <- factor(spanish_accommodation_proportion$F125_ENG, levels = spanish_accommodation_proportion$F125_ENG)
+
+# Custom hover text
+spanish_accommodation_proportion$HoverText <-
+  paste("Accommodation type: ", spanish_accommodation_proportion$F125_ENG,
+        "<br>Number of people staying in this type of accommodation: ",
+        spanish_accommodation_proportion$Count,"/", sum(spanish_accommodation_proportion$Count),
+        "<br>Proportion of people staying in this type of accommodation: ",
+        percent(spanish_accommodation_proportion$Proportion, accuracy = 0.01))
+
+# Creating the bar plot with ordered proportions
+plot_ly(spanish_accommodation_proportion,
+                y = ~F125_ENG,
+                x = ~Proportion,
+                type = 'bar',
+                text = "",
+                hoverinfo = 'text',
+                hovertext = ~HoverText,
+                textposition = 'auto',
+                orientation = 'h') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = "Most Popular Accommodation Types for Spanish tourists",
+         xaxis = list(title = "",
+                      side = 'top',
+                      tickformat = ",.0%"),
+         yaxis = list(title = "Type of Accommodation",
+                      automargin = TRUE))
+```
+
+
+:::
+
 
 As we can see, the most popular type of accommodation in the canton of Vaud is Hotel/SPA House. It is interesting to note the proportion of people staying in Campsite. We can see below on the word cloud the most popular other type of accommodation.
 
@@ -634,6 +970,27 @@ ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) 
 spending_data_package <- data.frame(
   Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
   Amount = c(mean(data$F82_01, na.rm = TRUE), 
+             mean(data$F82_02, na.rm = TRUE),
+             mean(data$F82_03, na.rm = TRUE),
+             mean(data$F82_04, na.rm = TRUE),
+             mean(data$F82_05, na.rm = TRUE),
+             mean(data$F82_06, na.rm = TRUE),
+             mean(data$F82_07, na.rm = TRUE))
+)
+
+ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Average Spending by Category", x = "Category", y = "Average Amount") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Average Spending by Category (with package) (Victor)
+
+```{r, message = FALSE, warning = FALSE}
+spending_data_package <- data.frame(
+  Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
+  Amount = c(mean(data$F82_01[data$F82_01 <= 30000], na.rm = TRUE), # Ici on modifie pour inclure seulement les packages qui coûtent en dessous de 30'000 CHF. On assume que les packages qui coûtent au dessus de ce montant ne sont pas en CHF, et donc biaisent le sample.
              mean(data$F82_02, na.rm = TRUE),
              mean(data$F82_03, na.rm = TRUE),
              mean(data$F82_04, na.rm = TRUE),
@@ -829,7 +1186,8 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
   geom_bar(stat = "identity") +
   labs(title = "Distribution of Currency", x = "Currency", y = "Percentage (%)") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Adjust text angle for better readability
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + # Adjust text angle for better readability
+  scale_fill_discrete(name = "Currency")
 ```
 
 ## Partie Victor
