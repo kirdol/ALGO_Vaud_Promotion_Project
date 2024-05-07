@@ -654,3 +654,409 @@ ggplot(sums_df, aes(x = group_name, y = american)) +
 American tourists have by far the highest percentage of tourists traveling alone, as well as in a group of unknown people. This suggests they are more likely to be on a solo trip to Switzerland, and also be in an organised group tour with other strangers.
 
 :::
+
+## Partie Jeff
+
+Top 7 countries are: Switzerland, France, UK, Germany, US, Belgium & Spain.
+
+```{r, warning = FALSE}
+# Filter data for "Aigle-Leysin-Les Mosses"
+filtered_data <- data %>%
+  filter(F105_OrgCode == "Aigle-Leysin-Les Mosses")
+
+# Reshape data from wide to long format and rename categories
+data_long <- filtered_data %>%
+  pivot_longer(
+    cols = F81_01:F81_06,
+    names_to = "Spending_Category",
+    values_to = "Amount"
+  ) %>%
+  mutate(Spending_Category = recode(Spending_Category,
+    "F81_01" = "Overnight Stay",
+    "F81_02" = "Transports",
+    "F81_03" = "Food & Drink",
+    "F81_04" = "Souvenirs",
+    "F81_05" = "Other Shopping",
+    "F81_06" = "Other Expenses"
+  ))
+
+# Generate the plotly interactive plot
+plot <- plot_ly(data_long, x = ~Spending_Category, y = ~Amount, type = 'bar', name = 'Spending',
+                marker = list(color = 'rgba(55, 128, 191, 0.7)', line = list(color = 'rgba(55, 128, 191, 1.0)', width = 1.5))) %>%
+  layout(title = "Spending by Category in Aigle-Leysin-Les Mosses",
+         xaxis = list(title = "Category"),
+         yaxis = list(title = "Spending Amount"),
+         barmode = 'group')
+
+# Display the plot
+plot
+```
+
+## Highest Continent spending in Vaud
+
+```{r}
+# Calculate the total spending by continent
+total_spending_by_continent <- data %>%
+  group_by(F05_01_ENG) %>%
+  summarise(Total_Spending = sum(F81_Total, na.rm = TRUE)) %>%
+  arrange(desc(Total_Spending))
+
+# Print the calculated data
+print(total_spending_by_continent)
+
+# Plot the total spending by continent as a bar chart
+ggplot(total_spending_by_continent, aes(x = F05_01_ENG, y = Total_Spending, fill = F05_01_ENG)) +
+  geom_bar(stat = "identity", color = "black", show.legend = FALSE) +
+  labs(x = "Continent", y = "Total Spending", title = "Total Spending by Continent") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
+
+## Spending by city
+
+```{r, warning = FALSE}
+# Convert data to long format and rename categories
+data_long <- data %>%
+  pivot_longer(
+    cols = F81_01:F81_06,
+    names_to = "Spending_Type",
+    values_to = "Amount"
+  ) %>%
+  mutate(Spending_Type = recode(Spending_Type,
+    "F81_01" = "Overnight stay",
+    "F81_02" = "Transports",
+    "F81_03" = "Food & Drink",
+    "F81_04" = "Souvenirs",
+    "F81_05" = "Other shopping",
+    "F81_06" = "Other expenses"
+  ))
+
+# Generate a list of unique cities (F105_Code)
+cities <- unique(data_long$F105_OrgCode)
+
+# Create a plotly object with a dropdown menu
+p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', color = ~Spending_Type) %>%
+  layout(
+    title = "Spendings by City",
+    xaxis = list(title = "Spending Type"),
+    yaxis = list(title = "Amount"),
+    updatemenus = list(
+      list(
+        y = 0.9,
+        buttons = lapply(cities, function(city) {
+          list(
+            method = "update",
+            args = list(
+              list(
+                x = list(data_long[data_long$F105_OrgCode == city,]$Spending_Type),
+                y = list(data_long[data_long$F105_OrgCode == city,]$Amount)
+              ),
+              list(
+                title = paste("Spendings for", city),
+                annotations = list()
+              )
+            ),
+            label = city
+          )
+        })
+      )
+    )
+  )
+
+p
+```
+
+## Spendings of top 7
+
+```{r}
+# Define the list of countries to include
+top7 <- c("Switzerland", "France", "United Kingdom", "Germany", "United States of America", "Belgium", "Spain")
+
+# Filter the dataset for selected countries and calculate total spendings
+spendings_top7 <- data %>%
+  filter(F05_02_ENG %in% top7) %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+# Create a bar plot of spendings by nationality
+ggplot(spendings_top7, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust text angle for better readability
+        plot.title = element_text(hjust = 0.5))  # Center the title for aesthetics
+```
+
+## Spendings of top 7 countries in districts
+
+::: panel-tabset
+#### Aigle
+
+```{r}
+spendings_aigle <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Aigle-Leysin-Les Mosses") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_aigle, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Aigle-Leysin-Les Mosses",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))  
+```
+
+#### Avenches
+
+```{r}
+spendings_avenches <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Avenches Tourisme") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_avenches, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Avenches Tourisme",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Echallens
+
+```{r}
+spendings_echallens <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Echallens Région Tourisme") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_echallens, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Echallens Région Tourisme",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Estavayer/Payerne
+
+```{r}
+spendings_estavayer <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Estavayer-le-Lac/Payerne Tourisme") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_estavayer, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Estavayer-le-Lac/Payerne Tourisme",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Lausanne
+
+```{r}
+spendings_lausanne <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Lausanne Tourisme") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_lausanne, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Lausanne Tourisme",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Montreux
+
+```{r}
+spendings_montreux <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Montreux Riviera") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_montreux, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Montreux Riviera",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Moudon
+
+```{r}
+spendings_moudon <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Moudon Région Tourisme") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_moudon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Moudon Région Tourisme",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Nyon
+
+```{r}
+spendings_nyon <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Nyon Région Tourisme") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_nyon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Nyon Région Tourisme",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Pays d'Enhaut
+
+```{r}
+spendings_enhaut <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Pays d'Enhaut Tourisme") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_enhaut, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Pays d'Enhaut Tourisme",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Vallée de Joux
+
+```{r}
+spendings_joux <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Vallée de Joux") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_joux, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Vallée de Joux",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Villars
+
+```{r}
+spendings_villars <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Villars-Diablerets-Gryon-Bex") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_villars, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Villars-Diablerets-Gryon-Bex",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+
+#### Yverdon
+
+```{r}
+spendings_yverdon <- data %>%
+  filter(F05_02_ENG %in% top7, F105_OrgCode == "Yverdon-les-Bains Région") %>%
+  group_by(F05_02_ENG) %>%
+  summarize(
+    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+ggplot(spendings_yverdon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Spendings by Nationality in Yverdon-les-Bains Région",
+       x = "Nationality",
+       y = "Total Spendings",
+       fill = "Nationality") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
+        plot.title = element_text(hjust = 0.5))
+```
+:::

@@ -575,6 +575,38 @@ As we can see on the graph above, the best average is optain in `r combined_data
 
 # Partie Jeff - Expenses and where they come from, when, where and for which sector?
 
+## Percentage of people with package & without package
+
+```{r, message = FALSE, warning = FALSE}
+# Calculate the number of non-NA entries for each type of spending
+spending_counts <- data %>%
+  summarize(
+    Package = sum(!is.na(F82_Total)),
+    WithoutPackage = sum(!is.na(F81_Total))
+  ) %>%
+  gather(key = "PackageType", value = "Count")
+
+# Calculate percentages
+total_records <- sum(spending_counts$Count)
+spending_counts <- spending_counts %>%
+  mutate(Percentage = (Count / total_records) * 100)
+
+# Plot the percentages with the percentage shown on the bars
+ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = sprintf("%.1f%%", Percentage)),  # Format the labels to one decimal place
+            position = position_stack(vjust = 0.5),  # Adjust text to be inside the bars
+            color = "white") +
+  labs(title = "Percentage of Observations With and Without Package",
+       x = "Type of Spending",
+       y = "Percentage (%)") +
+  scale_fill_brewer(palette = "Pastel1") + # Aesthetically pleasing color palette
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+A majority of people travelling in Vaud come without a package.
+
 ::: panel-tabset
 ## Average Spending by category (no package tour)
 
@@ -618,35 +650,7 @@ ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending
 ```
 :::
 
-## Percentage of people with package & without package
-
-```{r, message = FALSE, warning = FALSE}
-# Calculate the number of non-NA entries for each type of spending
-spending_counts <- data %>%
-  summarize(
-    Package = sum(!is.na(F82_Total)),
-    WithoutPackage = sum(!is.na(F81_Total))
-  ) %>%
-  gather(key = "PackageType", value = "Count")
-
-# Calculate percentages
-total_records <- sum(spending_counts$Count)
-spending_counts <- spending_counts %>%
-  mutate(Percentage = (Count / total_records) * 100)
-
-# Plot the percentages with the percentage shown on the bars
-ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)) +
-  geom_bar(stat = "identity") +
-  geom_text(aes(label = sprintf("%.1f%%", Percentage)),  # Format the labels to one decimal place
-            position = position_stack(vjust = 0.5),  # Adjust text to be inside the bars
-            color = "white") +
-  labs(title = "Percentage of Observations With and Without Package",
-       x = "Type of Spending",
-       y = "Percentage (%)") +
-  scale_fill_brewer(palette = "Pastel1") + # Aesthetically pleasing color palette
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
+With these plots, we can clearly observe that there is a difference in spendings for people who travelled with a package compared to the ones travelling without a spending package. Overall, the main expenses of people with a package is the package itself, meaning that most of the other variables are already included in the package. On the other hand, without the package, it is interesting to see that the main spending is on the overnight stay, then the food & drinks and finally the souvenirs.
 
 ::: panel-tabset
 #### Total spending per country (no package)
@@ -889,3 +893,4 @@ ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
 
 ```
 We notice that more than 2/3 of overall visitors came to Vaud with their partner (68.7%). Of these, 43% came only with their partner, without friends, children or other family.
+
