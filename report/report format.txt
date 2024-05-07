@@ -17,6 +17,8 @@ Trouver ce qui ressort, ce qui est surprenant
 Maps
 Plot différentes variables sur la carte leaflet du canton de vaud par district
 - continents/districts
+-type de logement x nationalité
+
 
 - top 7/dépenses, groupes, nuitées, etc
 - top 7/districts
