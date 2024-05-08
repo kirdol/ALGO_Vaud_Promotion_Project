@@ -9,7 +9,7 @@ format:
 
 ## Partie Stefan
 
-```{r output = FALSE, echo =FALSE}
+```{r Loading the packages and importing the data, output = FALSE, echo = FALSE}
 source(here::here("scripts", "setup.R"))
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
                  sep = ",")
@@ -23,7 +23,7 @@ With the data gathered from the survey, we have first explored the overall distr
 
 ```{r}
 ### F05_01.ENG ###
-#nb of occurrences by country and continents 
+# nb of occurrences by country and continents 
 OccurencesCountry <- data %>% 
   group_by(data$F05_02_ENG) %>% 
   count(sort = TRUE)
@@ -31,37 +31,44 @@ OccurencesContinent <- data %>%
   group_by(data$F05_01_ENG) %>% 
   count(sort = TRUE)
 
-#Continent in percentages
+# Continent in percentages
 F05_01_PCT <- data %>% 
   group_by(F05_01_ENG) %>%
   summarise(Count = n()) %>%
-  mutate(Percentage = Count / sum(Count) * 100) %>% 
+  mutate(Percentage = Count / sum(Count)) %>% 
   arrange(desc(Percentage)) %>%
-  mutate(Percentages = paste0(round(Percentage, 2), "%")) %>% 
-  select(-c(Percentage)) %>%
   rename(Continent_of_origin = F05_01_ENG)
 
-datatable(F05_01_PCT, options = list(pageLength = 10,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE)
-
+datatable(F05_01_PCT,
+          rownames = FALSE,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE)) %>%
+  formatPercentage('Percentage', 2)
 ```
 
 ```{r, warning=FALSE, out.height="100%", out.width="100%", fig.width=7 }
-#plot numbers continent 
-
-ggplot(F05_01_PCT, aes(x=reorder(Continent_of_origin, Percentages), y=Percentages, fill=Continent_of_origin)) +
+# plot numbers continent 
+ggplot(F05_01_PCT,
+       aes(x=reorder(Continent_of_origin, Percentage),
+           y=Percentage,
+           fill=Continent_of_origin)) +
   geom_bar(stat="identity") +
-  coord_flip() +  # Flip coordinates for horizontal bars
+  coord_flip() +
   theme_minimal() +
-  labs(x="Continents of origin", y="Percentages", title="Percentages of Each Unique Continent of origin") +
-  theme(legend.title = element_blank(), # Remove the legend title
-        legend.position = "none", # Hide the legend as the colors are not necessary with labels
-        plot.title = element_text(hjust = 0.5), # Center the plot title
+  labs(x="Continents of origin",
+       y="Percentages",
+       title="Percentage of Each Unique Continent of origin") +
+  theme(legend.title = element_blank(),
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
-  geom_text(aes(label=sprintf("%.2f%%", Percentages)), position=position_dodge(width=-0.5), vjust=-0.01, hjust=-0.1, size = 3) + # Add percentage labels
-  ylim(0, 90)  # Extend y-axis range
-
+  geom_text(aes(label=sprintf("%.2f%%", Percentage)),
+            position=position_dodge(width=-0.5),
+            vjust=-0.01,
+            hjust=-0.1,
+            size = 3) +
+  ylim(0, 90)
 ```
 
 We notice that a large part of the people surveyed were coming from Europe (approx. 78%), followed by people coming from Asia (approx. 8%), North and Central America (approx. 8%), South America (approx. 3%) Australia and Oceania (approx. 2%) and finally Africa (approx. 1%). Again, these results were concerning the whole canton.
@@ -72,7 +79,6 @@ We notice that a large part of the people surveyed were coming from Europe (appr
 We have then decided to explore the distribution, in frequency and percentage, of the nationalities per continent. You will find here again a table and a graph, summarizing this information:
 
 ```{r}
-
 # Countries in percentages 
 F05_02_PCT <- data %>% 
   group_by(F05_02_ENG) %>%
@@ -81,40 +87,43 @@ F05_02_PCT <- data %>%
   arrange(desc(Percentage)) %>%
   rename(Country_of_origin = F05_02_ENG)
 
-datatable(F05_02_PCT, options = list(pageLength = 10,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE)
+datatable(F05_02_PCT,
+          rownames = FALSE,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE))
 ```
 
 ```{r, fig.width=10, fig.height=10}
 ### F05_02_ENG ###
-#plot with continents 
+# plot with continents 
 F05_02_PCT <- data %>%
   group_by(F05_02_ENG, F05_01_ENG) %>%  # Group by both country and continent
   summarise(Count = n(), .groups = 'drop') %>%
   mutate(Percentage = round((Count / sum(Count) * 100),2)) %>%
   arrange(desc(Percentage)) 
 
-
-
-#concatenate all countries except " 7 best " 
+# concatenate all countries except " 7 best " 
 F05_02_PCT <- F05_02_PCT %>% add_row(F05_01_ENG = "Other Continents", F05_02_ENG = "Other Countries", Count = sum(F05_02_PCT$Count[7:104]), Percentage = sum(F05_02_PCT$Percentage[7:104]))
 
-#get rid of the rest of the rows
+# get rid of the rest of the rows
 F05_02_PCT <- F05_02_PCT[-(8:104),]
 
-#plot
+# plot
 ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fill = `F05_01_ENG`)) + 
   geom_bar(stat = "identity") +
-  coord_flip() +  # Make the plot horizontal
-  scale_fill_brewer(palette = "Set3", name = "Continent") +  # Use a color palette for continents
+  coord_flip() +
+  scale_fill_brewer(palette = "Set3", name = "Continent") +
   theme_minimal() +
-  labs(x = "Country of Origin", y = "Percentages", title = "Percentage of Responses by Country and Continent of origin") +
+  labs(title = "Percentage of Responses by Country and Continent of origin",
+       x = "Country of Origin",
+       y = "Percentages") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 9), 
         axis.text.y = element_text(angle = 45, hjust = 1, size = 9),
         plot.title = element_text(hjust = 0.5),
-        legend.position = "right") +  # Adjust legend position
-  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_stack(vjust=0.5))
+        legend.position = "right") +
+  geom_text(aes(label=sprintf("%.2f%%", Percentage)),
+            position=position_stack(vjust=0.5))
 ```
 
 For visibility purpose, we have decided to represent here in the graph the top 7 countries of the table, representing all above 3% of the nationalities found in the survey. We have then decided to group the  remaining countries in the category "Other Countries". 
@@ -127,7 +136,6 @@ We notice that Switzerland is the nationality the most represented among all the
 Then, In order to know more about the precise destination of the visitors, we have decided to gather by city the percentage of country of origin. 
 
 ```{r}
-
 # Counting the number of tourists by city and nationality
 tourists_by_nationality <- data %>%
   group_by(F105_Code, F05_02_ENG) %>%
@@ -145,10 +153,11 @@ nationality_ratio_per_city <- tourists_by_nationality %>%
   select(F105_Code, F05_02_ENG, Ratio) %>%
   rename(City = F105_Code, Country_of_origin = F05_02_ENG)
 
-datatable(nationality_ratio_per_city, options = list(pageLength = 10,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE)
-
+datatable(nationality_ratio_per_city,
+          rownames = FALSE,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE))
 ```
 
 The percentage here was in fact a ratio representing the number of people from one particular nationality over the total number of visitors in each city. Unfortunately, as very few data has been collected in some cities, the ratio of visitor from one nationality over all the visitor surveyed can be really large (up to 1, in point of percentage). On the other hand, as data from some other city gathered a lot of answers, we observe that some country of origin (e.g. Austria in Lausanne) were only accounting for 0.2% of the total visitors. 
@@ -158,7 +167,7 @@ The percentage here was in fact a ratio representing the number of people from o
 In the same process, let's now explore the country of origin ratio per district of tourism.
 
 ```{r}
-#ratio of each nationality relatively to the number of tourist surveyed in each district F105_OrgCode
+# ratio of each nationality relatively to the number of tourist surveyed in each district F105_OrgCode
 tourists_by_nationality <- data %>%
   group_by(F105_OrgCode, F05_02_ENG) %>%
   summarise(Count = n(), .groups = 'drop')
@@ -174,12 +183,10 @@ nationality_ratio_per_city <- tourists_by_nationality %>%
   mutate(Ratio = round((Count / TotalCount),3)) %>%
   select(F105_OrgCode, F05_02_ENG, Ratio) %>%
   rename(District_tourism = F105_OrgCode,Country_of_origin = F05_02_ENG)
-  
 
 datatable(nationality_ratio_per_city, options = list(pageLength = 10,
                                    class = "hover",
                                    searchHighlight = TRUE), rownames = FALSE)
-
 ```
 
 Again, the low number of data available in our data don't allow us to get really satisfying results for every city surveyed. 
@@ -210,59 +217,81 @@ As Swiss citizens accounted for more than 30% of the visitors surveyed, we have 
   filter(F05_02_ENG == "Switzerland") %>%
   group_by(F05_03) %>%
   summarise(Count = n()) %>%
-  mutate(Percentage = paste0(round((Count/sum(Count)) * 100, 1), "%")) %>%
-  #round(Percentage, 2) %>%
+  mutate(Percentage = Count/sum(Count)) %>%
   rename(Canton = F05_03)
 
  
- datatable(Inside_Switzerland, options = list(pageLength = 10,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE)
+ datatable(Inside_Switzerland,
+           options = list(pageLength = 10,
+                          class = "hover",
+                          searchHighlight = TRUE),
+           rownames = FALSE) %>%
+  formatPercentage('Percentage', 2)
 ```
-```{r}
-##trying to merg
 
+```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland}
+# Merging the population data with the original data
+population_data <-
+  data.frame(Canton = c("Aargau", "Appenzell Ausserrhoden",
+                        "Appenzell Innerrhoden", "Basel-Landschaft",
+                        "Basel-Stadt", "Bern", "Freiburg", "Genf", "Graubünden",
+                        "Jura", "Luzern", "Neuenburg", "Nidwalden", "Obwalden",
+                        "Schaffhausen", "Schwyz", "Solothurn", "St. Gallen",
+                        "Tessin", "Thurgau", "Uri", "Waadt", "Wallis", "Zug",
+                        "Zürich"),
+             Population = c("704000", "56200", "16200", "292000", "204000",
+                            "1045000", "338000", "499000", "200000", "74400",
+                            "433000", "176000", "44300", "38600", "84000",
+                            "166000", "278000", "515000", "353000", "282000",
+                            "37000", "817000", "350000", "130000", "1605000"))
 
-population_data <- data.frame(Canton = c("Aargau", "Appenzell Ausserrhoden", "Appenzell Innerrhoden", "Basel-Landschaft", "Basel-Stadt", "Bern", "Freiburg", "Genf", "Graubünden", "Jura", "Luzern", "Neuenburg", "Nidwalden", "Obwalden", "Schaffhausen", "Schwyz", "Solothurn", "St. Gallen", "Tessin", "Thurgau", "Uri", "Waadt", "Wallis", "Zug", "Zürich"), Population = c("704,000", "56,200", "16,200", "292,000", "204,000", "1,045,000", "338,000", "499,000", "200,000", "74,400", "433,000", "176,000", "44,300", "38,600", "84,000", "166,000", "278,000", "515,000", "353,000", "282,000", "37,000", "817,000", "350,000", "130,000", "1,605,000"))
+# replacing "Appenzell Innerrhoden " by "Appenzell Innerrhoden"
+Inside_Switzerland$Canton[3] <- "Appenzell Innerrhoden"
 
 # Merge the population data with your original data
+data_merged <- merge(Inside_Switzerland, population_data,
+                   by.x = "Canton",
+                   by.y = "Canton",
+                   all.x = TRUE)
+data_merged$Population <- as.numeric(data_merged$Population)
 
-
-
-data_truc <- merge(Inside_Switzerland, population_data, by.x = "Canton", by.y = "Canton", all.x = TRUE)
-# 
-# # Calculating the ratio of occurrences per population for each canton
-Inside_Switzerland <- Inside_Switzerland %>%
-  select(F05_02_ENG, F05_03, swiss_german, Population) %>%
-  filter(F05_02_ENG == "Switzerland") %>%
-  group_by(F05_03) %>%
-  summarise(Count = n(), Population = first(Population)) %>%
+# Calculating the ratio of occurrences per population for each canton
+Inside_Switzerland_ratio <- data_merged %>%
   mutate(Ratio = Count / Population) %>%
   mutate(Scaled_Ratio = Ratio / sum(Ratio)) %>%
-  rename(Canton = F05_03)
+  select(Canton, Count, Population, Ratio, Scaled_Ratio)
 
 # Now output the table with your custom settings
-datatable(Inside_Switzerland, options = list(pageLength = 10,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE)
-
+datatable(Inside_Switzerland_ratio,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE),
+          rownames = FALSE) %>%
+  formatPercentage('Ratio', 5) %>%
+  formatPercentage('Scaled_Ratio', 2)
 ```
 
 ```{r, fig.width=10, fig.height=6}
-#plot numbers continent 
-
-ggplot(Inside_Switzerland, aes(x=reorder(Canton, Percentage), y=Percentage, fill=Canton)) +
-  geom_bar(stat="identity", width = 0.8) +
-  coord_flip() +  # Flip coordinates for horizontal bars
-  theme_minimal() +
-  labs(x="Cantons", y="Percentage", title="Distribution among swiss visitors") +
-  theme(legend.title = element_blank(), # Remove the legend title
-        legend.position = "none", # Hide the legend as the colors are not necessary with labels
-        plot.title = element_text(hjust = 0.5), # Center the plot title
+# plot scaled_ratio per canton
+ggplot(Inside_Switzerland_ratio,
+       aes(x=reorder(Canton, Scaled_Ratio),
+           y=Scaled_Ratio)) +
+  geom_bar(stat="identity",
+           width = 0.8) +
+  labs(title="Distribution among swiss visitors (scaled ratio)",
+       x="Cantons",
+       y="Percentage") +
+  theme(legend.title = element_blank(),
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
-  geom_text(aes(label=sprintf("%.2f%%", Percentage)), position=position_dodge(width=-0.5), vjust=0.3, hjust=-0.1, size = 3) + # Add percentage labels
-  ylim(0, 22)  # Extend y-axis range
-
+  geom_text(aes(label=sprintf("%.2f%%", 100 * Scaled_Ratio)),
+            position=position_dodge(width=-0.5),
+            vjust=0.3,
+            hjust=-0.1,
+            size = 3) +
+  coord_flip() +
+  theme_minimal()
 ```
 
 As we can see on this table, the biggest part of the Swiss visitors surveyed in this study are people from Vaud (approx. 20%), Bern (approx. 16%) and Zurich (approx. 12%). 
@@ -277,9 +306,11 @@ Swiss_germans_percentage <- Inside_Switzerland %>%
 
 # sum(Swiss_germans_percentage$Percentage)
         
-datatable(Swiss_germans_percentage, options = list(pageLength = 10,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE)
+datatable(Swiss_germans_percentage,
+          rownames = FALSE,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE))
 ```
 
 Bern, Zurich and Aargau are the top 3 cantons represented among all swiss german cantons (with in approx. 26.5%, 19.5% and 10.5% in the order)
@@ -307,17 +338,20 @@ counts <- counts %>%
 
 ```{r}
 # Plot
-ggplot(counts, aes(x = is_swiss_german, y = percentage, fill = is_swiss_german)) +
+ggplot(counts,
+       aes(x = is_swiss_german,
+           y = percentage,
+           fill = is_swiss_german)) +
   geom_bar(stat = "identity") +
   scale_x_discrete(labels = c("Others", "Swiss germans")) +
   theme_minimal() +
   theme(legend.position = "none") + 
-  geom_text(aes(label=sprintf("%.2f%%", percentage)), position=position_stack(vjust=0.5)) + 
+  geom_text(aes(label=sprintf("%.2f%%", percentage)),
+            position=position_stack(vjust=0.5)) + 
   labs(title = "Percentage of Swiss German Cantons vs Other Cantons",
        x = "Canton Type",
        y = "Percentage") +
-  ylim(0, 90)  # Extend y-axis range
-
+  ylim(0, 90)
 ```
 
 Over all the swiss citizen, we can see that 68% of them are coming from the swiss german part. 
@@ -1231,9 +1265,9 @@ ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
 ## Partie Victor
 ## Responses in % to the question "Who did you travel with?"
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
-data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
+data <- read.csv(here("data","TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 
-explanations <- read.csv("../data/explanations.csv")
+explanations <- read.csv(here("data","explanations.csv"))
 
 which(colnames(data) == "F31_01")
 which(colnames(data) == "F32")
@@ -1286,7 +1320,6 @@ ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
   geom_text(aes(label = paste0(round(Percentage, 1), "%")), vjust = -0.5, size = 3, color = "black") +
   labs(title = "Frequency of responses", x = "Traveled with", y = "Percentage") +
   ylim(0, 100)
-
 ```
 We notice that more than 2/3 of overall visitors came to Vaud with their partner (68.7%). Of these, 43% came only with their partner, without friends, children or other family.
 
