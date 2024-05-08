@@ -11,43 +11,36 @@ Within this section, we present a series of maps showcasing the districts of can
 Note that the proportions displayed on the map represent percentages relative to the total number of visitors per district. However, due to the small numbers of visitors to certain origins and nationalities, these proportions should not be taken at face value for all areas. For better context, the total number of visitors per district is displayed alongside the percentage.
 
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
-# Load the packages
+# Load the packages and load the data
 source(here::here("scripts", "setup.R"))
-# Import and setup data
-
-data <- read.csv(here("data","TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
-
-df <- data[, 18:33]
-
-# Keep english columns only
-seq(2, 17, 2)
-df <- df[, seq(2, 17, 2)]
+data <- read.csv(here("data","TMS_dataset_Vaud_20240314_FINAL.csv"),
+                 sep = ",")
+# Select only the columns we need and keeping only the english columns
+df <- data[, 18:33] # columns from F31_01_ENG to F31_17_ENG
+df <- df[, seq(2, 17, 2)] # select only the columns with the english questions
 
 # Set responses to binary values
 for (i in 1:ncol(df)) {
-  df[, i] <- ifelse(df[, i] == "Applies", 1, ifelse(df[, i] == "Not applicable", 0, NA))
-}
+  df[, i] <- ifelse(df[, i] == "Applies", 1,
+                    ifelse(df[, i] == "Not applicable", 0, NA))}
 
 # We add a column to separate couples from families. Here people only traveled with their partner.
-
-df$couples <- ifelse(df$F31_02_ENG == 1 & df$F31_03_ENG == 0 & df$F31_04_ENG == 0 & df$F31_05_ENG == 0, 1, 0)
+df$couples <- ifelse(df$F31_02_ENG == 1 &
+                       df$F31_03_ENG == 0 &
+                       df$F31_04_ENG == 0 &
+                       df$F31_05_ENG == 0,1, 0)
 
 
 # Data from https://labs.karavia.ch/swiss-boundaries-geojson/
-districts <- sf::read_sf("../data/swiss_districts.geojson")
-#districts
-
+districts <- sf::read_sf(here("data","swiss_districts.geojson"))
 ```
 
 ```{r}
-
 vaud <- districts |>
   dplyr::filter(KANTONSNUM == 22)
-
 ```
 
 ```{r}
-
 # We will transform data to include corresponding leaflet district. 
 #unique(data$F105_Code)
 
@@ -80,7 +73,6 @@ vaud$sum[vaud$NAME == "Lavaux-Oron"] <- sum(data$leaflet_districts == "Lavaux-Or
 vaud$sum[vaud$NAME == "Lausanne"] <- sum(data$leaflet_districts == "Lausanne")
 vaud$sum[vaud$NAME == "Broye-Vully"] <- sum(data$leaflet_districts == "Broye-Vully")
 vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Ouest lausannois")
-
 ```
 
 ## Group types
@@ -152,7 +144,6 @@ leaflet(vaud) %>%
   leaflet::addPolygons(fillOpacity = 0.75, color = ~children_palette(vaud$children_proportion), weight = 0) %>%
   leaflet::addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$children_proportion, "%", "Total: ", vaud$children_sum))
 # High proportion of children in Aigle discrict, maybe for ski holidays.
-
 ```
 
 # Alone
@@ -190,11 +181,12 @@ leaflet(vaud) %>%
 :::
 
 ## Seasonality
-These maps show us which districts are most visited in the 2 main yearly seasons, summer and winter. We see a clear change in the district of Aigle, which has many more visitors during the winter, due to it being a region that is home to many ski slopes and winter activities. The main district that seems to profit from the summer months is Jura-Nord vaudois, and the proportion of visitors to the capital is indifferent to the seasons.
 
+These maps show us which districts are most visited in the 2 main yearly seasons, summer and winter. We see a clear change in the district of Aigle, which has many more visitors during the winter, due to it being a region that is home to many ski slopes and winter activities. The main district that seems to profit from the summer months is Jura-Nord vaudois, and the proportion of visitors to the capital is indifferent to the seasons.
 
 ::: panel-tabset
 # Summer
+
 ```{r}
 # Function to calculate sums for summer
 calculate_summer_sum <- function(data, vaud) {
@@ -218,10 +210,10 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~summer_palette(vaud$summer_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$summer_proportion, "%", "Total: ", vaud$summer_sum))
-
 ```
 
 # Winter
+
 ```{r}
 # Function to calculate sums for winter
 calculate_winter_sum <- function(data, vaud) {
@@ -245,12 +237,13 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~winter_palette(vaud$winter_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$winter_proportion, "%", "Total: ", vaud$winter_sum))
-
 ```
 :::
 
 ## Average spending
+
 Here is a map of the average and total spending by district. We can see that both the average and total spending is highest in the district of Riviera-Pays-d'Enhaut. We only take into account respondents with total expenses of under 30'000 CHF, in order to filter outliers.
+
 ```{r}
 # Drop outliers
 data_spending <- subset(data, F81_Total < 30000)
@@ -275,11 +268,12 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~spending_palette(vaud$average_spending), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$average_spending, "CHF", "Total: ", vaud$spending_sum, "CHF"))
-
 ```
 
 ## Swiss tourists
-Maps of the most frequently visited districts by tourists of Swiss origin. 
+
+Maps of the most frequently visited districts by tourists of Swiss origin.
+
 ```{r}
 # Swiss sub columns
 
@@ -327,7 +321,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~swiss_german_palette(vaud$swiss_german_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$swiss_german_proportion, "%", "Total: ", vaud$swiss_german_sum))
-
 ```
 
 # Swiss-French
@@ -360,11 +353,10 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~swiss_french_palette(vaud$swiss_french_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$swiss_french_proportion, "%", "Total: ", vaud$swiss_french_sum))
-
 ```
 :::
 
-The proportion of travelers from Ticino and Grisons is negligible (< 1% proportion for any district) so we don't include them on the map.
+The proportion of travelers from Ticino and Grisons is negligible (\< 1% proportion for any district) so we don't include them on the map.
 
 ## French tourists
 
@@ -397,8 +389,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~france_idf_palette(vaud$france_idf_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_idf_proportion, "%", "Total: ", vaud$france_idf_sum))
-
-
 ```
 
 Tourists from Île-de-France are mainly interested in visiting Lausanne.
@@ -431,8 +421,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~france_ara_palette(vaud$france_ara_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_ara_proportion, "%", "Total: ", vaud$france_ara_sum))
-
-
 ```
 
 # Rest of France
@@ -465,8 +453,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~france_rest_palette(vaud$france_rest_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$france_rest_proportion, "%", "Total: ", vaud$france_rest_sum))
-
-
 ```
 :::
 
@@ -501,7 +487,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~uk_london_palette(vaud$uk_london_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_london_proportion, "%", "Total: ", vaud$uk_london_sum))
-
 ```
 
 There was a high proportion of visitors from London in the district Lavaux-Oron. We can't confirm that visitors from London are more interested in this district than other UK tourists, since the sample is so small.
@@ -534,7 +519,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~uk_england_palette(vaud$uk_england_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_england_proportion, "%", "Total: ", vaud$uk_england_sum))
-
 ```
 
 # Scotland
@@ -565,7 +549,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~uk_scotland_palette(vaud$uk_scotland_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_scotland_proportion, "%", "Total: ", vaud$uk_scotland_sum))
-
 ```
 :::
 
@@ -602,7 +585,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~de_baden_palette(vaud$de_baden_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_baden_proportion, "%", "Total: ", vaud$de_baden_sum))
-
 ```
 
 Baden-Württemberg is the German region that is closest to Vaud geographically.
@@ -635,7 +617,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~de_bayern_palette(vaud$de_bayern_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_bayern_proportion, "%", "Total: ", vaud$de_bayern_sum))
-
 ```
 
 # Nordrhein-Westfalen
@@ -666,9 +647,7 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~de_nordrhein_palette(vaud$de_nordrhein_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_nordrhein_proportion, "%", "Total: ", vaud$de_nordrhein_sum))
-
 ```
-
 
 # Rest of Germany
 
@@ -698,7 +677,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~de_rest_palette(vaud$de_rest_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$de_rest_proportion, "%", "Total: ", vaud$de_rest_sum))
-
 ```
 :::
 
@@ -733,7 +711,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~us_california_palette(vaud$us_california_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$us_california_proportion, "%", "Total: ", vaud$us_california_sum))
-
 ```
 
 # Rest of US
@@ -764,7 +741,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~us_rest_palette(vaud$us_rest_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$us_rest_proportion, "%", "Total: ", vaud$us_rest_sum))
-
 ```
 :::
 
@@ -799,7 +775,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~belgium_palette(vaud$belgium_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$belgium_proportion, "%", "Total: ", vaud$belgium_sum))
-
 ```
 
 A high proportion of visitors of the Aigle district are from Belgium.
@@ -832,7 +807,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~spain_palette(vaud$spain_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$spain_proportion, "%", "Total: ", vaud$spain_sum))
-
 ```
 
 # Netherlands
@@ -863,7 +837,6 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~netherlands_palette(vaud$netherlands_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$netherlands_proportion, "%", "Total: ", vaud$netherlands_sum))
-
 ```
 
 # Canada
@@ -894,9 +867,7 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~canada_palette(vaud$canada_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$canada_proportion, "%", "Total: ", vaud$canada_sum))
-
 ```
-
 
 # Italy
 
@@ -926,6 +897,5 @@ leaflet(vaud) %>%
   setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   addPolygons(fillOpacity = 0.75, color = ~italy_palette(vaud$italy_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$italy_proportion, "%", "Total: ", vaud$italy_sum))
-
 ```
 :::
