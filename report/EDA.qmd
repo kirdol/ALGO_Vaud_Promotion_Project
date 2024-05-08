@@ -7,7 +7,7 @@ format:
 
 # EDA
 
-# Partie Stefan
+## Partie Stefan
 
 ```{r output = FALSE, echo =FALSE}
 source(here::here("scripts", "setup.R"))
