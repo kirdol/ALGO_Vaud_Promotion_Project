@@ -1,9 +1,4 @@
-# Load necessary libraries
-library(tm)
-library(ggplot2)
-library(here)
-
-# Set up the working environment
+# Loading the packages
 source(here::here("scripts", "setup.R"))
 
 # Read data
@@ -26,11 +21,9 @@ cleanText <- function(doc) {
   # Ensure that doc is a single character string
   doc <- paste(doc, collapse = " ")
   # If the document is empty after cleaning, keep a placeholder text
-  if (nchar(trimws(doc)) == 0) {
-    return("emptyplaceholder")  # Placeholder for empty documents
-  }
-  return(doc)
-}
+  if (nchar(trimws(doc)) == 0)
+    {return("emptyplaceholder")}  # Placeholder for empty documents
+  return(doc)}
 
 # Apply the custom cleaning function
 suppressWarnings(docs <- tm_map(docs, content_transformer(cleanText)))
@@ -45,13 +38,15 @@ words <- sort(rowSums(matrix), decreasing = TRUE)
 other_accomodation_df <- data.frame(word = names(words), freq = words)
 
 # Create a word cloud
-accomodation_wordcloud <- ggplot(other_accomodation_df, aes(label = word, size = freq, color = word)) +
-  geom_text_wordcloud(
-    shape = 'square',   # Change shape if necessary
-    rm_outside = TRUE   # Remove words outside the plot
-  ) +
-  scale_size_area(max_size = 20) +  # Adjust max size for better fit
-  theme_minimal() +  # Clean theme
-  theme(text = element_text(size = 12))  # Adjust text size
+accomodation_wordcloud <- ggplot(other_accomodation_df,
+                                 aes(label = word,
+                                     size = freq,
+                                     color = word)) +
+  geom_text_wordcloud(shape = 'square',
+                      rm_outside = TRUE) +
+  scale_size_area(max_size = 20) +
+  theme_minimal() +
+  theme(text = element_text(size = 12))
 
+# Print the word cloud
 print(accomodation_wordcloud)
