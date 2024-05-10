@@ -1,3 +1,7 @@
 # Conclusion
 
+Through this report, we managed to make the survey data stand out using graphs and plots. Additionally, we observed connections among multiple factors within responses, which is difficult to see with raw data alone. An interesting aspect of the survey was the diversity of the questions asked to individual repondents, which enabled us to display links between factors.
+
+However, our analysis was constrained by the relatively small dataset of 2,487 rows. Consequently, when we examine particular demographics, such as regional origins, in our research, our findings lack certainty due to the small number of people we studied, which makes it hard to determine if our findings are statistically significant or merely random occurrences.
+
 ## Conseils pour vaud promotion
