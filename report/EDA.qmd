@@ -56,9 +56,9 @@ ggplot(F05_01_PCT,
   geom_bar(stat="identity") +
   coord_flip() +
   theme_minimal() +
-  labs(x="Continents of origin",
+  labs(x="Continents of Origin",
        y="Percentages",
-       title="Percentage of Each Unique Continent of origin") +
+       title="Distribution of Each Continent of Origin") +
   theme(legend.title = element_blank(),
         legend.position = "none",
         plot.title = element_text(hjust = 0.5),
@@ -115,7 +115,7 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
   coord_flip() +
   scale_fill_brewer(palette = "Set3", name = "Continent") +
   theme_minimal() +
-  labs(title = "Percentage of Responses by Country and Continent of origin",
+  labs(title = "Distribution of Responses by Country and Continent of Origin",
        x = "Country of Origin",
        y = "Percentages") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 9), 
@@ -191,9 +191,9 @@ datatable(nationality_ratio_per_city, options = list(pageLength = 10,
 
 Again, the low number of data available in our data don't allow us to get really satisfying results for every city surveyed. 
 
-As Swiss citizens accounted for more than 30% of the visitors surveyed, we have decided to know more about the percentages of people coming from Switzerland, visiting Switzerland. Therefore, here is the distribution of visitors per canton of origin.
+As Swiss citizens accounted for more than 30% of the visitors surveyed, we have decided to know more about the percentages of people coming from Switzerland, visiting Switzerland. Therefore, here is the distribution of visitors per canton of origin. 
 
-```{r}
+```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland}
 
 ## Séparation cantons suisse-allemands
 
@@ -220,16 +220,7 @@ As Swiss citizens accounted for more than 30% of the visitors surveyed, we have 
   mutate(Percentage = Count/sum(Count)) %>%
   rename(Canton = F05_03)
 
- 
- datatable(Inside_Switzerland,
-           options = list(pageLength = 10,
-                          class = "hover",
-                          searchHighlight = TRUE),
-           rownames = FALSE) %>%
-  formatPercentage('Percentage', 2)
-```
 
-```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland}
 # Merging the population data with the original data
 population_data <-
   data.frame(Canton = c("Aargau", "Appenzell Ausserrhoden",
@@ -257,16 +248,18 @@ data_merged$Population <- as.numeric(data_merged$Population)
 
 # Calculating the ratio of occurrences per population for each canton
 Inside_Switzerland_ratio <- data_merged %>%
+  mutate(Percentage = Count/sum(Count)) %>%
   mutate(Ratio = Count / Population) %>%
   mutate(Scaled_Ratio = Ratio / sum(Ratio)) %>%
-  select(Canton, Count, Population, Ratio, Scaled_Ratio)
+  select(Canton, Count, Percentage, Population, Ratio, Scaled_Ratio)
 
 # Now output the table with your custom settings
 datatable(Inside_Switzerland_ratio,
           options = list(pageLength = 10,
                          class = "hover",
-                         searchHighlight = TRUE),
-          rownames = FALSE) %>%
+                         searchHighlight = TRUE,
+  columnDefs = list(list(targets = 4, visible = FALSE))),rownames = FALSE) %>%
+  formatPercentage('Percentage', 2) %>%
   formatPercentage('Ratio', 5) %>%
   formatPercentage('Scaled_Ratio', 2)
 ```

@@ -14,7 +14,7 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 
 **Plot of the total number of days spent in Vaud per month of the year**
 
-Now let's explore the number of day spend per month of the year in the canton of Vaud
+Now let's explore the number of day spent per month of the year in the Canton of Vaud.
 
 ```{r, message = FALSE, warning = FALSE}
 ### F12 & F13 ###
@@ -246,7 +246,7 @@ Now let's explore the percentage of trip category per continent. In the survey, 
 ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity") +
   labs(x = "Country", y = "Percentages", fill = "Type of Trip") +
-  ggtitle("Stacked Bar Plot of Type of Trip by Country") +
+  ggtitle("Type of Trip by Continent of Origin") +
   scale_fill_manual(values = my_colors) + # Use your defined colors here
   geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 5) +
   theme_minimal() + 
