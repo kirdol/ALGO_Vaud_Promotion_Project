@@ -19,7 +19,8 @@ packages_loaded <- c(
   "ggrepel",
   "kableExtra",
   "knitr",
-  "visdat")
+  "visdat",
+  "summarytools")
 
 # Function that install the packages if not already installed on your computer
 for (pkg in packages_loaded) {
@@ -33,4 +34,3 @@ for (pkg in packages_loaded) {
 # cleaning of the environment
 rm(pkg,
    packages_loaded)
-

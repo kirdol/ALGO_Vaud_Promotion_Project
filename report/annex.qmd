@@ -1,10 +1,12 @@
-# Annex {#sec-Annex}
+# Annex
 
 ```{r loading the packages, echo = FALSE, message = FALSE}
 source(here::here("scripts", "setup.R"))
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 ```
 
-## Raw questions description in German
+## Raw questions descriptions {#sec-data-description}
+### Raw questions description in German
 Find below the raw description translated in German:
 
 ```{r raw questions in german, echo = FALSE}
@@ -22,7 +24,7 @@ questions_ger %>%
                                       "responsive"))
 ```
 
-## Raw questions description in English
+### Raw questions description in English
 Find below the raw description translated in English:
 
 ```{r raw questions in english, echo = FALSE}
@@ -39,3 +41,11 @@ questions_eng %>%
                                       "condensed",
                                       "responsive"))
 ```
+
+## Data summary {#sec-data-summary}
+Find below the full techincal description of the dataset:
+
+```{r echo = FALSE}
+print(dfSummary(data), method = "render")
+```
+

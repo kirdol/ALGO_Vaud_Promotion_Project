@@ -5,7 +5,7 @@ source(here::here("scripts", "setup.R"))
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 ```
 
-Find below the list of questions that were asked during the survey. The original questionnaire that we received was in German. The questions were translated before conducting our analysis. The version shown below is a simplified version of the original questions. Fin the original German and English explanation in [Annex -@sec-Annex].
+Find below the list of questions that were asked during the survey. The original questionnaire that we received was in German. The questions were translated before conducting our analysis. The version shown below is a simplified version of the original questions. Fin the original German and English explanation in [Annex -@sec-data-description] and a better view at the type of data in [Annex -@sec-data-summary].
 
 ```{r dataframe with the questions, echo=FALSE}
 questions <- data.frame(
@@ -170,4 +170,5 @@ data_ordered <- data_with_missing[, ordered_indices]
 vis_miss(data_ordered)
 ```
 
-We can clearly see that some columns have a high percentage of missing values. Some of these missing values are due to questions that are answered only if the person completing the survey does not find the correct answer among the proposed multiple-choice options. Therefore, they need to input their own custom answer. F82_0x columns are about the expsenses of the tourists if they took a package. F81_0x columns are linked to the expenses of the tourists that did not took a package. These column are thus complementary (`r round(sum(is.na(data$F82_01)) / nrow(data) * 100)`% + `r round(sum(is.na(data$F81_01)) / nrow(data) * 100)`% = `r (sum(is.na(data$F82_01)) / nrow(data) * 100) + (sum(is.na(data$F81_01)) / nrow(data) * 100)`%). This needs to be kept in mind when interpreting the results of our analysis
+
+It's evident that several columns exhibit a high rate of missing data. This often occurs when respondents are required to enter a custom answer because the provided multiple-choice options do not include an appropriate response. The F82_0x columns relate to the expenses incurred by tourists who opted for a package, while the F81_0x columns pertain to expenses of tourists who did not purchase a package. These column are thus complementary (`r round(sum(is.na(data$F82_01)) / nrow(data) * 100)`% + `r round(sum(is.na(data$F81_01)) / nrow(data) * 100)`% = `r (sum(is.na(data$F82_01)) / nrow(data) * 100) + (sum(is.na(data$F81_01)) / nrow(data) * 100)`%). This needs to be kept in mind when interpreting the results of our analysis.

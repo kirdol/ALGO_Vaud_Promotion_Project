@@ -82,7 +82,7 @@ vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Oues
 
 This is a plot of the proportion of visitors for each district traveling as a couple, which means only with their partner, without friends or other family. We notice a high proportion of couples in Broye-Vully and Lavaux-Oron.
 
-```{r}
+```{r, cache = TRUE}
 # Couples
 
 # Add couples column to data
@@ -117,7 +117,7 @@ leaflet(vaud) %>%
 
 This plot shows the proportion of visitors traveling with children in each district. Notably, Jura-Nord Vaudois and Aigle districts exhibit a high proportion of children. We attribute this to the prevalence of ski holidays and family-friendly outdoor activities, such as hiking, in these regions.
 
-```{r}
+```{r, cache = TRUE}
 # Add children column to data
 data$children <- df$F31_04_ENG
 
@@ -150,7 +150,7 @@ leaflet(vaud) %>%
 
 This is a plot of the proportion of visitors for each district traveling alone. The highest proportion of solo visitors is in La Côte region, in districts of Morges and Nyon.
 
-```{r}
+```{r, cache = TRUE}
 # Add alone column to data
 data$alone <- df$F31_01_ENG
 
@@ -187,7 +187,7 @@ These maps show us which districts are most visited in the 2 main yearly seasons
 ::: panel-tabset
 # Summer
 
-```{r}
+```{r, cache = TRUE}
 # Function to calculate sums for summer
 calculate_summer_sum <- function(data, vaud) {
   vaud$summer_sum <- NA
@@ -214,7 +214,7 @@ leaflet(vaud) %>%
 
 # Winter
 
-```{r}
+```{r, cache = TRUE}
 # Function to calculate sums for winter
 calculate_winter_sum <- function(data, vaud) {
   vaud$winter_sum <- NA
@@ -244,7 +244,7 @@ leaflet(vaud) %>%
 
 Here is a map of the average and total spending by district. We can see that both the average and total spending is highest in the district of Riviera-Pays-d'Enhaut. We only take into account respondents with total expenses of under 30'000 CHF, in order to filter outliers.
 
-```{r}
+```{r, cache = TRUE}
 # Drop outliers
 data_spending <- subset(data, F81_Total < 30000)
 
@@ -295,7 +295,7 @@ swiss_italian_cantons = c("Tessin")
 
 Here we see the proportion of Swiss-German travelers for each district.
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for swiss germans
 data$swiss_german <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_german_cantons, 1, 0)
 
@@ -327,7 +327,7 @@ leaflet(vaud) %>%
 
 Here we see the proportion of Swiss-French travelers for each district
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for swiss french
 data$swiss_french <- ifelse(data$F05_02 == "Schweiz" & data$F05_03 %in% swiss_french_cantons, 1, 0)
 
@@ -363,7 +363,7 @@ The proportion of travelers from Ticino and Grisons is negligible (\< 1% proport
 ::: panel-tabset
 # Île-de-France
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for Île-de-France
 data$france_idf <- ifelse(data$F05_02 == "Frankreich" & data$F05_03 == "Île-de-France", 1, 0)
 
@@ -395,7 +395,7 @@ Tourists from Île-de-France are mainly interested in visiting Lausanne.
 
 # Auvergne-Rhône-Alpes
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for Auvergne-Rhône-Alpes
 data$france_ara <- ifelse(data$F05_02 == "Frankreich" & data$F05_03 == "Auvergne-Rhône-Alpes", 1, 0)
 
@@ -425,7 +425,7 @@ leaflet(vaud) %>%
 
 # Rest of France
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for Rest of France
 data$france_rest <- ifelse(data$F05_02 == "Frankreich" &
                              data$F05_03 != "Auvergne-Rhône-Alpes" &
@@ -461,7 +461,7 @@ leaflet(vaud) %>%
 ::: panel-tabset
 # London
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for uk_london
 data$uk_london <- ifelse(data$F05_02_ENG == "United Kingdom" & data$F05_03 == "England" & data$F05_04 == "London City of", 1, 0)
 
@@ -493,7 +493,7 @@ There was a high proportion of visitors from London in the district Lavaux-Oron.
 
 # Rest of England
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for uk_england
 data$uk_england <- ifelse(data$F05_02_ENG == "United Kingdom" & data$F05_03 == "England" & data$F05_04 != "London City of", 1, 0)
 
@@ -523,7 +523,7 @@ leaflet(vaud) %>%
 
 # Scotland
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for uk_scotland
 data$uk_scotland <- ifelse(data$F05_02_ENG == "United Kingdom" & data$F05_03 == "Scotland", 1, 0)
 
@@ -559,7 +559,7 @@ There were too few visitors from Northern Ireland and Wales to be included in th
 ::: panel-tabset
 # Baden-Württemberg
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for de_baden
 data$de_baden <- ifelse(data$F05_02 == "Deutschland" & data$F05_03 == "Baden-Württemberg", 1, 0)
 
@@ -591,7 +591,7 @@ Baden-Württemberg is the German region that is closest to Vaud geographically.
 
 # Bayern
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for de_bayern
 data$de_bayern <- ifelse(data$F05_02 == "Deutschland" & data$F05_03 == "Bayern", 1, 0)
 
@@ -621,7 +621,7 @@ leaflet(vaud) %>%
 
 # Nordrhein-Westfalen
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for de_nordrhein
 data$de_nordrhein <- ifelse(data$F05_02 == "Deutschland" & data$F05_03 == "Nordrhein-Westfalen", 1, 0)
 
@@ -651,7 +651,7 @@ leaflet(vaud) %>%
 
 # Rest of Germany
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for de_rest
 data$de_rest <- ifelse(data$F05_02 == "Deutschland" & data$F05_03 != "Baden-Württemberg" & data$F05_03 != "Bayern" & data$F05_03 != "Nordrhein-Westfalen", 1, 0)
 
@@ -685,7 +685,7 @@ leaflet(vaud) %>%
 ::: panel-tabset
 # California
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for us_california
 data$us_california <- ifelse(data$F05_02_ENG == "United States of America" & data$F05_03 == "California", 1, 0)
 
@@ -715,7 +715,7 @@ leaflet(vaud) %>%
 
 # Rest of US
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for us_rest
 data$us_rest <- ifelse(data$F05_02_ENG == "United States of America" & data$F05_03 != "California", 1, 0)
 
@@ -749,7 +749,7 @@ leaflet(vaud) %>%
 ::: panel-tabset
 # Belgium
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for belgium
 data$belgium <- ifelse(data$F05_02_ENG == "Belgium", 1, 0)
 
@@ -781,7 +781,7 @@ A high proportion of visitors of the Aigle district are from Belgium.
 
 # Spain
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for spain
 data$spain <- ifelse(data$F05_02_ENG == "Spain", 1, 0)
 
@@ -811,7 +811,7 @@ leaflet(vaud) %>%
 
 # Netherlands
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for netherlands
 data$netherlands <- ifelse(data$F05_02_ENG == "Netherlands", 1, 0)
 
@@ -841,7 +841,7 @@ leaflet(vaud) %>%
 
 # Canada
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for canada
 data$canada <- ifelse(data$F05_02_ENG == "Canada", 1, 0)
 
@@ -871,7 +871,7 @@ leaflet(vaud) %>%
 
 # Italy
 
-```{r}
+```{r, cache = TRUE}
 # Binary column for italy
 data$italy <- ifelse(data$F05_02_ENG == "Italy", 1, 0)
 

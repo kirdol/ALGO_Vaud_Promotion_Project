@@ -731,15 +731,16 @@ data_long <- data %>%
     "F81_06" = "Other expenses"
   ))
 
-# Generate a list of unique cities (F105_Code)
+# Generate a list of unique cities (F105_OrgCode assumed correct column name)
 cities <- unique(data_long$F105_OrgCode)
 
 # Create a plotly object with a dropdown menu
-p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', color = ~Spending_Type) %>%
+p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', colors = ~Spending_Type) %>%
   layout(
     title = "Spendings by City",
     xaxis = list(title = "Spending Type"),
     yaxis = list(title = "Amount"),
+    showlegend = FALSE,  # Set this to FALSE to remove the legend
     updatemenus = list(
       list(
         y = 0.9,
@@ -763,6 +764,7 @@ p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', color = ~
     )
   )
 
+# Print the plot object to display it
 p
 ```
 
