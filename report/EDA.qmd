@@ -1111,7 +1111,8 @@ plot_ly(combined_data,
 
 As we can see on the graph above, the best average is optain in `r combined_data$leaflet_districts[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But this statistics is not very representative to the reality. Only `r combined_data$Count[1]` people answered the survey in this district which is not enough to have a good idea of the quality of the hotels in this district. The second best region after `r combined_data$leaflet_districts[1]` is `r combined_data$leaflet_districts[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district got with `r combined_data$Count[2]` observation which is more representative. This high score for the Region of `r combined_data$leaflet_districts[2]` is not really surprising given the fact that this place is well know for its luxury hotels.
 
-# Partie Jeff - Expenses and where they come from, when, where and for which sector?
+# Partie Jeff 
+> Expenses and where they come from, when, where and for which sector?
 
 ## Percentage of people with package & without package
 
@@ -1134,7 +1135,7 @@ ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)
   geom_bar(stat = "identity") +
   geom_text(aes(label = sprintf("%.1f%%", Percentage)),  # Format the labels to one decimal place
             position = position_stack(vjust = 0.5),  # Adjust text to be inside the bars
-            color = "white") +
+            color = "black") +
   labs(title = "Percentage of Observations With and Without Package",
        x = "Type of Spending",
        y = "Percentage (%)") +
@@ -1362,14 +1363,14 @@ continent_summary <- data %>%
 p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percentage), y = Package_Tour_Percentage, fill = F05_01_ENG)) +
   geom_bar(stat = "identity") +
   geom_text(aes(label = sprintf("%.1f%%", Package_Tour_Percentage)),  # Adding percentage labels
-            position = position_stack(vjust = 0.5), color = "black", size = 3.5) +
+            vjust = -0.5, color = "black", size = 3.5) +  # Adjust vjust to position labels above bars
   labs(title = "Percentage of Package Tours by Continent",
        x = "Continent",
        y = "Percentage of Package Tours (%)") +
   scale_fill_brewer(palette = "Set3") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "none")  # Removing the legend for clarity
+        legend.position = "none") 
 
 # Display the plot
 print(p)
@@ -1384,11 +1385,13 @@ currency_data <- data %>%
   mutate(Percentage = n / sum(n) * 100)
 
 # Create a bar chart
-ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
-  geom_bar(stat = "identity") +
+ggplot(currency_data, aes(x = reorder(F80, desc(Percentage)), y = Percentage, fill = F80)) +
+  geom_bar(stat = "identity", fill = "skyblue") + 
+  geom_text(aes(label = paste0(round(Percentage, 1), "%")), vjust = -0.5, size = 3, color = "black") + 
   labs(title = "Distribution of Currency", x = "Currency", y = "Percentage (%)") +
+  ylim(0, 100) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + # Adjust text angle for better readability
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   scale_fill_discrete(name = "Currency")
 ```
 
