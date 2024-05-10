@@ -470,12 +470,13 @@ plot_ly(resort_counts_df,
 
 From this plot, we can see that the most pupular city in the canton of Vaud is Lausanne. Let's now have a look at the type of accommodation where the visitor stayed in the canton of Vaud. We took the liberty to remove the `r data %>% filter(F125_ENG == "#N/A") %>% summarise(Count = n())` observation where the type of accommodation was not specified. We can now concentrate more our attention on the district where the people stayed.
 
-```{r Most Popular District destinations, echo = FALSE}
-resort_counts <- table(data$leaflet_districts)
-accommodation_counts <- table(data$F125_ENG)
+::: panel-tabset
 
+# Total
+
+```{r Most Popular District destinations, echo = FALSE}
 # Proportion
-resort_counts_df <- as.data.frame(resort_counts)
+resort_counts <- as.data.frame(table(data$leaflet_districts))
 resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
 
 # Adjust factor levels based on Proportion descending
@@ -513,6 +514,317 @@ plot_ly(resort_counts_df,
                       tickformat = ',.0%'),
          hovermode = 'closest')
 ```
+
+
+# Switzerland
+
+```{r Most Popular District destinations Switzerland, echo = FALSE}
+# Proportion
+swiss_data_destination <- subset(data, F05_02_ENG == "Switzerland")
+resort_counts_df <- as.data.frame(table(swiss_data_destination$leaflet_districts))
+resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
+
+# Adjust factor levels based on Proportion descending
+resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+
+# Custom hover text
+resort_counts_df$HoverText <- 
+  paste("District name: ", resort_counts_df$Var1,
+        "<br>Number of people visiting this district: ",
+        resort_counts_df$Freq, "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this district: ",
+        scales::percent(resort_counts_df$Proportion))
+
+# Plot as a bar plot
+plot_ly(resort_counts_df,
+        x = ~Var1,
+        y = ~Proportion,
+        type = 'bar',
+        text = "",
+        hoverinfo = 'text',
+        hovertext = ~HoverText,
+        textposition = 'auto') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = 'Most Popular Destinations (District)',
+         xaxis = list(title = 'District',
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(title = 'Proportion',
+                      showgrid = TRUE,
+                      zeroline = FALSE,
+                      tickformat = ',.0%'),
+         hovermode = 'closest')
+```
+
+# France
+
+```{r Most Popular District destinations France, echo = FALSE}
+# Proportion
+french_data_destination <- subset(data, F05_02_ENG == "France")
+resort_counts_df <- as.data.frame(table(french_data_destination$leaflet_districts))
+resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
+
+# Adjust factor levels based on Proportion descending
+resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+
+# Custom hover text
+resort_counts_df$HoverText <- 
+  paste("District name: ", resort_counts_df$Var1,
+        "<br>Number of people visiting this district: ",
+        resort_counts_df$Freq, "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this district: ",
+        scales::percent(resort_counts_df$Proportion))
+
+# Plot as a bar plot
+plot_ly(resort_counts_df,
+        x = ~Var1,
+        y = ~Proportion,
+        type = 'bar',
+        text = "",
+        hoverinfo = 'text',
+        hovertext = ~HoverText,
+        textposition = 'auto') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = 'Most Popular Destinations (District)',
+         xaxis = list(title = 'District',
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(title = 'Proportion',
+                      showgrid = TRUE,
+                      zeroline = FALSE,
+                      tickformat = ',.0%'),
+         hovermode = 'closest')
+```
+
+# UK
+
+```{r Most Popular District destinations UK, echo = FALSE}
+# Proportion
+uk_data_destination <- subset(data, F05_02_ENG == "United Kingdom")
+resort_counts_df <- as.data.frame(table(uk_data_destination$leaflet_districts))
+resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
+
+# Adjust factor levels based on Proportion descending
+resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+
+# Custom hover text
+resort_counts_df$HoverText <- 
+  paste("District name: ", resort_counts_df$Var1,
+        "<br>Number of people visiting this district: ",
+        resort_counts_df$Freq, "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this district: ",
+        scales::percent(resort_counts_df$Proportion))
+
+# Plot as a bar plot
+plot_ly(resort_counts_df,
+        x = ~Var1,
+        y = ~Proportion,
+        type = 'bar',
+        text = "",
+        hoverinfo = 'text',
+        hovertext = ~HoverText,
+        textposition = 'auto') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = 'Most Popular Destinations (District)',
+         xaxis = list(title = 'District',
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(title = 'Proportion',
+                      showgrid = TRUE,
+                      zeroline = FALSE,
+                      tickformat = ',.0%'),
+         hovermode = 'closest')
+```
+
+# Germany
+
+```{r Most Popular District destinations Germany, echo = FALSE}
+# Proportion
+germany_data_destination <- subset(data, F05_02_ENG == "Germany")
+resort_counts_df <- as.data.frame(table(germany_data_destination$leaflet_districts))
+resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
+
+# Adjust factor levels based on Proportion descending
+resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+
+# Custom hover text
+resort_counts_df$HoverText <- 
+  paste("District name: ", resort_counts_df$Var1,
+        "<br>Number of people visiting this district: ",
+        resort_counts_df$Freq, "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this district: ",
+        scales::percent(resort_counts_df$Proportion))
+
+# Plot as a bar plot
+plot_ly(resort_counts_df,
+        x = ~Var1,
+        y = ~Proportion,
+        type = 'bar',
+        text = "",
+        hoverinfo = 'text',
+        hovertext = ~HoverText,
+        textposition = 'auto') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = 'Most Popular Destinations (District)',
+         xaxis = list(title = 'District',
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(title = 'Proportion',
+                      showgrid = TRUE,
+                      zeroline = FALSE,
+                      tickformat = ',.0%'),
+         hovermode = 'closest')
+```
+
+# USA
+
+```{r Most Popular District destinations USA, echo = FALSE}
+# Proportion
+usa_data_destination <- subset(data, F05_02_ENG == "United States of America")
+resort_counts_df <- as.data.frame(table(usa_data_destination$leaflet_districts))
+resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
+
+# Adjust factor levels based on Proportion descending
+resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+
+# Custom hover text
+resort_counts_df$HoverText <- 
+  paste("District name: ", resort_counts_df$Var1,
+        "<br>Number of people visiting this district: ",
+        resort_counts_df$Freq, "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this district: ",
+        scales::percent(resort_counts_df$Proportion))
+
+# Plot as a bar plot
+plot_ly(resort_counts_df,
+        x = ~Var1,
+        y = ~Proportion,
+        type = 'bar',
+        text = "",
+        hoverinfo = 'text',
+        hovertext = ~HoverText,
+        textposition = 'auto') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = 'Most Popular Destinations (District)',
+         xaxis = list(title = 'District',
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(title = 'Proportion',
+                      showgrid = TRUE,
+                      zeroline = FALSE,
+                      tickformat = ',.0%'),
+         hovermode = 'closest')
+```
+
+# Belgium
+
+```{r Most Popular District destinations Belgium, echo = FALSE}
+# Proportion
+belgium_data_destination <- subset(data, F05_02_ENG == "Belgium")
+resort_counts_df <- as.data.frame(table(belgium_data_destination$leaflet_districts))
+resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
+
+# Adjust factor levels based on Proportion descending
+resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+
+# Custom hover text
+resort_counts_df$HoverText <- 
+  paste("District name: ", resort_counts_df$Var1,
+        "<br>Number of people visiting this district: ",
+        resort_counts_df$Freq, "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this district: ",
+        scales::percent(resort_counts_df$Proportion))
+
+# Plot as a bar plot
+plot_ly(resort_counts_df,
+        x = ~Var1,
+        y = ~Proportion,
+        type = 'bar',
+        text = "",
+        hoverinfo = 'text',
+        hovertext = ~HoverText,
+        textposition = 'auto') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = 'Most Popular Destinations (District)',
+         xaxis = list(title = 'District',
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(title = 'Proportion',
+                      showgrid = TRUE,
+                      zeroline = FALSE,
+                      tickformat = ',.0%'),
+         hovermode = 'closest')
+```
+
+# Spain
+
+```{r Most Popular District destinations Spain, echo = FALSE}
+# Proportion
+spain_data_destination <- subset(data, F05_02_ENG == "Spain")
+resort_counts_df <- as.data.frame(table(spain_data_destination$leaflet_districts))
+resort_counts_df$Proportion <- (resort_counts_df$Freq / sum(resort_counts_df$Freq))
+
+# Adjust factor levels based on Proportion descending
+resort_counts_df$Var1 <- factor(resort_counts_df$Var1, levels = resort_counts_df$Var1[order(-resort_counts_df$Proportion)])
+
+# Custom hover text
+resort_counts_df$HoverText <- 
+  paste("District name: ", resort_counts_df$Var1,
+        "<br>Number of people visiting this district: ",
+        resort_counts_df$Freq, "/", sum(resort_counts_df$Freq),
+        "<br>Proportion of people visiting this district: ",
+        scales::percent(resort_counts_df$Proportion))
+
+# Plot as a bar plot
+plot_ly(resort_counts_df,
+        x = ~Var1,
+        y = ~Proportion,
+        type = 'bar',
+        text = "",
+        hoverinfo = 'text',
+        hovertext = ~HoverText,
+        textposition = 'auto') %>%
+  config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
+                                    'zoomOut2d', 'autoScale2d', 'resetScale2d',
+                                    'hoverClosestCartesian', 
+                                    'hoverCompareCartesian',
+                                    'toggleSpikelines', 'zoom')) %>%
+  layout(title = 'Most Popular Destinations (District)',
+         xaxis = list(title = 'District',
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(title = 'Proportion',
+                      showgrid = TRUE,
+                      zeroline = FALSE,
+                      tickformat = ',.0%'),
+         hovermode = 'closest')
+```
+
+:::
 
 As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r n_distinct(data$leaflet_districts)` district, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller one. It is still interesting to have a look to keep this in mind.
 
@@ -894,16 +1206,17 @@ plot_ly(spanish_accommodation_proportion,
                       automargin = TRUE))
 ```
 
-
 :::
 
-
-As we can see, the most popular type of accommodation in the canton of Vaud is Hotel/SPA House. It is interesting to note the proportion of people staying in Campsite. We can see below on the word cloud the most popular other type of accommodation.
+The most popular accommodation type in the canton of Vaud, according to a survey of 2,440 respondents, is the Hotel/SPA House, selected by 777 individuals. Notably, 293 people chose to stay at campsites. For Swiss respondents specifically, campsites rise to the second most popular option, with nearly 30% opting for this type of accommodation, while the Hotel/Spa House remains the top choice. Interestingly, the free apartment/house is highly favored by visitors from France, the United Kingdom, Germany, and Belgium, ranking in their top two choices. Conversely, visitors from the United States tend to prefer hotels, rented apartments/houses, or other types of accommodations over free apartments. Additionally, campsites are notably less popular among American visitors.
+Below, a word cloud illustrates other favored types of accommodation.
 
 ```{r wordcloud, echo = FALSE, warning = FALSE}
 # Running the wordcloud script
 source(here("scripts", "word_cloud_for_eda.R"))
 ```
+
+Among the `{r} sum(words)` respondents who did not choose traditional accommodations, the most popular alternative was staying with family, as indicated by `{r} words[1]` individuals. Staying with friends was the second most common choice, favored by `{r} words[2]` respondents, while staying at someone else's house ranked third with `{r} words[3]` mentions.
 
 ### Hotels Stars
 
@@ -974,7 +1287,8 @@ plot_ly(combined_data,
 
 As we can see on the graph above, the best average is optain in `r combined_data$leaflet_districts[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But this statistics is not very representative to the reality. Only `r combined_data$Count[1]` people answered the survey in this district which is not enough to have a good idea of the quality of the hotels in this district. The second best region after `r combined_data$leaflet_districts[1]` is `r combined_data$leaflet_districts[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district got with `r combined_data$Count[2]` observation which is more representative. This high score for the Region of `r combined_data$leaflet_districts[2]` is not really surprising given the fact that this place is well know for its luxury hotels.
 
-# Partie Jeff - Expenses and where they come from, when, where and for which sector?
+# Partie Jeff 
+> Expenses and where they come from, when, where and for which sector?
 
 ## Percentage of people with package & without package
 
@@ -997,7 +1311,7 @@ ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)
   geom_bar(stat = "identity") +
   geom_text(aes(label = sprintf("%.1f%%", Percentage)),  # Format the labels to one decimal place
             position = position_stack(vjust = 0.5),  # Adjust text to be inside the bars
-            color = "white") +
+            color = "black") +
   labs(title = "Percentage of Observations With and Without Package",
        x = "Type of Spending",
        y = "Percentage (%)") +
@@ -1225,14 +1539,14 @@ continent_summary <- data %>%
 p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percentage), y = Package_Tour_Percentage, fill = F05_01_ENG)) +
   geom_bar(stat = "identity") +
   geom_text(aes(label = sprintf("%.1f%%", Package_Tour_Percentage)),  # Adding percentage labels
-            position = position_stack(vjust = 0.5), color = "black", size = 3.5) +
+            vjust = -0.5, color = "black", size = 3.5) +  # Adjust vjust to position labels above bars
   labs(title = "Percentage of Package Tours by Continent",
        x = "Continent",
        y = "Percentage of Package Tours (%)") +
   scale_fill_brewer(palette = "Set3") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "none")  # Removing the legend for clarity
+        legend.position = "none") 
 
 # Display the plot
 print(p)
@@ -1247,11 +1561,13 @@ currency_data <- data %>%
   mutate(Percentage = n / sum(n) * 100)
 
 # Create a bar chart
-ggplot(currency_data, aes(x = F80, y = Percentage, fill = F80)) +
-  geom_bar(stat = "identity") +
+ggplot(currency_data, aes(x = reorder(F80, desc(Percentage)), y = Percentage, fill = F80)) +
+  geom_bar(stat = "identity", fill = "skyblue") + 
+  geom_text(aes(label = paste0(round(Percentage, 1), "%")), vjust = -0.5, size = 3, color = "black") + 
   labs(title = "Distribution of Currency", x = "Currency", y = "Percentage (%)") +
+  ylim(0, 100) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + # Adjust text angle for better readability
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   scale_fill_discrete(name = "Currency")
 ```
 
