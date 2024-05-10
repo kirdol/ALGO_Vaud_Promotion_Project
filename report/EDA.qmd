@@ -50,8 +50,8 @@ datatable(F05_01_PCT,
 ```{r, warning=FALSE, out.height="100%", out.width="100%", fig.width=7 }
 # plot numbers continent 
 ggplot(F05_01_PCT,
-       aes(x=reorder(Continent_of_origin, Percentage),
-           y=Percentage,
+       aes(x=reorder(Continent_of_origin, Percentage*100),
+           y=Percentage*100,
            fill=Continent_of_origin)) +
   geom_bar(stat="identity") +
   coord_flip() +
@@ -63,7 +63,7 @@ ggplot(F05_01_PCT,
         legend.position = "none",
         plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
-  geom_text(aes(label=sprintf("%.2f%%", Percentage)),
+  geom_text(aes(label=sprintf("%.2f%%", Percentage*100)),
             position=position_dodge(width=-0.5),
             vjust=-0.01,
             hjust=-0.1,
