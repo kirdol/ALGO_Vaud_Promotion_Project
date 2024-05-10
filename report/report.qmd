@@ -1,5 +1,6 @@
 ---
 title: "Algo Project Report"
+title-block-banner: "#0095C8"
 author: "Lodrik Adam, Stefan Favre, Victor Hogan, Jeff Macaraeg"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 format:
@@ -14,7 +15,7 @@ format:
     code-tools: true
     theme: Flatly
     code-block-bg: true
-    code-block-border-left: "#1ABC9C"
+    code-block-border-left: "#0095C8"
     link-external-icon: true
 ---
 
