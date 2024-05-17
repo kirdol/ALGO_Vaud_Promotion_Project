@@ -69,3 +69,13 @@ datatable(F05_02_PCT,
                          class = "hover",
                          searchHighlight = TRUE))
 ```
+
+##
+
+```{r Per city, the percentage of each visitor's country of origin, relative to the number of visitor of the city, echo=FALSE}
+datatable(nationality_ratio_per_city,
+          rownames = FALSE,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE))
+```

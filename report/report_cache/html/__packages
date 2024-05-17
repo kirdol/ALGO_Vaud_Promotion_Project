@@ -26,3 +26,4 @@ knitr
 visdat
 summarytools
 cowplot
+jsonlite

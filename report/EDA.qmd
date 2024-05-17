@@ -115,7 +115,7 @@ Our results show that Switzerland is the nationality the most represented among 
 
 Now in order to know more precisely about the destination of the visitors, we have decided to gather by city the percentage of country of origin. 
 
-```{r}
+```{r, warning=FALSE}
 # Counting the number of tourists by city and nationality
 tourists_by_nationality <- data %>%
   group_by(F105_Code, F05_02_ENG) %>%
@@ -183,9 +183,13 @@ final_data <- final_data %>%
 # Step 2: Group by F105_Code and compute the ratio
 final_data <- final_data %>%
   group_by(F105_Code) %>%
-  mutate(Ratio = round(Count / TotalCount, 3)) %>%
+  mutate(Ratio = round(Count / TotalCount, 3))
   ungroup()  # Ungroup to return to original data structure
   
+final_data <- final_data %>%
+  group_by(F105_Code, F05_02_ENG) %>%
+  arrange(desc(Ratio))
+
 # Step 3: Sum the Ratio for a specific city (e.g., "Lausanne")
 sum_ratio_lausanne <- final_data %>%
   filter(F105_Code == "Morges") %>%
@@ -193,11 +197,32 @@ sum_ratio_lausanne <- final_data %>%
   pull(SumRatio) ###why > 1 ??
 
 
-datatable(nationality_ratio_per_city,
-          rownames = FALSE,
-          options = list(pageLength = 10,
-                         class = "hover",
-                         searchHighlight = TRUE))
+# Plotly
+plot <- plot_ly(final_data, 
+                x = ~F105_Code, 
+                y = ~Ratio, 
+                color = ~F05_02_ENG, 
+                type = 'bar') %>%
+  layout(title = 'Stacked Bar Plot of Ratios by City and Nationality',
+         xaxis = list(title = 'City', tickangle = -45),
+         yaxis = list(title = 'Ratio'),
+         barmode = 'stack',
+         showlegend = FALSE)  # Remove the legend
+
+plot
+
+
+# Create the stacked bar plot
+# ggplot(final_data, aes(x = F105_Code, y = Ratio, fill = F05_02_ENG)) +
+#   geom_bar(stat = "identity") +
+#   labs(title = "Stacked Bar Plot of Ratios by City and Nationality",
+#        x = "City",
+#        y = "Ratio",
+#        fill = "Nationality") +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1),
+#         legend.position = "none")
+
 ```
 
 The percentage here was in fact a ratio representing the number of people from one particular nationality over the total number of visitors in each city. Unfortunately, as very few data has been collected in some cities, the ratio of visitor from one nationality over all the visitor surveyed can be really large (up to 1, in point of percentage). On the other hand, as data from some other city gathered a lot of answers, we observe that some country of origin (e.g. Austria in Lausanne) were only accounting for 0.2% of the total visitors. 
