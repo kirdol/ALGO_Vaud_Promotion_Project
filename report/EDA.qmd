@@ -5,24 +5,23 @@ format:
     fig-align: center
 ---
 
-# EDA
-
-## Partie Stefan
-
 ```{r Loading the packages and importing the data, output = FALSE, echo = FALSE}
 source(here::here("scripts", "setup.R"))
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
                  sep = ",")
 ```
 
-### Data Exploration: Who is coming? 
+# Exploratory Data Analysis
 
-**Global percentage of people coming in the canton of Vaud per continent**
+## Visitor Demographics 
 
-With the data gathered from the survey, we have first explored the overall distribution of nationalities of the visitors. Therefore, you will find here a table and a graph providing the frequency per nationality and the percentage of nationality it represents. 
+### Global Distribution of Visitors to the Canton of Vaud by Continent
 
-```{r}
+With the data gathered from the survey, we have first explored the overall distribution of nationalities of the visitors. Therefore, you will find here a graph providing the percentage of visitors per continent that came to visit the Canton of Vaud. You will find more details about the number of occurrences and percentages per continent in the Annex. 
+
+```{r, warning=FALSE, out.height="100%", out.width="100%", fig.width=7}
 ### F05_01.ENG ###
+
 # nb of occurrences by country and continents 
 OccurencesCountry <- data %>% 
   group_by(data$F05_02_ENG) %>% 
@@ -39,15 +38,6 @@ F05_01_PCT <- data %>%
   arrange(desc(Percentage)) %>%
   rename(Continent_of_origin = F05_01_ENG)
 
-datatable(F05_01_PCT,
-          rownames = FALSE,
-          options = list(pageLength = 10,
-                         class = "hover",
-                         searchHighlight = TRUE)) %>%
-  formatPercentage('Percentage', 2)
-```
-
-```{r, warning=FALSE, out.height="100%", out.width="100%", fig.width=7 }
 # plot numbers continent 
 ggplot(F05_01_PCT,
        aes(x=reorder(Continent_of_origin, Percentage*100),
@@ -58,7 +48,7 @@ ggplot(F05_01_PCT,
   theme_minimal() +
   labs(x="Continents of Origin",
        y="Percentages",
-       title="Distribution of Each Continent of Origin") +
+       title="Distribution of Visitors per Continent in Percentage, in the whole canton") +
   theme(legend.title = element_blank(),
         legend.position = "none",
         plot.title = element_text(hjust = 0.5),
@@ -73,28 +63,19 @@ ggplot(F05_01_PCT,
 
 We notice that a large part of the people surveyed were coming from Europe (approx. 78%), followed by people coming from Asia (approx. 8%), North and Central America (approx. 8%), South America (approx. 3%) Australia and Oceania (approx. 2%) and finally Africa (approx. 1%). Again, these results were concerning the whole canton.
 
+### Global Distribution of Visitors to the Canton of Vaud by Nationality
 
-**Global percentage of people coming in canton of Vaud per country of origin**
+We have then decided to explore the distribution in percentage of the nationalities per continent. You will find here a graph showing our results. To enhance visibility, we have gathered most of the countries in the variable "Other Countries" and added it on the graph with the remaining top 7 most represented countries in the list. You can find the whole table about the number of occurrences and percentages per nationality in the Annex. 
 
-We have then decided to explore the distribution, in frequency and percentage, of the nationalities per continent. You will find here again a table and a graph, summarizing this information:
-
-```{r}
+```{r,fig.width=10, fig.height=10, echo=FALSE}
 # Countries in percentages 
 F05_02_PCT <- data %>% 
   group_by(F05_02_ENG) %>%
   summarise(Count = n()) %>%
   mutate(Percentage = paste0(round((Count / sum(Count) * 100),2),"%")) %>% 
-  arrange(desc(Percentage)) %>%
+  arrange(desc(Count)) %>%
   rename(Country_of_origin = F05_02_ENG)
 
-datatable(F05_02_PCT,
-          rownames = FALSE,
-          options = list(pageLength = 10,
-                         class = "hover",
-                         searchHighlight = TRUE))
-```
-
-```{r, fig.width=10, fig.height=10}
 ### F05_02_ENG ###
 # plot with continents 
 F05_02_PCT <- data %>%
@@ -115,25 +96,24 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
   coord_flip() +
   scale_fill_brewer(palette = "Set3", name = "Continent") +
   theme_minimal() +
-  labs(title = "Distribution of Responses by Country and Continent of Origin",
+  labs(title = "Distribution of Visitors by Country and Continent of Origin in Percentages",
        x = "Country of Origin",
        y = "Percentages") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 9), 
         axis.text.y = element_text(angle = 45, hjust = 1, size = 9),
-        plot.title = element_text(hjust = 0.5),
+        plot.title = element_text(hjust = 0.5, size = 15),
         legend.position = "right") +
   geom_text(aes(label=sprintf("%.2f%%", Percentage)),
             position=position_stack(vjust=0.5))
 ```
 
-For visibility purpose, we have decided to represent here in the graph the top 7 countries of the table, representing all above 3% of the nationalities found in the survey. We have then decided to group the  remaining countries in the category "Other Countries". 
+Our results show that Switzerland is the nationality the most represented among all the visitor (approx. 31.5%). Therefore, there are a lot of domestic visitors travelling to the canton of Vaud. Also, we see again that the most represented nationalities are Europeans, such as France (approx. 14.5%), United Kingdom (appox. 7.5%), Germany (approx. 5.5%), Belgium (approx. 3.5%) and finally Spain (approx. 3%). The only other nationality coming from a other continent represented here is the United States of America (approx. 5.5%). Proximity could be for instance one of the main factor explaining these results. 
 
-We notice that Switzerland is the nationality the most represented among all the visitor (approx. 31.5%). Therefore, there are a lot of Swiss citizens travelling in their own country for various purpose to the canton of Vaud. Also, we see again that the most represented nationalities are Europeans, such as France (approx. 14.5%), United Kingdom (appox. 7.5%), Germany (approx. 5.5%), Belgium (approx. 3.5%) and finally Spain (approx. 3%). The only other nationality coming from a other continent represented here is the United States of America (approx. 5.5%). Proximity could be for instance one of the main factor explaining these results. 
-
+## City and District Visitor Distributions
 
 **Per city, the percentage of each visitor's country of origin, relative to the number of visitor of the city**
 
-Then, In order to know more about the precise destination of the visitors, we have decided to gather by city the percentage of country of origin. 
+Now in order to know more precisely about the destination of the visitors, we have decided to gather by city the percentage of country of origin. 
 
 ```{r}
 # Counting the number of tourists by city and nationality
@@ -144,14 +124,74 @@ tourists_by_nationality <- data %>%
 # Calculating the total number of tourists per city
 total_tourists_per_city <- tourists_by_nationality %>%
   group_by(F105_Code) %>%
-  summarise(TotalCount = sum(Count), .groups = 'drop')
+  summarise(TotalCount = sum(Count), .groups = 'drop') %>%
+  arrange(desc(TotalCount)) 
+
+#top 10 cities 
+# top_10_cities <- total_tourists_per_city %>%
+#   arrange(desc(TotalCount)) %>%
+#   head(10)
+
+# Joining the counts back to the detailed breakdown and calculating the ratio
+# nationality_ratio_per_city <- tourists_by_nationality %>%
+#   left_join(total_tourists_per_city, by = "F105_Code") %>%
+#   mutate(Ratio = round((Count / TotalCount),3)) %>%
+#   select(F105_Code, F05_02_ENG, Ratio) %>%
+#   rename(City = F105_Code, Country_of_origin = F05_02_ENG)
 
 # Joining the counts back to the detailed breakdown and calculating the ratio
 nationality_ratio_per_city <- tourists_by_nationality %>%
   left_join(total_tourists_per_city, by = "F105_Code") %>%
-  mutate(Ratio = round((Count / TotalCount),3)) %>%
-  select(F105_Code, F05_02_ENG, Ratio) %>%
-  rename(City = F105_Code, Country_of_origin = F05_02_ENG)
+  arrange(desc(TotalCount))
+
+# Step 1: Identify the top 10 cities by TotalCount
+top_10_cities <- nationality_ratio_per_city %>%
+  distinct(F105_Code, TotalCount) %>%
+  arrange(desc(TotalCount)) %>%
+  slice_head(n = 10) %>%
+  pull(F105_Code)
+
+# Step 2: Split the data into top 10 cities and the remaining cities
+top_cities_data <- nationality_ratio_per_city %>%
+  filter(F105_Code %in% top_10_cities)
+
+other_cities_data <- nationality_ratio_per_city %>%
+  filter(!F105_Code %in% top_10_cities)
+
+# Step 3: Aggregate the remaining cities into a single "other" observation
+other_summary <- other_cities_data %>%
+  group_by(F05_02_ENG) %>%
+  summarise(
+    F105_Code = "Other",
+    Count = sum(Count),
+    TotalCount = sum(TotalCount)
+  )
+
+# Step 4: Combine the top 10 cities with the "other" observation
+final_data <- bind_rows(
+  top_cities_data,
+  other_summary
+)
+
+NB_TotalCount_Other <- final_data %>% add_row(F105_Code = "Other Continents", F05_02_ENG = "Other Countries", Count = sum(final_data$Count[300:346]), TotalCount = sum(final_data$TotalCount[300:346])) %>% 
+  filter(F105_Code =="Other Continents")
+
+# Assuming your data frame is named `final_data`
+final_data <- final_data %>%
+  mutate(TotalCount = if_else(F105_Code == "Other", 3390, TotalCount)) 
+
+# Step 2: Group by F105_Code and compute the ratio
+final_data <- final_data %>%
+  group_by(F105_Code) %>%
+  mutate(Ratio = round(Count / TotalCount, 3)) %>%
+  ungroup()  # Ungroup to return to original data structure
+  
+# Step 3: Sum the Ratio for a specific city (e.g., "Lausanne")
+sum_ratio_lausanne <- final_data %>%
+  filter(F105_Code == "Morges") %>%
+  summarise(SumRatio = sum(Ratio)) %>%
+  pull(SumRatio) ###why > 1 ??
+
 
 datatable(nationality_ratio_per_city,
           rownames = FALSE,

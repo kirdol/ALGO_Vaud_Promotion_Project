@@ -49,3 +49,23 @@ Find below the full techincal description of the dataset:
 print(dfSummary(data), method = "render")
 ```
 
+## Percentage per continent of visitors coming in the canton of Vaud
+
+```{r Percentage per continent of visitors coming in the canton of Vaud, echo = FALSE}
+datatable(F05_01_PCT,
+          rownames = FALSE,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE)) %>%
+  formatPercentage('Percentage', 2)
+```
+
+## Global Distribution of Visitors to the Canton of Vaud by Nationality
+
+```{r Global Distribution of Visitors to the Canton of Vaud by Nationality, echo=FALSE}
+datatable(F05_02_PCT,
+          rownames = FALSE,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE))
+```
