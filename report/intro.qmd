@@ -15,6 +15,10 @@ The first part of our report presents the data in a more readable format. Follow
 
 ## An overview of the Districts and Cities
 
+### Districts of Canton Vaud
+
+Below you can find the map of the 10 districts in the canton of Vaud that we will have a better look at in this document.
+
 ```{r, echo = FALSE}
 # Create a new column 'leaflet_region' with NA values
 data$leaflet_districts <- NA
@@ -60,62 +64,68 @@ vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Oues
 vaud$value <- 1
 
 # Couples proportion plot
-value_palette <- leaflet::colorNumeric(palette = "Purples", domain = vaud$value)
+value_palette <- leaflet::colorNumeric(palette = "lightblue", domain = vaud$value)
 
 
 leaflet(vaud) %>%
   leaflet::addTiles() %>%
   leaflet::setView(lng = 6.63, lat = 46.61, zoom = 9) %>%
   leaflet::addPolygons(fillOpacity = 0.75, color = ~value_palette(vaud$value), weight = 0) %>%
-  leaflet::addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME))
+  leaflet::addPolygons(color = "black", weight = 1, fillOpacity = 0, label = paste(vaud$NAME))
 ```
 
-```{r}
-# Extract city names from the F105_Code column
-cities <- data %>% select(F105_Code) %>% distinct() %>% pull(F105_Code)
+### Countries of Origin
 
-# Function to get coordinates for a city using an API (e.g., OpenStreetMap)
-get_coordinates <- function(city) {
-  url <- paste0("https://nominatim.openstreetmap.org/search?city=", URLencode(city), "&format=json&limit=1")
-  result <- fromJSON(url)
-  if (length(result) == 0) {
-    return(data.frame(city = city, lat = NA, lon = NA))
-  } else {
-    return(data.frame(city = city, lat = as.numeric(result[[1]]$lat), lon = as.numeric(result[[1]]$lon)))
-  }
-}
+You can find below the map of the countries of origin of the tourists visiting Vaud. This gives a great idea of the scope of the survey and the diversity of the tourists visiting the canton.
 
-# Initialize an empty data frame to store coordinates
-coordinates <- data.frame(city = character(), lat = numeric(), lon = numeric(), stringsAsFactors = FALSE)
+```{r, echo = FALSE, message = FALSE}
+# Read in the dataset
+data <- read_csv(here::here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"))
 
-# Get coordinates for all cities
-for (city in cities) {
-  coord <- get_coordinates(city)
-  coordinates <- rbind(coordinates, coord)
-}
+# Calculate the proportions
+country_proportions <- data %>%
+  count(F05_02_ENG) %>%
+  mutate(Proportion = n / sum(n)) %>%
+  select(Country = F05_02_ENG, Proportion)
 
-# Filter out cities without coordinates
-coordinates <- coordinates %>% filter(!is.na(lat) & !is.na(lon))
+# Read in the world boundaries shapefile
+country <- read_sf(here::here("data", "world-administrative-boundaries.shp"))
+
+# Assuming the correct column for joining is 'name'
+# Join the proportions data with the shapefile data
+country <- country %>%
+  left_join(country_proportions, by = c("name" = "Country")) %>%
+  filter(!is.na(Proportion))  # Filter out countries not in the data
+
+# Define color palette
+color_pal <- colorBin("YlGnBu", domain = country$Proportion, bins = 10, na.color = "transparent")
 
 # Create the leaflet map
-map <- leaflet(data = coordinates) %>%
-  addTiles() %>%
-  addMarkers(~lon, ~lat, popup = ~city)
+m <- leaflet(country) %>%
+  addProviderTiles(providers$CartoDB.PositronNoLabels) %>%
+  setView(lng = 9, lat = 46, zoom = 4) %>%
+  addPolygons(weight = 1, color = "white", fillColor = "lightblue",
+              fillOpacity = 0.7, highlight = highlightOptions(weight = 2, color = "#666", fillOpacity = 0.7),
+              label = ~paste(""),
+              labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "15px", direction = "auto")) %>%
+  addPolygons(color = "black", weight = 1, fillOpacity = 0, label = ~paste(name), labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "15px", direction = "auto"))
 
-# Print the map
-map
+# Display the map
+m
 ```
 
+```{r, eval = FALSE, echo = FALSE}
+# Create the leaflet map (with Propotion of tourists from each country)
+m <- leaflet(country) %>%
+  addProviderTiles(providers$CartoDB.PositronNoLabels) %>%
+  setView(lng = 9, lat = 46, zoom = 3) %>%
+  addPolygons(weight = 1, color = "white", fillColor = ~color_pal(Proportion),
+              fillOpacity = 0.7, highlight = highlightOptions(weight = 2, color = "#666", fillOpacity = 0.7),
+              label = ~paste(name, ":", round(Proportion, 4)*100, "%"),
+              labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "15px", direction = "auto")) %>%
+  addPolygons(color = "black", weight = 1, fillOpacity = 0, label = ~paste(name, ":", round(Proportion, 4)*100, "%"), labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "15px", direction = "auto"))
 
-
-```{r}
-states <- read_sf(here("data", "world-administrative-boundaries.shp"))
-
-m <- leaflet() %>%
-  addProviderTiles(providers$CartoDB.PositronNoLabels)  %>% 
-  setView(lng = 9, lat = 46, zoom = 3) %>% 
-  addPolygons(data = states,
-              weight = 1)
+# Display the map
 m
 ```
 
