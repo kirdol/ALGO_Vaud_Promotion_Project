@@ -20,7 +20,10 @@ packages_loaded <- c(
   "kableExtra",
   "knitr",
   "visdat",
-  "summarytools")
+  "summarytools",
+  "readr",
+  "jsonlite",
+  "sf")
 
 # Function that install the packages if not already installed on your computer
 for (pkg in packages_loaded) {
