@@ -655,7 +655,7 @@ American tourists have by far the highest percentage of tourists traveling alone
 
 :::
 
-## Partie Jeff
+## Partie Jeff (à renommer)
 
 Top 7 countries are: Switzerland, France, UK, Germany, US, Belgium & Spain.
 
@@ -712,7 +712,11 @@ ggplot(total_spending_by_continent, aes(x = F05_01_ENG, y = Total_Spending, fill
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
 ```
 
-## Spending by city
+## Spending by District
+
+NEED TO CHANGE INTO VICTOR'S DISTRICT
+
+Looking at the categories of spendings, we decided to analyse and compare the districts' spendings and see for which category each district spends the most.
 
 ```{r, warning = FALSE}
 # Convert data to long format and rename categories
@@ -768,34 +772,9 @@ p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', colors = 
 p
 ```
 
+WRITE TEXT
+
 ## Spendings of top 7
-
-```{r}
-# Define the list of countries to include
-top7 <- c("Switzerland", "France", "United Kingdom", "Germany", "United States of America", "Belgium", "Spain")
-
-# Filter the dataset for selected countries and calculate total spendings
-spendings_top7 <- data %>%
-  filter(F05_02_ENG %in% top7) %>%
-  group_by(F05_02_ENG) %>%
-  summarize(
-    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
-    .groups = 'drop'
-  )
-
-# Create a bar plot of spendings by nationality
-ggplot(spendings_top7, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality",
-       x = "Nationality",
-       y = "Total Spendings",
-       fill = "Nationality") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust text angle for better readability
-        plot.title = element_text(hjust = 0.5))  # Center the title for aesthetics
-```
-
-## Spendings of top 7 (Victor)
 
 ```{r}
 # Define the list of countries to include

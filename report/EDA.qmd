@@ -1352,10 +1352,12 @@ plot_ly(combined_data,
 
 As we can see on the graph above, the best average is optain in `r combined_data$leaflet_districts[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But this statistics is not very representative to the reality. Only `r combined_data$Count[1]` people answered the survey in this district which is not enough to have a good idea of the quality of the hotels in this district. The second best region after `r combined_data$leaflet_districts[1]` is `r combined_data$leaflet_districts[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district got with `r combined_data$Count[2]` observation which is more representative. This high score for the Region of `r combined_data$leaflet_districts[2]` is not really surprising given the fact that this place is well know for its luxury hotels.
 
-# Partie Jeff 
+## Spendings
 > Expenses and where they come from, when, where and for which sector?
 
-## Percentage of people with package & without package
+### Percentage of people with package & without package
+
+To begin with, we can notice that there are 2 types of traveller spendings: the ones who come in Switzerland with no package, meaning they spend on different categories that are not included in the packages, and the ones who come with a package, which usually already includes some different categories.
 
 ```{r, message = FALSE, warning = FALSE}
 # Calculate the number of non-NA entries for each type of spending
@@ -1388,7 +1390,7 @@ ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)
 A majority of people travelling in Vaud come without a package.
 
 ::: panel-tabset
-## Average Spending by category (no package tour)
+#### Average Spending by category (no package tour)
 
 ```{r, message = FALSE, warning = FALSE}
 spending_data <- data.frame(
@@ -1408,28 +1410,7 @@ ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
 ```
 
-## Average Spending by Category (with package)
-
-```{r, message = FALSE, warning = FALSE}
-spending_data_package <- data.frame(
-  Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
-  Amount = c(mean(data$F82_01, na.rm = TRUE), 
-             mean(data$F82_02, na.rm = TRUE),
-             mean(data$F82_03, na.rm = TRUE),
-             mean(data$F82_04, na.rm = TRUE),
-             mean(data$F82_05, na.rm = TRUE),
-             mean(data$F82_06, na.rm = TRUE),
-             mean(data$F82_07, na.rm = TRUE))
-)
-
-ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) +
-  geom_bar(stat = "identity", color = "black") +
-  labs(title = "Average Spending by Category", x = "Category", y = "Average Amount") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-## Average Spending by Category (with package) (Victor)
+#### Average Spending by Category (with package)
 
 ```{r, message = FALSE, warning = FALSE}
 spending_data_package <- data.frame(
@@ -1454,8 +1435,6 @@ ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending
 With these plots, we can clearly observe that there is a difference in spendings for people who travelled with a package compared to the ones travelling without a spending package. Overall, the main expenses of people with a package is the package itself, meaning that most of the other variables are already included in the package. On the other hand, without the package, it is interesting to see that the main spending is on the overnight stay, then the food & drinks and finally the souvenirs.
 
 ::: panel-tabset
-
-
 #### Total spending per country (no package)
 
 ```{r, message = FALSE, warning = FALSE}
@@ -1596,24 +1575,9 @@ ggplot(average_spending_by_country, aes(x = reorder(F05_02_ENG_grouped, -Average
 
 For the plots above, we removed outliers (spending of more than 30'000 CHF) because these observations biased the rest of the sample. We assume that it is probable that most respondents with spending above 30'000 made an error in the currency, using their local currency to answer questions instead of CHF.
 
+### Percentage of package by continent
 
-## Spending by Nationality
-Checking for outliers?
-
-```{r, message = FALSE, warning = FALSE}
-filtered_data <- data %>%
-  rename(Continent = F05_01_ENG) %>%
-  filter(F81_Total <= 100000)
-
-ggplot(filtered_data, aes(x = F05_02_ENG, y = F81_Total, fill = Continent)) +
-  geom_boxplot() +
-  labs(title = "Spending by Nationality", x = "Nationality", y = "Spending") +
-  scale_fill_brewer(palette = "Set3") + # Adds a color palette for the continents
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "bottom")
-```
-
-## Percentage of package by continent
+Now, it is of interest to check where the 8% of traveller with a package are from. For this, we decided to see it as percentage of nationality.
 
 ```{r, message = FALSE, warning = FALSE}
 # Prepare the data by adding a binary column for package and non-package tours
@@ -1653,7 +1617,9 @@ p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percent
 print(p)
 ```
 
-## Distribution of Currency
+As a result, it is interesting to see that the main spenders in packages are from Asia, Africa and South America. It would be interesting to target travellers from these continents to packages deals rather than the rest of nationalities.
+
+### Distribution of Currency
 
 ```{r, message = FALSE, warning = FALSE}
 # Calculate the frequency and percentage of each currency value
