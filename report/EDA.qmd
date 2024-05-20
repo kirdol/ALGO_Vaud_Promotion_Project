@@ -183,8 +183,8 @@ final_data <- final_data %>%
 # Step 2: Group by F105_Code and compute the ratio
 final_data <- final_data %>%
   group_by(F105_Code) %>%
-  mutate(Ratio = round(Count / TotalCount, 3))
-  ungroup()  # Ungroup to return to original data structure
+  mutate(Ratio = round(Count / TotalCount, 3)) %>%
+  ungroup()
   
 final_data <- final_data %>%
   group_by(F105_Code, F05_02_ENG) %>%

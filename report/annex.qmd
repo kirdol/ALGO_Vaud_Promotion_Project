@@ -6,7 +6,9 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 ```
 
 ## Raw questions descriptions {#sec-data-description}
+
 ### Raw questions description in German
+
 Find below the raw description translated in German:
 
 ```{r raw questions in german, echo = FALSE}
@@ -25,6 +27,7 @@ questions_ger %>%
 ```
 
 ### Raw questions description in English
+
 Find below the raw description translated in English:
 
 ```{r raw questions in english, echo = FALSE}
@@ -43,6 +46,7 @@ questions_eng %>%
 ```
 
 ## Data summary {#sec-data-summary}
+
 Find below the full techincal description of the dataset:
 
 ```{r echo = FALSE}
@@ -70,9 +74,9 @@ datatable(F05_02_PCT,
                          searchHighlight = TRUE))
 ```
 
-##
+## r
 
-```{r Per city, the percentage of each visitor's country of origin, relative to the number of visitor of the city, echo=FALSE}
+```{r Per city, the percentage of each visitor country of origin, relative to the number of visitor of the city, echo=FALSE}
 datatable(nationality_ratio_per_city,
           rownames = FALSE,
           options = list(pageLength = 10,
