@@ -128,5 +128,3 @@ m <- leaflet(country) %>%
 # Display the map
 m
 ```
-
-
