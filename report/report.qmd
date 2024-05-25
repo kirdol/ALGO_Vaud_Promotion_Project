@@ -1,5 +1,5 @@
 ---
-title: "Algo Project Report"
+title: "Comprehensive Analysis of the Tourismus Monitor Schweiz survey"
 title-block-banner: "#0095C8"
 author: "Lodrik Adam, Stefan Favre, Victor Hogan, Jeff Macaraeg"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
