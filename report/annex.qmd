@@ -83,3 +83,24 @@ datatable(nationality_ratio_per_city,
                          class = "hover",
                          searchHighlight = TRUE))
 ```
+
+
+```{r Distribution among swiss visitors (scaled ratio), echo=FALSE}
+datatable(Inside_Switzerland_ratio,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE,
+  columnDefs = list(list(targets = 4, visible = FALSE))),rownames = FALSE) %>%
+  formatPercentage('Percentage', 2) %>%
+  formatPercentage('Ratio', 5) %>%
+  formatPercentage('Scaled_Ratio', 2)
+```
+
+```{r Distribution among swiss german speaking visitors (scaled ratio), echo=FALSE}
+datatable(Swiss_germans_percentage,
+          rownames = FALSE,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE))
+```
+
