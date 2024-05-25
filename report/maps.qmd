@@ -77,7 +77,7 @@ vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Oues
 
 ## Group types
 
-The following maps depict how people travel to the canton of Vaud. It shows the proportion of visitors that cam to one of the region with their children, alone or as a couple. Note that someone can be in multiple categories. For example, someone can be a couple and have children. He would then be counted in the couples and children categories.
+The following maps depict how people travel to the canton of Vaud. It shows the proportion of visitors of each regions that came with their children, alone or as a couple. Note that someone can be in multiple categories. For example, someone can be a couple and have children. He would then be counted in the couples and children categories.
 
 ::: panel-tabset
 
@@ -186,7 +186,7 @@ leaflet(vaud) %>%
 
 ## Seasonality
 
-These maps show us which districts are most visited in the 2 main yearly seasons, summer and winter. We see a clear change in the district of Aigle, which has many more visitors during the winter, due to it being a region that is home to many ski slopes and winter activities. The main district that seems to profit from the summer months is Jura-Nord vaudois, and the proportion of visitors to the capital is indifferent to the seasons.
+These maps show us which districts are most visited in the two main yearly seasons, summer and winter. We see a clear change in the district of Aigle, which has many more visitors during the winter, due to it being a region that is home to many ski slopes and winter activities. The main district that seems to profit from the summer months is Jura-Nord vaudois, and the proportion of visitors to the capital is indifferent to the seasons.
 
 ::: panel-tabset
 
@@ -372,7 +372,7 @@ Interestingly the Swiss-German tourists represents a high proportion of the tour
 
 ## French tourists
 
-Let's explore on a map the most frequently visited districts by French tourists. We seperated the tourists from Île-de-France, Auvergne-Rhône-Alpes and the rest of France to check for different preferences patterns.
+Let's explore on a map the most frequently visited districts by French tourists. We seperated the tourists from Île-de-France, Auvergne-Rhône-Alpes and the rest of France to check for different preferences patterns and proportions of french tourists in each regions.
 
 ::: panel-tabset
 
@@ -470,12 +470,11 @@ leaflet(vaud) %>%
 
 :::
 
-We can see on the maps that the tourists from Île-de-France are mainly interested in visiting Lausanne while the tourists from Auvergne-Rhône-Alpes and the rest of France are also interested in the region of Lausanne but also notably in the others regions.
+We can see on the maps that the tourists from Île-de-France are well represented in the region of Lausanne while the tourists from Auvergne-Rhône-Alpes and the rest of France are also well represented in the region of Lausanne but also notably in the others regions.
 
 ## British tourists
 
-You can find on the map below the most frequently visited districts by British tourists. We seperated the tourists from London, the rest of England and Scotland to check for different preferences patterns. There were too few visitors from Northern Ireland and Wales to be included in the map.
-
+You can find on the map below the most visited regions in proportions with to the total number of visitors in the region by British tourists. We seperated the tourists from London, the rest of England and Scotland to check for different preferences patterns. There were too few visitors from Northern Ireland and Wales to be included in the map.
 
 ::: panel-tabset
 
@@ -575,7 +574,7 @@ There was a high proportion of visitors from London in the district Lavaux-Oron.
 
 ## German tourists
 
-Let's look at a map with the most frequently visited districts by German tourists. We seperated the tourists from Baden-Württemberg, Bayern and Nordrhein-Westfalen to check for different preferences patterns.
+You can find on the map below the most visited regions in proportions with to the total number of visitors in the region by German tourists. We seperated the tourists from Baden-Württemberg, Bayern and Nordrhein-Westfalen to check for different preferences patterns.
 
 ::: panel-tabset
 
@@ -705,7 +704,7 @@ leaflet(vaud) %>%
 
 ## US tourists
 
-Let's explore on a map the most frequently visited districts by US tourists. We seperated the tourists from California and the rest of the US to check for different preferences patterns.
+You can find on the map below the most visited regions in proportions with to the total number of visitors in the region by US tourists. We seperated the tourists from California and the rest of the US to check for different preferences patterns.
 
 ::: panel-tabset
 
