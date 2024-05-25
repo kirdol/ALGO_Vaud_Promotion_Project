@@ -18,7 +18,7 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 
 Now let's explore the number of day spent per month of the year in the Canton of Vaud.
 
-```{r, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
 ### F12 & F13 ###
 #Are we more interested in knowing when they came for holidays or how long?
 
@@ -243,7 +243,7 @@ combined_plot_with_legend <- plot_grid(combined, legend, ncol = 1, nrow = 1)
 
 Now let's explore the percentage of trip category per continent. In the survey, the visitors were asked the type of trip they were having. Therefore, you will find here the graph of the distribution of the type of trip for each continent. The choice was made among 4 possibilities that are explained in the legend of the graph. 
  
-```{r, echo = TRUE, message=FALSE, out.height="100%", out.width="100%", fig.width= 10, fig.height=8}
+```{r, echo = FALSE, message=FALSE, out.height="100%", out.width="100%", fig.width= 10, fig.height=8}
 
 ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity") +
@@ -269,7 +269,7 @@ In general, we notice that most of the visitors coming from continent far away f
 
 Here are the distribution of the frequencies of the number of night spent during a trip in Switzerland.
 
-```{r, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 ### F20 ###
 # Careful here: some people have 0 nightstay and only passed by switzerland for a day. 
 # but answered the question 16, asking about the number of nights.
@@ -331,7 +331,7 @@ ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F10
 
 Now let's explore the percentage of the number of days spent in Switzerland over the whole visitors' trip.
 
-```{r, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 ### F21 ###
 #consider NA as 0 here. 
 
@@ -361,7 +361,7 @@ As this graph shows, we notice that over the whole trip, most of the people will
 
 Now let's explore the distribution of the arrivals per nationality over the year: 
 
-```{r, fig.height=18, warning=FALSE}
+```{r, fig.height=18, warning=FALSE, echo = FALSE}
 ### Deeper reasoning ###
 
 # Where are coming from the people, per month
@@ -498,7 +498,7 @@ df_sums_df$Spent = average_spending
 df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(-df_sums_df$Spent)])
 ```
 
-```{r}
+```{r, echo = FALSE, message = FALSE}
 #Plot frequency
 ggplot(df_sums_df, aes(x = Column, y = Spent)) +
   geom_bar(stat = "identity", fill = "skyblue") +
@@ -507,10 +507,9 @@ ggplot(df_sums_df, aes(x = Column, y = Spent)) +
 
 ```
 
-
 ## Travel group type by nation
 
-```{r}
+```{r, echo = FALSE, message = FALSE}
 # Type of groups x Country of origin
 # Create bin columns for top 5 countries
 data$swiss <- ifelse(data$F05_02 == "Schweiz", 1, 0)
@@ -584,7 +583,7 @@ Here we can see the group types of travelers (Alone, with partner, with children
 
 #### Swiss
 
-```{r}
+```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = swiss)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   ylim(0, 100) +
@@ -596,7 +595,7 @@ Swiss tourists are more likely than other nations to travel with children. They 
 
 #### French
 
-```{r}
+```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = french)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   ylim(0, 100) +
@@ -607,7 +606,7 @@ ggplot(sums_df, aes(x = group_name, y = french)) +
 
 #### British
 
-```{r}
+```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = british)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   ylim(0, 100) +
@@ -618,7 +617,7 @@ ggplot(sums_df, aes(x = group_name, y = british)) +
 
 #### German
 
-```{r}
+```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = german)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   ylim(0, 100) +
@@ -631,7 +630,7 @@ German tourists are the most likely of these countries to be traveling only with
 
 #### American
 
-```{r}
+```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = american)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   ylim(0, 100) +
