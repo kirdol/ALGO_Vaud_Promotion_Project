@@ -1700,6 +1700,8 @@ df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(
 df_sums_df$Percentage <- (df_sums_df$Sum)/nrow(df)*100
 ```
 
+These are the responses to the question "Who did you travel with?". All the bars in this plot are non-mutually exclusive responses, meaning respondents could select multiple options, except for the bar "Only with partner", in which case the respondent only selected "traveled with partner".
+
 ```{r}
 ggplot(df_sums_df, aes(x = Column, y = Percentage)) +
   geom_bar(stat = "identity", fill = "skyblue") +
