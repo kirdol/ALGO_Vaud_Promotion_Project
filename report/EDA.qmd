@@ -7,7 +7,7 @@ format:
 
 ```{r Loading the packages and importing the data, output = FALSE, echo = FALSE}
 source(here::here("scripts", "setup.R"))
-data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
+data <- read.csv(here("data", "district_map.csv"),
                  sep = ",")
 ```
 
@@ -51,7 +51,7 @@ ggplot(F05_01_PCT,
        title="Distribution of Visitors per Continent in Percentage, in the whole canton") +
   theme(legend.title = element_blank(),
         legend.position = "none",
-        plot.title = element_text(hjust = 0.5),
+        plot.title = element_text(hjust = 0.5, size = 10),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   geom_text(aes(label=sprintf("%.2f%%", Percentage*100)),
             position=position_dodge(width=-0.5),
@@ -234,20 +234,20 @@ In the same process, let's now explore the country of origin ratio per district 
 ```{r}
 # ratio of each nationality relatively to the number of tourist surveyed in each district F105_OrgCode
 tourists_by_nationality <- data %>%
-  group_by(F105_OrgCode, F05_02_ENG) %>%
+  group_by(leaflet_districts, F05_02_ENG) %>%
   summarise(Count = n(), .groups = 'drop')
 
 # Calculating the total number of tourists per city
 total_tourists_per_city <- tourists_by_nationality %>%
-  group_by(F105_OrgCode) %>%
+  group_by(leaflet_districts) %>%
   summarise(TotalCount = sum(Count), .groups = 'drop')
 
 # Joining the counts back to the detailed breakdown and calculating the ratio
 nationality_ratio_per_city <- tourists_by_nationality %>%
-  left_join(total_tourists_per_city, by = "F105_OrgCode") %>%
+  left_join(total_tourists_per_city, by = "leaflet_districts") %>%
   mutate(Ratio = round((Count / TotalCount),3)) %>%
-  select(F105_OrgCode, F05_02_ENG, Ratio) %>%
-  rename(District_tourism = F105_OrgCode,Country_of_origin = F05_02_ENG)
+  select(leaflet_districts, F05_02_ENG, Ratio) %>%
+  rename(District_tourism = leaflet_districts,Country_of_origin = F05_02_ENG)
 
 datatable(nationality_ratio_per_city, options = list(pageLength = 10,
                                    class = "hover",
@@ -255,6 +255,8 @@ datatable(nationality_ratio_per_city, options = list(pageLength = 10,
 ```
 
 Again, the low number of data available in our data don't allow us to get really satisfying results for every city surveyed. 
+
+### Domestic tourism
 
 As Swiss citizens accounted for more than 30% of the visitors surveyed, we have decided to know more about the percentages of people coming from Switzerland, visiting Switzerland. Therefore, here is the distribution of visitors per canton of origin. 
 
@@ -318,15 +320,15 @@ Inside_Switzerland_ratio <- data_merged %>%
   mutate(Scaled_Ratio = Ratio / sum(Ratio)) %>%
   select(Canton, Count, Percentage, Population, Ratio, Scaled_Ratio)
 
-# Now output the table with your custom settings
-datatable(Inside_Switzerland_ratio,
-          options = list(pageLength = 10,
-                         class = "hover",
-                         searchHighlight = TRUE,
-  columnDefs = list(list(targets = 4, visible = FALSE))),rownames = FALSE) %>%
-  formatPercentage('Percentage', 2) %>%
-  formatPercentage('Ratio', 5) %>%
-  formatPercentage('Scaled_Ratio', 2)
+# # Now output the table with your custom settings
+# datatable(Inside_Switzerland_ratio,
+#           options = list(pageLength = 10,
+#                          class = "hover",
+#                          searchHighlight = TRUE,
+#   columnDefs = list(list(targets = 4, visible = FALSE))),rownames = FALSE) %>%
+#   formatPercentage('Percentage', 2) %>%
+#   formatPercentage('Ratio', 5) %>%
+#   formatPercentage('Scaled_Ratio', 2)
 ```
 
 ```{r, fig.width=10, fig.height=6}
