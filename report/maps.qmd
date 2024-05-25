@@ -246,6 +246,8 @@ leaflet(vaud) %>%
 
 :::
 
+As expected, we see a clear distinction between the summer and winter seasons. The tourists are more likely to visit cities and districts in the mountains during the winter months, while spending most of their time on the plateau during the summer.
+
 ## Average spending
 
 Here is a map of the average and total spending by district. We can see that both the average and total spending is highest in the district of Riviera-Pays-d'Enhaut. We only take into account respondents with total expenses of under 30'000 CHF, in order to filter outliers.
@@ -276,9 +278,11 @@ leaflet(vaud) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$average_spending, "CHF", "Total: ", vaud$spending_sum, "CHF"))
 ```
 
+It is interesting to see that the tourists that came in the region of Montreux have spent the most on average, around 2600 CHF. The tourists that came in Lausanne spent closer to 2300 CHF while the rest of the regions, they spent between 1500 and 2000 CHF in average. This is a consequent difference in spending between the districts.
+
 ## Swiss tourists
 
-Maps of the most frequently visited districts by tourists of Swiss origin.
+Let's explore on a map the proportion of Swiss tourists in each districts. We seperated the Swiss-German and Swiss-French tourists to check for different preferences patterns. The proportion of travelers from Ticino and Grisons is negligible (< 1% proportion for any district) so we don't include them on the map.
 
 ```{r, echo = FALSE}
 # Swiss sub columns
@@ -332,7 +336,7 @@ leaflet(vaud) %>%
 
 # Swiss-French
 
-Here we see the proportion of Swiss-French travelers for each district
+Here we see the proportion of Swiss-French travelers for each district.
 
 ```{r, echo = FALSE}
 # Binary column for swiss french
@@ -361,11 +365,14 @@ leaflet(vaud) %>%
   addPolygons(fillOpacity = 0.75, color = ~swiss_french_palette(vaud$swiss_french_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$swiss_french_proportion, "%", "Total: ", vaud$swiss_french_sum))
 ```
+
 :::
 
-The proportion of travelers from Ticino and Grisons is negligible (\< 1% proportion for any district) so we don't include them on the map.
+Interestingly the Swiss-German tourists represents a high proportion of the tourists in the region of Jura Nord vaudois. The Swiss-French tourists in the other hand seems more present in the region of Aigle.
 
 ## French tourists
+
+Let's explore on a map the most frequently visited districts by French tourists. We seperated the tourists from Île-de-France, Auvergne-Rhône-Alpes and the rest of France to check for different preferences patterns.
 
 ::: panel-tabset
 
@@ -467,6 +474,9 @@ We can see on the maps that the tourists from Île-de-France are mainly interest
 
 ## British tourists
 
+You can find on the map below the most frequently visited districts by British tourists. We seperated the tourists from London, the rest of England and Scotland to check for different preferences patterns. There were too few visitors from Northern Ireland and Wales to be included in the map.
+
+
 ::: panel-tabset
 
 # London
@@ -498,8 +508,6 @@ leaflet(vaud) %>%
   addPolygons(fillOpacity = 0.75, color = ~uk_london_palette(vaud$uk_london_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$uk_london_proportion, "%", "Total: ", vaud$uk_london_sum))
 ```
-
-There was a high proportion of visitors from London in the district Lavaux-Oron. We can't confirm that visitors from London are more interested in this district than other UK tourists, since the sample is so small.
 
 # Rest of England
 
@@ -563,9 +571,11 @@ leaflet(vaud) %>%
 
 :::
 
-There were too few visitors from Northern Ireland and Wales to be included in the map.
+There was a high proportion of visitors from London in the district Lavaux-Oron. We can't confirm that visitors from London are more interested in this district than other UK tourists, since the sample is so small.
 
 ## German tourists
+
+Let's look at a map with the most frequently visited districts by German tourists. We seperated the tourists from Baden-Württemberg, Bayern and Nordrhein-Westfalen to check for different preferences patterns.
 
 ::: panel-tabset
 
@@ -695,6 +705,8 @@ leaflet(vaud) %>%
 
 ## US tourists
 
+Let's explore on a map the most frequently visited districts by US tourists. We seperated the tourists from California and the rest of the US to check for different preferences patterns.
+
 ::: panel-tabset
 
 # California
@@ -761,6 +773,8 @@ leaflet(vaud) %>%
 
 ## Other main countries
 
+The most frequently visited districts by tourists from Belgium, Spain and the Netherlands can be seen on the map below.
+
 ::: panel-tabset
 
 # Belgium
@@ -792,8 +806,6 @@ leaflet(vaud) %>%
   addPolygons(fillOpacity = 0.75, color = ~belgium_palette(vaud$belgium_proportion), weight = 0) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$belgium_proportion, "%", "Total: ", vaud$belgium_sum))
 ```
-
-A high proportion of visitors of the Aigle district are from Belgium.
 
 # Spain
 
@@ -916,3 +928,5 @@ leaflet(vaud) %>%
 ```
 
 :::
+
+A high proportion of visitors of the Aigle district are from Belgium and Netherlands. Italy seems to prefer the region of Lausanne.
