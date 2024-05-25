@@ -898,6 +898,8 @@ As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r
 
 ### Type of Accommodation by country
 
+Let's dive deeper into the most popular type of accomodation per contry. You can find below a plot showing the proportion of each type of accomodation for all the contries and for the most represented countries in our data, Switzerland, France, UK, Germany, USA, Belgium and Spain.
+
 ::: panel-tabset
 
 # Total
@@ -1278,6 +1280,8 @@ plot_ly(spanish_accommodation_proportion,
 The most popular accommodation type in the canton of Vaud, according to a survey of 2,440 respondents, is the Hotel/SPA House, selected by 777 individuals. Notably, 293 people chose to stay at campsites. For Swiss respondents specifically, campsites rise to the second most popular option, with nearly 30% opting for this type of accommodation, while the Hotel/Spa House remains the top choice. Interestingly, the free apartment/house is highly favored by visitors from France, the United Kingdom, Germany, and Belgium, ranking in their top two choices. Conversely, visitors from the United States tend to prefer hotels, rented apartments/houses, or other types of accommodations over free apartments. Additionally, campsites are notably less popular among American visitors.
 Below, a word cloud illustrates other favored types of accommodation.
 
+#### Word Cloud
+
 ```{r wordcloud, echo = FALSE, warning = FALSE}
 # Running the wordcloud script
 source(here("scripts", "word_cloud_for_eda.R"))
@@ -1359,9 +1363,9 @@ As we can see on the graph above, the best average is optain in `r combined_data
 
 ### Percentage of people with package & without package
 
-To begin with, we can notice that there are 2 types of traveller spendings: the ones who come in Switzerland with no package, meaning they spend on different categories that are not included in the packages, and the ones who come with a package, which usually already includes some different categories.
+To begin with, we can notice that there are 2 types of traveler spendings: the ones who come in Switzerland with no package, meaning they spend on different categories that are not included in the packages, and the ones who come with a package, which usually already includes some different categories.
 
-```{r, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Calculate the number of non-NA entries for each type of spending
 spending_counts <- data %>%
   summarize(
@@ -1389,10 +1393,56 @@ ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-A majority of people travelling in Vaud come without a package.
+A majority of people travelling in Vaud come without a package. Despite only having around 8% of travelers without a package, it is of interest for us to see where they come from.
+
+### Percentage of package by continent
+
+For this, we decided to see it as percentage per continent.
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# Prepare the data by adding a binary column for package and non-package tours
+data <- data %>%
+  mutate(
+    With_Package = ifelse(!is.na(F82_Total), 1, 0),  # 1 if there's a package, 0 otherwise
+    Without_Package = ifelse(!is.na(F81_Total), 1, 0)  # 1 if there's no package, 0 otherwise
+  )
+
+# Summarize data to count the number of package and non-package tours by continent
+continent_summary <- data %>%
+  group_by(F05_01_ENG) %>%
+  summarize(
+    Total_Tours = n(),  # Total number of tours
+    Package_Tours = sum(With_Package, na.rm = TRUE),  # Total package tours
+    Non_Package_Tours = sum(Without_Package, na.rm = TRUE)  # Total non-package tours
+  ) %>%
+  mutate(
+    Package_Tour_Percentage = (Package_Tours / Total_Tours) * 100  # Calculate the percentage
+  ) %>%
+  arrange(desc(Package_Tour_Percentage))  # Arrange continents in descending order of package tour percentage
+
+# Plot the percentage of package tours by continent in descending order
+p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percentage), y = Package_Tour_Percentage, fill = F05_01_ENG)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = sprintf("%.1f%%", Package_Tour_Percentage)),  # Adding percentage labels
+            vjust = -0.5, color = "black", size = 3.5) +  # Adjust vjust to position labels above bars
+  labs(title = "Percentage of Package Tours by Continent",
+       x = "Continent",
+       y = "Percentage of Package Tours (%)") +
+  scale_fill_brewer(palette = "Set3") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none") 
+
+# Display the plot
+print(p)
+```
+
+As a result, it is interesting to see that the main spenders in packages are from Asia, Africa and South America. It would be interesting to target travellers from these continents to packages deals rather than the rest of nationalities.
+
+### Average Spendings by Category
 
 ::: panel-tabset
-#### Average Spending by category (no package tour)
+#### Without Package
 
 ```{r, message = FALSE, warning = FALSE}
 spending_data <- data.frame(
@@ -1412,7 +1462,9 @@ ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
 ```
 
-#### Average Spending by Category (with package)
+We observe that 
+
+#### With Package
 
 ```{r, message = FALSE, warning = FALSE}
 spending_data_package <- data.frame(
@@ -1576,50 +1628,6 @@ ggplot(average_spending_by_country, aes(x = reorder(F05_02_ENG_grouped, -Average
 :::
 
 For the plots above, we removed outliers (spending of more than 30'000 CHF) because these observations biased the rest of the sample. We assume that it is probable that most respondents with spending above 30'000 made an error in the currency, using their local currency to answer questions instead of CHF.
-
-### Percentage of package by continent
-
-Now, it is of interest to check where the 8% of traveller with a package are from. For this, we decided to see it as percentage of nationality.
-
-```{r, message = FALSE, warning = FALSE}
-# Prepare the data by adding a binary column for package and non-package tours
-data <- data %>%
-  mutate(
-    With_Package = ifelse(!is.na(F82_Total), 1, 0),  # 1 if there's a package, 0 otherwise
-    Without_Package = ifelse(!is.na(F81_Total), 1, 0)  # 1 if there's no package, 0 otherwise
-  )
-
-# Summarize data to count the number of package and non-package tours by continent
-continent_summary <- data %>%
-  group_by(F05_01_ENG) %>%
-  summarize(
-    Total_Tours = n(),  # Total number of tours
-    Package_Tours = sum(With_Package, na.rm = TRUE),  # Total package tours
-    Non_Package_Tours = sum(Without_Package, na.rm = TRUE)  # Total non-package tours
-  ) %>%
-  mutate(
-    Package_Tour_Percentage = (Package_Tours / Total_Tours) * 100  # Calculate the percentage
-  ) %>%
-  arrange(desc(Package_Tour_Percentage))  # Arrange continents in descending order of package tour percentage
-
-# Plot the percentage of package tours by continent in descending order
-p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percentage), y = Package_Tour_Percentage, fill = F05_01_ENG)) +
-  geom_bar(stat = "identity") +
-  geom_text(aes(label = sprintf("%.1f%%", Package_Tour_Percentage)),  # Adding percentage labels
-            vjust = -0.5, color = "black", size = 3.5) +  # Adjust vjust to position labels above bars
-  labs(title = "Percentage of Package Tours by Continent",
-       x = "Continent",
-       y = "Percentage of Package Tours (%)") +
-  scale_fill_brewer(palette = "Set3") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "none") 
-
-# Display the plot
-print(p)
-```
-
-As a result, it is interesting to see that the main spenders in packages are from Asia, Africa and South America. It would be interesting to target travellers from these continents to packages deals rather than the rest of nationalities.
 
 ### Distribution of Currency
 
