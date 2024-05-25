@@ -2,6 +2,8 @@
 format:
   html:
     code-fold: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r output = FALSE}
@@ -357,19 +359,6 @@ ggplot(ratio_nightstays_CH_EU, aes(x = Percentage_Night_Stays_Switzerland)) +
 
 As this graph shows, we notice that over the whole trip, most of the people will stay around 20% of their trip in Switzerland.
 
-```{r}
-### F30 ###
-F30_Q <- data %>% count(F30_ENG, name = "Total")
-F30_Q$percentage <- with(F30_Q, Total / sum(Total) * 100)
-
-ggplot(F30_Q, aes(x = F30_ENG, y = Total, label = paste(percentage, "%"))) +
-  geom_bar(stat = "identity", fill = "skyblue") +
-  geom_text(vjust = -0.5, color = "black") +
-  theme_minimal() +
-  labs(title = "Q30: Have you booked a package tour?",
-       x = "Answers",
-       y = "Total")
-```
 Now let's explore the distribution of the arrivals per nationality over the year: 
 
 ```{r, fig.height=18, warning=FALSE}
@@ -657,33 +646,11 @@ American tourists have by far the highest percentage of tourists traveling alone
 
 :::
 
-## Partie Jeff (à renommer)
-
-## Highest Continent spending in Vaud
-
-```{r}
-# Calculate the total spending by continent
-total_spending_by_continent <- data %>%
-  group_by(F05_01_ENG) %>%
-  summarise(Total_Spending = sum(F81_Total, na.rm = TRUE)) %>%
-  arrange(desc(Total_Spending))
-
-# Print the calculated data
-print(total_spending_by_continent)
-
-# Plot the total spending by continent as a bar chart
-ggplot(total_spending_by_continent, aes(x = F05_01_ENG, y = Total_Spending, fill = F05_01_ENG)) +
-  geom_bar(stat = "identity", color = "black", show.legend = FALSE) +
-  labs(x = "Continent", y = "Total Spending", title = "Total Spending by Continent") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
-```
+## Spendings Analysis
 
 ## Spending by District
 
-NEED TO CHANGE INTO VICTOR'S DISTRICT
-
-Looking at the categories of spendings, we decided to analyse and compare the districts' spendings and see for which category each district spends the most.
+It is interesting for us to combine the expenses variables with the district ones in order to see in which category of spendings the travelers spend most for each district.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 # Code copied from maps
@@ -708,7 +675,7 @@ data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
 
 ```
 
-```{r, warning = FALSE}
+```{r, echo = FALSE, warning = FALSE}
 # Convert data to long format and rename categories
 data_long <- data %>%
   pivot_longer(
@@ -762,11 +729,15 @@ p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', colors = 
 p
 ```
 
-WRITE TEXT
+In all cases, overnight stay is the category most spent on. It is followed mainly by Food & Drinks, Transports and Souvenirs. Looking at the Ouest Lausannois, we notice that travelers also spend on other expenses. 
 
-## Spendings of top 7
+Next, we will go through the spendings for our main countries.
 
-```{r}
+## Spendings of countries
+
+We want to compare the total spendings for our seven countries of interest compared to the spendings per person.
+
+```{r, warning = FALSE, echo = FALSE}
 # Define the list of countries to include
 top7 <- c("Switzerland", "France", "United Kingdom", "Germany", "United States of America", "Belgium", "Spain")
 
@@ -785,9 +756,9 @@ spendings_top7$per_person = spendings_top7$Total_Spendings/c(nrow(data[data$F05_
 ```
 
 ::: panel-tabset
-# Total spendings
+#### Total
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 
 # Create a bar plot of spendings by nationality
 ggplot(spendings_top7, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
@@ -801,9 +772,9 @@ ggplot(spendings_top7, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_EN
         plot.title = element_text(hjust = 0.5))  # Center the title for aesthetics
 ```
 
-# Spendings per person
+#### Per person
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 
 # Create a bar plot of spendings by nationality
 ggplot(spendings_top7, aes(x = F05_02_ENG, y = per_person, fill = F05_02_ENG)) +
@@ -819,12 +790,16 @@ ggplot(spendings_top7, aes(x = F05_02_ENG, y = per_person, fill = F05_02_ENG)) +
 
 :::
 
-## Spendings of top 7 countries in districts
+We notice that by taking spending per person, Americans are the main spenders, followed by the British and the Spanish. When comparing to the total spending, where Swiss, American and French are the highest, the results for individual spending is more interesting.
+
+## Spendings of countries per districts
+
+Now, we will focus on these countries spending in our districts. The aim for this is to see in which district we find more nationalities and how much they spend in each district.
 
 ::: panel-tabset
 #### Aigle
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_aigle <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Aigle") %>%
   group_by(F05_02_ENG) %>%
@@ -844,9 +819,11 @@ ggplot(spendings_aigle, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_E
         plot.title = element_text(hjust = 0.5))  
 ```
 
+Top spenders: Swiss, French and British travellers.
+
 #### Morges
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_avenches <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Morges") %>%
   group_by(F05_02_ENG) %>%
@@ -866,9 +843,11 @@ ggplot(spendings_avenches, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_0
         plot.title = element_text(hjust = 0.5))
 ```
 
+Top Spenders: Swiss, American, French and British.
+
 #### Gros-de-Vaud
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_echallens <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Gros-de-Vaud") %>%
   group_by(F05_02_ENG) %>%
@@ -888,9 +867,11 @@ ggplot(spendings_echallens, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_
         plot.title = element_text(hjust = 0.5))
 ```
 
+Top spenders: None of our seven countries of interest.
+
 #### Broye-Vully
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_estavayer <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Broye-Vully") %>%
   group_by(F05_02_ENG) %>%
@@ -910,9 +891,11 @@ ggplot(spendings_estavayer, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_
         plot.title = element_text(hjust = 0.5))
 ```
 
+Top spenders: Swiss, French and Spanish travelers.
+
 #### Lausanne
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_lausanne <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Lausanne") %>%
   group_by(F05_02_ENG) %>%
@@ -932,9 +915,11 @@ ggplot(spendings_lausanne, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_0
         plot.title = element_text(hjust = 0.5))
 ```
 
+Top spenders: American, French, Swiss and British travelers.
+
 #### Riviera-Pays-d'Enhaut
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_montreux <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Riviera-Pays-d'Enhaut") %>%
   group_by(F05_02_ENG) %>%
@@ -954,9 +939,11 @@ ggplot(spendings_montreux, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_0
         plot.title = element_text(hjust = 0.5))
 ```
 
+Top spenders: Swiss, American and French spenders.
+
 #### Lavaux-Oron
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_moudon <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Lavaux-Oron") %>%
   group_by(F05_02_ENG) %>%
@@ -976,9 +963,11 @@ ggplot(spendings_moudon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_
         plot.title = element_text(hjust = 0.5))
 ```
 
+Top spenders: Swiss, Spanish and German travelers.
+
 #### Nyon
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_nyon <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Nyon") %>%
   group_by(F05_02_ENG) %>%
@@ -998,9 +987,11 @@ ggplot(spendings_nyon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_EN
         plot.title = element_text(hjust = 0.5))
 ```
 
+Top spenders: French, American and Swiss travelers.
+
 #### Ouest lausannois
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_enhaut <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Ouest lausannois") %>%
   group_by(F05_02_ENG) %>%
@@ -1020,11 +1011,11 @@ ggplot(spendings_enhaut, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_
         plot.title = element_text(hjust = 0.5))
 ```
 
-
+Top spenders: American, French and Swiss travelers.
 
 #### Jura-Nord vaudois
 
-```{r}
+```{r, warning = FALSE, echo = FALSE}
 spendings_yverdon <- data %>%
   filter(F05_02_ENG %in% top7, leaflet_districts == "Jura-Nord vaudois") %>%
   group_by(F05_02_ENG) %>%
@@ -1043,4 +1034,9 @@ ggplot(spendings_yverdon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
         plot.title = element_text(hjust = 0.5))
 ```
+
+Top spenders: Swiss, only a few French and German travelers.
+
 :::
+
+As a result, we notice that some countries such as Spain, Germany or the United Kingdom are more present and spend more in some district than some others. French, Swiss and Americans seem to be very present in most district and have pretty high expenses in each for a lot of scenarios.
