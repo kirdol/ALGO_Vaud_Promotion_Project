@@ -360,7 +360,7 @@ As we can see on this table, the biggest part of the Swiss visitors surveyed in 
 
 As we know that approximately 65% of Switzerland has as main language german, we thought that it would be interesting to know the distribution among swiss german visitors in the survey. Here is the plot showing the distribution per canton. 
 
-```{r, fig.width=10, fig.height=6, echo=FALSE}
+```{r, fig.width=10, fig.height=6, echo=FALSE, warning=FALSE}
 # Now how much percentage do swiss germans represent in this
 Swiss_germans_percentage <- data_merged %>%
   filter(Canton %in% swiss_german_cantons) %>%
