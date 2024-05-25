@@ -898,6 +898,8 @@ As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r
 
 ### Type of Accommodation by country
 
+Let's dive deeper into the most popular type of accomodation per contry. You can find below a plot showing the proportion of each type of accomodation for all the contries and for the most represented countries in our data, Switzerland, France, UK, Germany, USA, Belgium and Spain.
+
 ::: panel-tabset
 
 # Total
@@ -1277,6 +1279,8 @@ plot_ly(spanish_accommodation_proportion,
 
 The most popular accommodation type in the canton of Vaud, according to a survey of 2,440 respondents, is the Hotel/SPA House, selected by 777 individuals. Notably, 293 people chose to stay at campsites. For Swiss respondents specifically, campsites rise to the second most popular option, with nearly 30% opting for this type of accommodation, while the Hotel/Spa House remains the top choice. Interestingly, the free apartment/house is highly favored by visitors from France, the United Kingdom, Germany, and Belgium, ranking in their top two choices. Conversely, visitors from the United States tend to prefer hotels, rented apartments/houses, or other types of accommodations over free apartments. Additionally, campsites are notably less popular among American visitors.
 Below, a word cloud illustrates other favored types of accommodation.
+
+#### Word Cloud
 
 ```{r wordcloud, echo = FALSE, warning = FALSE}
 # Running the wordcloud script
