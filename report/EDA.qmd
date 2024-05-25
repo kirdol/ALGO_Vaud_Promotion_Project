@@ -928,7 +928,7 @@ As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r
 
 ### Type of Accommodation by country
 
-Let's dive deeper into the most popular type of accomodation per contry. You can find below a plot showing the proportion of each type of accomodation for all the contries and for the most represented countries in our data, Switzerland, France, UK, Germany, USA, Belgium and Spain.
+Let's dive deeper into the most popular type of accomodation per country. You can find below a plot showing the proportion of each type of accomodation for all the contries and for the most represented countries in our data, Switzerland, France, UK, Germany, USA, Belgium and Spain.
 
 ::: panel-tabset
 
@@ -1310,8 +1310,6 @@ plot_ly(spanish_accommodation_proportion,
 The most popular accommodation type in the canton of Vaud, according to a survey of 2,440 respondents, is the Hotel/SPA House, selected by 777 individuals. Notably, 293 people chose to stay at campsites. For Swiss respondents specifically, campsites rise to the second most popular option, with nearly 30% opting for this type of accommodation, while the Hotel/Spa House remains the top choice. Interestingly, the free apartment/house is highly favored by visitors from France, the United Kingdom, Germany, and Belgium, ranking in their top two choices. Conversely, visitors from the United States tend to prefer hotels, rented apartments/houses, or other types of accommodations over free apartments. Additionally, campsites are notably less popular among American visitors.
 Below, a word cloud illustrates other favored types of accommodation.
 
-#### Word Cloud
-
 ```{r wordcloud, echo = FALSE, warning = FALSE}
 # Running the wordcloud script
 source(here("scripts", "word_cloud_for_eda.R"))
@@ -1427,7 +1425,7 @@ A majority of people travelling in Vaud come without a package. Despite only hav
 
 ### Percentage of package by continent
 
-For this, we decided to see it as percentage per continent.
+To do so, we decided to see it as percentage per continent.
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Prepare the data by adding a binary column for package and non-package tours
@@ -1467,14 +1465,16 @@ p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percent
 print(p)
 ```
 
-As a result, it is interesting to see that the main spenders in packages are from Asia, Africa and South America. It would be interesting to target travellers from these continents to packages deals rather than the rest of nationalities.
+As a result, it is interesting to see that the main spenders in packages are from Asia, Africa and South America. It would be interesting to target travelers from these continents to package deals rather than the rest of nationalities.
 
 ### Average Spendings by Category
+
+Now let's have a look at the average spending per category. The aim would be to see in which category most of the travelers spend their money on.
 
 ::: panel-tabset
 #### Without Package
 
-```{r, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 spending_data <- data.frame(
   Spending_Type = c("Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
   Amount = c(mean(data$F81_01, na.rm = TRUE), 
@@ -1492,11 +1492,11 @@ ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
 ```
 
-We observe that 
+We observe that most of the expenses from the people coming to Vaud is in their overnight stay, followed by their eating expenses and the transports and souvenirs.
 
 #### With Package
 
-```{r, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 spending_data_package <- data.frame(
   Spending_Type = c("Package", "Overnight stay", "Transports", "Food & Drink", "Souvenirs", "Other shopping", "Other expenses"),
   Amount = c(mean(data$F82_01[data$F82_01 <= 30000], na.rm = TRUE), # Ici on modifie pour inclure seulement les packages qui coûtent en dessous de 30'000 CHF. On assume que les packages qui coûtent au dessus de ce montant ne sont pas en CHF, et donc biaisent le sample.
@@ -1514,14 +1514,21 @@ ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
+
+For the ones with the package, most is spent on the package, then the eating expenses and finally with the overnight stay. This is explained by the fact that packages usually include transportations and activities, which have a pretty high cost in Switzerland.
+
 :::
 
-With these plots, we can clearly observe that there is a difference in spendings for people who travelled with a package compared to the ones travelling without a spending package. Overall, the main expenses of people with a package is the package itself, meaning that most of the other variables are already included in the package. On the other hand, without the package, it is interesting to see that the main spending is on the overnight stay, then the food & drinks and finally the souvenirs.
+With these plots, we can observe that there is a difference in spending for people who traveled with a package compared to the ones travelling without a spending package. Overall, the main expenses of people with a package is the package itself, meaning that some of the other variables are already included in the package. On the other hand, without the package, it is interesting to see that the main spending is on the overnight stay, then the food & drinks and finally the souvenirs.
+
+### Spendings by Country
+
+Here, we will focus on our 7 main countries, putting the rest of the countries into "other countries". By doing so, we can observe which countries has the most expenses within our main nationalities.
 
 ::: panel-tabset
-#### Total spending per country (no package)
+#### Total spending (without package)
 
-```{r, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 
 # Create a vector of countries to group as "other countries"
 countries_to_group <- c("Switzerland", "France", "United Kingdom", "Germany", "United States of America", "Belgium", "Spain")
@@ -1547,9 +1554,11 @@ ggplot(total_spending_F81, aes(x = reorder(F05_02_ENG_grouped, -Total_Spending_F
 
 ```
 
-#### Total spending per country (with package)
+Swiss travelers spend the most in total, followed by French and Amercian travelers.
 
-```{r, message = FALSE, warning = FALSE}
+#### Total spending (with package)
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 
 # Create a vector of countries to group as "other countries"
 countries_to_group <- c("Switzerland", "France", "United Kingdom", "Germany", "United States of America", "Belgium", "Spain")
@@ -1575,9 +1584,11 @@ ggplot(total_spending_F82, aes(x = reorder(F05_02_ENG_grouped, -Total_Spending_F
 
 ```
 
-#### Average spending (no package)
+Looking at the packages, and as we observed in the percentage of package by continent above, Europeans and North Americans aren't the ones spending most in total on packages. It is rather Asians who do so.
 
-```{r, message = FALSE, warning = FALSE}
+#### Average spending (without package)
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Create a vector of countries to group as "other countries"
 countries_to_group <- c("Switzerland", "France", "United Kingdom", "Germany", "United States of America", "Belgium", "Spain")
 
@@ -1615,9 +1626,11 @@ ggplot(average_spending_by_country, aes(x = reorder(F05_02_ENG_grouped, -Average
 
 ```
 
+Looking at averages, North Americans spend the most on average when coming to Vaud, followed by Belgium and the United Kingdom.
+
 #### Average spending (with package)
 
-```{r, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Create a vector of countries to group as "other countries"
 countries_to_group <- c("Switzerland", "France", "United Kingdom", "Germany", "United States of America", "Belgium", "Spain")
 
@@ -1655,13 +1668,17 @@ ggplot(average_spending_by_country, aes(x = reorder(F05_02_ENG_grouped, -Average
 
 ```
 
+Once again, looking at the average with a package, it is North American again.
+
 :::
 
-For the plots above, we removed outliers (spending of more than 30'000 CHF) because these observations biased the rest of the sample. We assume that it is probable that most respondents with spending above 30'000 made an error in the currency, using their local currency to answer questions instead of CHF.
+For the plots above, we removed outliers (spending of more than 30'000 CHF) because these observations biased the rest of the sample. We assumed that it was probable that most respondents with spending above 30'000 made an error in the currency, using their local currency to answer questions instead of CHF.
 
 ### Distribution of Currency
 
-```{r, message = FALSE, warning = FALSE}
+Now, it is of interest to check which currency was the most used by travelers
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Calculate the frequency and percentage of each currency value
 currency_data <- data %>%
   count(F80) %>%
@@ -1678,7 +1695,8 @@ ggplot(currency_data, aes(x = reorder(F80, desc(Percentage)), y = Percentage, fi
   scale_fill_discrete(name = "Currency")
 ```
 
-## Partie Victor
+We observed that most visitors spend in Swiss Francs or Euros. Other currencies are less used. As mentioned above, we assumed that some people used their currencies when putting their spendings, which created outliers in our results.
+
 ## Travel partners of visitors
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
 data <- read.csv(here("data","TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
