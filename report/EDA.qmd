@@ -358,7 +358,7 @@ As we can see on this table, the biggest part of the Swiss visitors surveyed in 
 
 #### Distribution of domestic tourism - German speaking part 
 
-As we know that approximatively 65% of Switzerland has as main language german, we thought that it would be interesting to know the distribution among swiss german visitors in the survey. Here is the plot showing the distribution per canton. 
+As we know that approximately 65% of Switzerland has as main language german, we thought that it would be interesting to know the distribution among swiss german visitors in the survey. Here is the plot showing the distribution per canton. 
 
 ```{r, fig.width=10, fig.height=6, echo=FALSE}
 # Now how much percentage do swiss germans represent in this
@@ -1676,7 +1676,7 @@ For the plots above, we removed outliers (spending of more than 30'000 CHF) beca
 
 ### Distribution of Currency
 
-Now, it is of interest to check which currency was the most used by travelers
+Now, it is of interest to check which currency was the most used by travelers.
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Calculate the frequency and percentage of each currency value
@@ -1698,6 +1698,7 @@ ggplot(currency_data, aes(x = reorder(F80, desc(Percentage)), y = Percentage, fi
 We observed that most visitors spend in Swiss Francs or Euros. Other currencies are less used. As mentioned above, we assumed that some people used their currencies when putting their spendings, which created outliers in our results.
 
 ## Travel partners of visitors
+
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
 data <- read.csv(here("data","TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 
