@@ -258,9 +258,11 @@ Again, the low number of data available in our data don't allow us to get really
 
 ### Domestic tourism
 
+#### Global swiss domestic visitors 
+
 As Swiss citizens accounted for more than 30% of the visitors surveyed, we have decided to know more about the percentages of people coming from Switzerland, visiting Switzerland. Therefore, here is the distribution of visitors per canton of origin. 
 
-```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland}
+```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland, fig.width=10, fig.height=6, echo=FALSE}
 
 ## Séparation cantons suisse-allemands
 
@@ -329,9 +331,7 @@ Inside_Switzerland_ratio <- data_merged %>%
 #   formatPercentage('Percentage', 2) %>%
 #   formatPercentage('Ratio', 5) %>%
 #   formatPercentage('Scaled_Ratio', 2)
-```
 
-```{r, fig.width=10, fig.height=6}
 # plot scaled_ratio per canton
 ggplot(Inside_Switzerland_ratio,
        aes(x=reorder(Canton, Scaled_Ratio),
@@ -356,31 +356,60 @@ ggplot(Inside_Switzerland_ratio,
 
 As we can see on this table, the biggest part of the Swiss visitors surveyed in this study are people from Vaud (approx. 20%), Bern (approx. 16%) and Zurich (approx. 12%). 
 
-Now among the swiss german cantons, let's explore the distribution of the canton
+#### Distribution of domestic tourism - German speaking part 
 
-```{r}
+As we know that approximatively 65% of Switzerland has as main language german, we thought that it would be interesting to know the distribution among swiss german visitors in the survey. Here is the plot showing the distribution per canton. 
+
+```{r, fig.width=10, fig.height=6, echo=FALSE}
 # Now how much percentage do swiss germans represent in this
-Swiss_germans_percentage <- Inside_Switzerland %>%
+Swiss_germans_percentage <- data_merged %>%
   filter(Canton %in% swiss_german_cantons) %>%
-  mutate(Percentage = paste0(round((Count/sum(Count)) * 100, 1), "%"))
+  mutate(Percentage = paste0(round((Count/sum(Count)) * 100, 1), "%")) %>%
+  mutate(Ratio = Count / Population) %>%
+  mutate(Scaled_Ratio = Ratio / sum(Ratio)) %>%
+  select(Canton, Count, Percentage, Population, Ratio, Scaled_Ratio)
+
 
 # sum(Swiss_germans_percentage$Percentage)
         
-datatable(Swiss_germans_percentage,
-          rownames = FALSE,
-          options = list(pageLength = 10,
-                         class = "hover",
-                         searchHighlight = TRUE))
+# datatable(Swiss_germans_percentage,
+#           rownames = FALSE,
+#           options = list(pageLength = 10,
+#                          class = "hover",
+#                          searchHighlight = TRUE))
+
+# plot scaled_ratio per canton
+ggplot(Swiss_germans_percentage,
+       aes(x=reorder(Canton, Scaled_Ratio),
+           y=Scaled_Ratio)) +
+  geom_bar(stat="identity",
+           width = 0.8) +
+  labs(title="Distribution among swiss german visitors (scaled ratio)",
+       x="Cantons",
+       y="Percentage") +
+  theme(legend.title = element_blank(),
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_text(aes(label=sprintf("%.2f%%", 100 * Scaled_Ratio)),
+            position=position_dodge(width=-0.5),
+            vjust=0.3,
+            hjust=-0.1,
+            size = 3) +
+  coord_flip() +
+  theme_minimal()
 ```
 
-Bern, Zurich and Aargau are the top 3 cantons represented among all swiss german cantons (with in approx. 26.5%, 19.5% and 10.5% in the order)
+XXXXXXXXXXXXX are the top 3 cantons represented among all swiss german cantons (with in approx. XXX%, XXX% and XXX% in the order)
 
 Now, for interpretability and visualisation, let's see the proportion of swiss german people over the rest of the swiss citizens surveyed: 
 
 ```{r}
   # Assuming 'Inside_Switzerland' has a column 'Canton' and you have a vector 'swiss_german_cantons' listing Swiss German cantons
+
 Inside_Switzerland <- Inside_Switzerland %>%
-  mutate(is_swiss_german = Canton %in% swiss_german_cantons)
+  mutate(Categories = ifelse(Canton %in% swiss_german_cantons, "Swiss germans",
+                             ifelse(Canton %in% c("Waadt"),"Vaud","Other")))
 
 # Calculate total counts
 total_counts <- Inside_Switzerland %>% 
@@ -388,33 +417,34 @@ total_counts <- Inside_Switzerland %>%
 
 # Calculate counts for Swiss German cantons and others
 counts <- Inside_Switzerland %>%
-  group_by(is_swiss_german) %>%
+  group_by(Categories) %>%
   summarize(count = n(), .groups = 'drop')
 
 # Calculate percentages
 counts <- counts %>%
-  mutate(percentage = count / total_counts$total * 100)
-```
+  mutate(percentage = count / total_counts$total * 100) %>%
+  mutate(Categories = fct_reorder(Categories, percentage, .desc = TRUE))
 
-```{r}
+
+
 # Plot
 ggplot(counts,
-       aes(x = is_swiss_german,
+       aes(x = Categories,
            y = percentage,
-           fill = is_swiss_german)) +
+           fill = Categories)) +
   geom_bar(stat = "identity") +
-  scale_x_discrete(labels = c("Others", "Swiss germans")) +
+  # scale_x_discrete(labels = c("Others", "Swiss germans")) +
   theme_minimal() +
   theme(legend.position = "none") + 
   geom_text(aes(label=sprintf("%.2f%%", percentage)),
             position=position_stack(vjust=0.5)) + 
-  labs(title = "Percentage of Swiss German Cantons vs Other Cantons",
-       x = "Canton Type",
+  labs(title = "Percentages of Swiss German, Vaud and other visitors",
+       x = "Canton",
        y = "Percentage") +
   ylim(0, 90)
 ```
 
-Over all the swiss citizen, we can see that 68% of them are coming from the swiss german part. 
+Over all the swiss citizen, we can see that 72% of them are coming from the swiss german part. 
 
 ## Partie Lodrik
 
