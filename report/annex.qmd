@@ -96,11 +96,4 @@ datatable(Inside_Switzerland_ratio,
   formatPercentage('Scaled_Ratio', 2)
 ```
 
-```{r Distribution among swiss german speaking visitors (scaled ratio), echo=FALSE}
-datatable(Swiss_germans_percentage,
-          rownames = FALSE,
-          options = list(pageLength = 10,
-                         class = "hover",
-                         searchHighlight = TRUE))
-```
 
