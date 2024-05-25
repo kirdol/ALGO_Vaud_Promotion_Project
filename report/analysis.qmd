@@ -14,7 +14,7 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 
 # Analysis
 
-**Plot of the total number of days spent in Vaud per month of the year**
+## Plot of the total number of days spent in Vaud per month of the year
 
 Now let's explore the number of day spent per month of the year in the Canton of Vaud.
 
@@ -265,7 +265,7 @@ ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
 
 In general, we notice that most of the visitors coming from continent far away from Switzerland are coming in Switzerland for serveral nightstays during their trip in Europe. On another hand, living closer, are staying most of the time for one overnight stay in Switzerland. This is probably due to the large quantity of visitors surveyed coming from Switzerland but from other cantons or visitors coming from adjacent countries such as Germany in France, all these visitors accounting for a total of approx. 50% of the people surveyed.
 
-**Global frenquency of nightstays in Switzerland**
+## Global frenquency of nightstays in Switzerland
 
 Here are the distribution of the frequencies of the number of night spent during a trip in Switzerland.
 
@@ -508,7 +508,6 @@ ggplot(df_sums_df, aes(x = Column, y = Spent)) +
 ```
 
 
-
 ## Travel group type by nation
 
 ```{r}
@@ -583,7 +582,7 @@ Here we can see the group types of travelers (Alone, with partner, with children
 
 ::: panel-tabset
 
-# Swiss
+#### Swiss
 
 ```{r}
 ggplot(sums_df, aes(x = group_name, y = swiss)) +
@@ -595,7 +594,7 @@ ggplot(sums_df, aes(x = group_name, y = swiss)) +
 
 Swiss tourists are more likely than other nations to travel with children. They are also most likely to be traveling with a partner, and pets. This suggests that they are more likely to be visiting as a family than other tourists.
 
-# French
+#### French
 
 ```{r}
 ggplot(sums_df, aes(x = group_name, y = french)) +
@@ -606,7 +605,7 @@ ggplot(sums_df, aes(x = group_name, y = french)) +
 
 ```
 
-# British
+#### British
 
 ```{r}
 ggplot(sums_df, aes(x = group_name, y = british)) +
@@ -617,7 +616,7 @@ ggplot(sums_df, aes(x = group_name, y = british)) +
 
 ```
 
-# German
+#### German
 
 ```{r}
 ggplot(sums_df, aes(x = group_name, y = german)) +
@@ -630,7 +629,7 @@ ggplot(sums_df, aes(x = group_name, y = german)) +
 
 German tourists are the most likely of these countries to be traveling only with their partner, as a couple.
 
-# American
+#### American
 
 ```{r}
 ggplot(sums_df, aes(x = group_name, y = american)) +
@@ -645,8 +644,6 @@ ggplot(sums_df, aes(x = group_name, y = american)) +
 American tourists have by far the highest percentage of tourists traveling alone, as well as in a group of unknown people. This suggests they are more likely to be on a solo trip to Switzerland, and also be in an organised group tour with other strangers.
 
 :::
-
-## Spendings Analysis
 
 ## Spending by District
 
