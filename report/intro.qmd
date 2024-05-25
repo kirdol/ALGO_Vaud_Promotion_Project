@@ -13,7 +13,7 @@ Our report aims to simplify the comprehension of this raw data through data visu
 
 The first part of our report presents the data in a more readable format. Following that, we conduct exploratory data analysis (EDA), which involves creating basic charts to provide perspective and convey the scale of the variables to the reader. Next, we proceed to the analysis phase, where we cross-analyze multiple variables to highlight correlations. The final section of the report is dedicated to plotting various variables on a map of the districts of Canton Vaud. Lastly, we will articulate our conclusions about the survey data and share our experience with this report.
 
-## An overview of the Districts and Cities
+## An overview of the Districts and Countries of origin
 
 ### Districts of Canton Vaud
 
