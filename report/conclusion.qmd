@@ -1,7 +1,37 @@
 # Conclusion
 
-Through this report, we managed to make the survey data stand out using graphs and plots. Additionally, we observed connections among multiple factors within responses, which is difficult to see with raw data alone. An interesting aspect of the survey was the diversity of the questions asked to individual repondents, which enabled us to display links between factors.
+## Results
+
+Through this report, we managed to make the survey data stand out using graphs and plots. Additionally, we observed connections among multiple factors within responses, which is difficult to see with raw data alone. An interesting aspect of the survey was the diversity of the questions asked to individual respondents, which enabled us to display links between factors.
 
 However, our analysis was constrained by the relatively small dataset of 2,487 rows. Consequently, when we examine particular demographics, such as regional origins, in our research, our findings lack certainty due to the small number of people we studied, which makes it hard to determine if our findings are statistically significant or merely random occurrences.
 
-## Conseils pour vaud promotion
+## Recommendations to Vaud Promotion
+
+- proposer package, personnes d'asie pour cette options, meme si 9%, afrique et amerique latine
+- americans dépensent le plus, ce sont des bons touristes
+- district d'aigle = bien plus fréquenté en hiver, focus marketing en hiver ici
+- 68% des gens qui viennent en suisse sont accompagnés de leurs partenaires
+- d'après données, le plus de gens en mars et juillet
+- CH-allemnand: parmi les vsitieurs jura nord vuadois, 60% sont suisse allemands
+- parmi les visiteurs de la region d'aigle, 28% sont des suisse romands
+- plus grosses dépensesn à riviera, dans les 2500 chf, lausanne 2300 chf et reste entre 1500-2000 chf --> dépenses, si proposer des packages, concentrer sur riviera
+- gens seuls dépenesnt plus par rapport aux autres catégories (par personne, dépensens plus qu'en famille ou groupe, 3300 pour alone et other family 2700, friends 2200)
+- dépenses le moins avec unknown (with package)
+- sur tout leur voyage, entre 10 et 25% en suisse
+- 1 night in vaud in majority
+- most popular accomdation: hotel, free apartment (friends/relatives) and rented apartment (airbnb)
+- tousistes suisses dans le canton de vaud sont majoritairement suisse allemand (72%), autres cantons (24%) et et les touristes vaudois dans vaud (4%)
+- parmi les touristes suisse allemands, majoritairement des gens qui viennt d'URI (scaled data)
+
+## Improvements for future works
+
+- plus de données/data en termes de quantité
+- prélever les sondages pour pas que ce soit biaisé niveau temps (homogène, time windows, endroits)
+- dates des réponses
+- date de naissances des répondants/tranche d'âge
+- fourchettes de prix pour les spendings
+- moins de questions ouvertes
+- currencies: attention a question ouvertes et currency
+- ya quoi dans les packages
+- limitaions: ppl demographics, as not a lot of responses

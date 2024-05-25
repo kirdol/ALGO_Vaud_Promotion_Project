@@ -4,7 +4,7 @@ format:
     code-fold: true
 ---
 
-# A detailed map analysis
+# Detailed maps analysis
 
 Within this section, we present a series of maps showcasing the districts of canton Vaud, each illustrating the proportion of visitors from specific origins and demographic categories. These visualizations offer insights into the distribution of visitors across different regions, providing context for the diversity of visitors within the canton.
 
