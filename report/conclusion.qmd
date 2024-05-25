@@ -8,30 +8,25 @@ However, our analysis was constrained by the relatively small dataset of 2,487 r
 
 ## Recommendations to Vaud Promotion
 
-- proposer package, personnes d'asie pour cette options, meme si 9%, afrique et amerique latine
-- americans dépensent le plus, ce sont des bons touristes
-- district d'aigle = bien plus fréquenté en hiver, focus marketing en hiver ici
-- 68% des gens qui viennent en suisse sont accompagnés de leurs partenaires
-- d'après données, le plus de gens en mars et juillet
-- CH-allemnand: parmi les vsitieurs jura nord vuadois, 60% sont suisse allemands
-- parmi les visiteurs de la region d'aigle, 28% sont des suisse romands
-- plus grosses dépensesn à riviera, dans les 2500 chf, lausanne 2300 chf et reste entre 1500-2000 chf --> dépenses, si proposer des packages, concentrer sur riviera
-- gens seuls dépenesnt plus par rapport aux autres catégories (par personne, dépensens plus qu'en famille ou groupe, 3300 pour alone et other family 2700, friends 2200)
-- dépenses le moins avec unknown (with package)
-- sur tout leur voyage, entre 10 et 25% en suisse
-- 1 night in vaud in majority
-- most popular accomdation: hotel, free apartment (friends/relatives) and rented apartment (airbnb)
-- tousistes suisses dans le canton de vaud sont majoritairement suisse allemand (72%), autres cantons (24%) et et les touristes vaudois dans vaud (4%)
-- parmi les touristes suisse allemands, majoritairement des gens qui viennt d'URI (scaled data)
+Looking at the observed results, have found several recommendations that we could propose to Vaud Promotion in order to better promote and target their promotion to travelers coming to Vaud.
+
+To begin with, despite only having 8% of travelers in the survey having taken a package, the main target for the packages proposition are people from Asia, followed by Africa and South America. So, to promote the packages, these are the targets that are willing to spend more to obtain packages which includes some other expenses category. Also, the travelers coming with a package seem to spend the least (link to unknown people).
+
+Next, the American are the tourists that spend the most when looking at individual expenses. They seem to spend a lot in any category and pretty much everywhere in Vaud. Also, most of the overall expenses are done in the Riviera-Pays-d'Enhaut district, with a record of 2'500 CHF on average per person, followed by Lausanne with 2'300 CHF. The rest have records of between 1'500 to 2'000 CHF of spendings. So, if the company wants to propose packages, the Riviera-Pays-d'Enhaut could be a great target for them as there is a lot of spending in this district.
+
+Then, looking at seasonality of the travelers, it seems that most of the respondents come in the seasons of March and July, which is logical especially as it is the summer. Also, if the company wants to focus on promoting a specific district for the winter, Aigle is the most frequented district in winter.
+
+After that, we can focus on the groups. 68% of the travelers coming to Vaud are accompanied by their partners, which is an indication that Vaud is a good canton to promote people coming with their partner. Now, by looking at the expenses, solo travelers spend more on average per personne that families or groups, with respective spendings of 3'300 CHF for solo travelers, 2'700 CHF for families and 2'200 CHF for friend groups.
+
+Looking at the destinations and accomodations, majority of travelers spend only 1 night in Vaud. The most popular accomodations are hotels, followed by stays with relatives or friends or even rented apartments such as AirBnB. Moreover, on a whole trip, travelers stay in general between 10 to 25% in Switzerland.
+
+Finally, when looking at the origins of the travelers, 72% of the Swiss tourists coming to Vaud are Swiss-German. Swiss-French represent 24% and residents of Vaud coming as tourists only 4%. Focusing on the Swis-German tourists, looking at relative inhabitants per canton, most people come from Uri. Also, among the visitors of the Jura-Nord Vaudois district, 60% are Swiss-German. Finally, among the visiors of Aigle, 28% are from the French speaking part of Switzerland.
+
 
 ## Improvements for future works
 
-- plus de données/data en termes de quantité
-- prélever les sondages pour pas que ce soit biaisé niveau temps (homogène, time windows, endroits)
-- dates des réponses
-- date de naissances des répondants/tranche d'âge
-- fourchettes de prix pour les spendings
-- moins de questions ouvertes
-- currencies: attention a question ouvertes et currency
-- ya quoi dans les packages
-- limitaions: ppl demographics, as not a lot of responses
+After finishing the project, we identified points of improvements on some aspects of the survey. We will provide some suggestions of improvement for future works with the company.
+
+To begin with, it could be of interest to obtain more data in terms of quantity to have better representations of the origins of people specifically. This way, we could better identify specific regions of origins instead of countries of origins. The surveys need to be conducted uniformly in time and space.
+
+Also, it would be interesting to add certains aspects in the survey, such as the date of the repsondent's answer and the birth date or age of the respondent in order to push some analyses further. Also, the open questions can be tricky to analyze, as there were some questions where people didn't really understand the question or where people make some mistakes, which is more difficult to handle when doing an analysis. For example, as a recommendation to avoid outliers in the spendings, it could be interesting to provide a range of prices to select from instead of letting the respondent answer freely, as we had the case of people putting a price in their own currency. Finally, it could be interesting to have the information of what is provided in the packages of the travelers.
