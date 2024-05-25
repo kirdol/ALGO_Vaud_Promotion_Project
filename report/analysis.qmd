@@ -418,6 +418,8 @@ On this graph, we notice that the size of the dots, representing the monthly num
 
 ## Average spending by travel group type
 
+Here we have calcuated the average total CHF spent during a trip to Vaud, per person, depending on who the respondent has traveled with. All the bars in this plot are non-mutually exclusive responses, meaning respondents could select multiple options, except for the bar "Only with partner", in which case the respondent only selected "traveled with partner".
+
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
 
 data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
@@ -516,7 +518,7 @@ ggplot(df_sums_df, aes(x = Column, y = Spent)) +
 
 ```
 
-Here we have calcuated the average total CHF spent during a trip to Vaud, per person, depending on who the respondent has traveled with.
+
 
 ## Travel group type by nation
 
@@ -656,41 +658,6 @@ American tourists have by far the highest percentage of tourists traveling alone
 :::
 
 ## Partie Jeff (à renommer)
-
-Top 7 countries are: Switzerland, France, UK, Germany, US, Belgium & Spain.
-
-```{r, warning = FALSE}
-# Filter data for "Aigle-Leysin-Les Mosses"
-filtered_data <- data %>%
-  filter(F105_OrgCode == "Aigle-Leysin-Les Mosses")
-
-# Reshape data from wide to long format and rename categories
-data_long <- filtered_data %>%
-  pivot_longer(
-    cols = F81_01:F81_06,
-    names_to = "Spending_Category",
-    values_to = "Amount"
-  ) %>%
-  mutate(Spending_Category = recode(Spending_Category,
-    "F81_01" = "Overnight Stay",
-    "F81_02" = "Transports",
-    "F81_03" = "Food & Drink",
-    "F81_04" = "Souvenirs",
-    "F81_05" = "Other Shopping",
-    "F81_06" = "Other Expenses"
-  ))
-
-# Generate the plotly interactive plot
-plot <- plot_ly(data_long, x = ~Spending_Category, y = ~Amount, type = 'bar', name = 'Spending',
-                marker = list(color = 'rgba(55, 128, 191, 0.7)', line = list(color = 'rgba(55, 128, 191, 1.0)', width = 1.5))) %>%
-  layout(title = "Spending by Category in Aigle-Leysin-Les Mosses",
-         xaxis = list(title = "Category"),
-         yaxis = list(title = "Spending Amount"),
-         barmode = 'group')
-
-# Display the plot
-plot
-```
 
 ## Highest Continent spending in Vaud
 
