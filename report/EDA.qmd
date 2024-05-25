@@ -15,9 +15,11 @@ data <- read.csv(here("data", "district_map.csv"),
 
 ## Visitor Demographics
 
-### Global Distribution of Visitors to the Canton of Vaud by Continent
+### Global Distribution of Visitors in the Canton of Vaud by Continent
 
-With the data gathered from the survey, we have first explored the overall distribution of nationalities of the visitors. Therefore, you will find here a graph providing the percentage of visitors per continent that came to visit the Canton of Vaud. You will find more details about the number of occurrences and percentages per continent in the Annex.
+The survey gathered around 2500 responses from 100 different nationalities. We decided to to start by looking at the overall nationality distribution of the visitors. The full statistics and additional informations can be found in the "Annex"  section.
+
+The graph below shows the percentage of visitors per continent who have visited the canton of Vaud. More detailed information on the distribution per continent can be found in the [Annex -@sec-data-distributioncontinent].
 
 ```{r, warning=FALSE, out.height="100%", out.width="100%", fig.width=7}
 ### F05_01.ENG ###
@@ -46,7 +48,7 @@ ggplot(F05_01_PCT,
   geom_bar(stat="identity") +
   coord_flip() +
   theme_minimal() +
-  labs(x="Continents of Origin",
+  labs(x="Continents",
        y="Percentages",
        title="Distribution of Visitors per Continent in Percentage, in the whole canton") +
   theme(legend.title = element_blank(),
@@ -61,11 +63,11 @@ ggplot(F05_01_PCT,
   ylim(0, 90)
 ```
 
-We notice that a large part of the people surveyed were coming from Europe (approx. 78%), followed by people coming from Asia (approx. 8%), North and Central America (approx. 8%), South America (approx. 3%) Australia and Oceania (approx. 2%) and finally Africa (approx. 1%). Again, these results were concerning the whole canton.
+As we can see, the majority of respondents came from Europe (around 78%), followed by Asia (around 8%), North and Central America (around 8%), South America (around 3%), Australia and Oceania (around 2%) and Africa (around 1%).
 
-### Global Distribution of Visitors to the Canton of Vaud by Nationality
+### Global Distribution of Visitors in the Canton of Vaud by Nationality
 
-We have then decided to explore the distribution in percentage of the nationalities per continent. You will find here a graph showing our results. To enhance visibility, we have gathered most of the countries in the variable "Other Countries" and added it on the graph with the remaining top 7 most represented countries in the list. You can find the whole table about the number of occurrences and percentages per nationality in the Annex.
+Then we decided to explore the distribution of the nationalities per continent. Here is a graph showing our results. For better visibility, we have grouped most of the countries in the variable "Other Countries" and added them on the graph with the remaining top 7 most represented countries in the list. You can find the table of the occurrences and percentages per nationality in the [Annex -@sec-data-distributionnationality].
 
 ```{r,fig.width=10, fig.height=10, echo=FALSE}
 # Countries in percentages 
@@ -107,7 +109,7 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
             position=position_stack(vjust=0.5))
 ```
 
-Our results show that Switzerland is the nationality the most represented among all the visitor (approx. 31.5%). Therefore, there are a lot of domestic visitors travelling to the canton of Vaud. Also, we see again that the most represented nationalities are Europeans, such as France (approx. 14.5%), United Kingdom (appox. 7.5%), Germany (approx. 5.5%), Belgium (approx. 3.5%) and finally Spain (approx. 3%). The only other nationality coming from a other continent represented here is the United States of America (approx. 5.5%). Proximity could be for instance one of the main factor explaining these results.
+Our results show that Switzerland is the country most represented among all visitors (around 31.5%). The canton of Vaud therefore has a large number of domestic visitors. We can also see that the countries most represented are European, such as France (around 14.5%), the United Kingdom (around 7.5%), Germany (around 5.5%), Belgium (around 3.5%) and finally Spain (around 3%). The only other nationality from another continent represented here is the United States of America (around 5.5%). Proximity, for example, could be one of the main factors explaining these results.
 
 ## City and District Visitor Distributions
 
@@ -256,13 +258,13 @@ datatable(nationality_ratio_per_city, options = list(pageLength = 10,
 
 Again, the low number of data available in our data don't allow us to get really satisfying results for every city surveyed.
 
-### Domestic tourism
+### Domestic Tourism
 
-#### Global swiss domestic visitors
+#### Global Swiss Domestic Visitors
 
-As Swiss citizens accounted for more than 30% of the visitors surveyed, we have decided to know more about the percentages of people coming from Switzerland, visiting Switzerland. Therefore, here is the distribution of visitors per canton of origin.
+As mentioned above, more than 30% of the visitors surveyed were Swiss. We therefore decided to find out more about the percentage of domestic visitors in the canton of Vaud. Here is the distribution of visitors by canton of origin, scaled by taking into account the population size of the cantons. This ensure the comparison between the different cantons.
 
-```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland, fig.width=10, fig.height=6, echo=FALSE}
+```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland, fig.width=10, fig.height=6, warning=FALSE, echo=FALSE}
 
 ## Séparation cantons suisse-allemands
 
@@ -338,113 +340,125 @@ ggplot(Inside_Switzerland_ratio,
            y=Scaled_Ratio)) +
   geom_bar(stat="identity",
            width = 0.8) +
-  labs(title="Distribution among swiss visitors (scaled ratio)",
+  labs(title="Scaled Distribution of Domestic Visitor Cantons",
        x="Cantons",
-       y="Percentage") +
+       y="Percentages") +
   theme(legend.title = element_blank(),
         legend.position = "none",
-        plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+        plot.title = element_text(hjust = 0.5, size = 15, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text.y = element_text(size = 6)) +
   geom_text(aes(label=sprintf("%.2f%%", 100 * Scaled_Ratio)),
             position=position_dodge(width=-0.5),
             vjust=0.3,
             hjust=-0.1,
             size = 3) +
   coord_flip() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 2)) +
   theme_minimal()
 ```
 
-As we can see on this table, the biggest part of the Swiss visitors surveyed in this study are people from Vaud (approx. 20%), Bern (approx. 16%) and Zurich (approx. 12%).
-
-#### Distribution of domestic tourism - German speaking part
-
-As we know that approximately 65% of Switzerland has as main language german, we thought that it would be interesting to know the distribution among swiss german visitors in the survey. Here is the plot showing the distribution per canton.
+As can be seen from this table, the cantons with the highest percentage of domestic visitors scaled by the total population of these cantons are Vaud (approx. 8.5%), Uri (approx. 7.3%) and Obwalden (approx. 5.8%).
 
 ```{r, fig.width=10, fig.height=6, echo=FALSE, warning=FALSE}
+#### Distribution of domestic tourism - German speaking part
+
+# As we know that around 65% of Switzerland has German as its main language, we thought it would be interesting to know the distribution of Swiss-German visitors in the survey. Here is the graph showing the distribution per canton, again scaled by its population.
+
+
 # Now how much percentage do swiss germans represent in this
-Swiss_germans_percentage <- data_merged %>%
-  filter(Canton %in% swiss_german_cantons) %>%
-  mutate(Percentage = paste0(round((Count/sum(Count)) * 100, 1), "%")) %>%
-  mutate(Ratio = Count / Population) %>%
-  mutate(Scaled_Ratio = Ratio / sum(Ratio)) %>%
-  select(Canton, Count, Percentage, Population, Ratio, Scaled_Ratio)
-
-
-# sum(Swiss_germans_percentage$Percentage)
-        
-# datatable(Swiss_germans_percentage,
-#           rownames = FALSE,
-#           options = list(pageLength = 10,
-#                          class = "hover",
-#                          searchHighlight = TRUE))
-
-# plot scaled_ratio per canton
-ggplot(Swiss_germans_percentage,
-       aes(x=reorder(Canton, Scaled_Ratio),
-           y=Scaled_Ratio)) +
-  geom_bar(stat="identity",
-           width = 0.8) +
-  labs(title="Distribution among swiss german visitors (scaled ratio)",
-       x="Cantons",
-       y="Percentage") +
-  theme(legend.title = element_blank(),
-        legend.position = "none",
-        plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  geom_text(aes(label=sprintf("%.2f%%", 100 * Scaled_Ratio)),
-            position=position_dodge(width=-0.5),
-            vjust=0.3,
-            hjust=-0.1,
-            size = 3) +
-  coord_flip() +
-  theme_minimal()
+# Swiss_germans_percentage <- data_merged %>%
+#   filter(Canton %in% swiss_german_cantons) %>%
+#   mutate(Percentage = paste0(round((Count/sum(Count)) * 100, 1), "%")) %>%
+#   mutate(Ratio = Count / Population) %>%
+#   mutate(Scaled_Ratio = Ratio / sum(Ratio)) %>%
+#   select(Canton, Count, Percentage, Population, Ratio, Scaled_Ratio)
+# 
+# 
+# # sum(Swiss_germans_percentage$Percentage)
+#         
+# # datatable(Swiss_germans_percentage,
+# #           rownames = FALSE,
+# #           options = list(pageLength = 10,
+# #                          class = "hover",
+# #                          searchHighlight = TRUE))
+# 
+# # plot scaled_ratio per canton
+# ggplot(Swiss_germans_percentage,
+#        aes(x=reorder(Canton, Scaled_Ratio),
+#            y=Scaled_Ratio)) +
+#   geom_bar(stat="identity",
+#            width = 0.8) +
+#   labs(title="Distribution among swiss german visitors (scaled ratio)",
+#        x="Cantons",
+#        y="Percentage") +
+#   theme(legend.title = element_blank(),
+#         legend.position = "none",
+#         plot.title = element_text(hjust = 0.5),
+#         axis.text.x = element_text(angle = 45, hjust = 1)) +
+#   geom_text(aes(label=sprintf("%.2f%%", 100 * Scaled_Ratio)),
+#             position=position_dodge(width=-0.5),
+#             vjust=0.3,
+#             hjust=-0.1,
+#             size = 3) +
+#   coord_flip() +
+#   theme_minimal()
+# 
+# 
+# XXXXXXXXXXXXX are the top 3 cantons represented among all swiss german cantons (with in approx. XXX%, XXX% and XXX% in the order)
 ```
 
-XXXXXXXXXXXXX are the top 3 cantons represented among all swiss german cantons (with in approx. XXX%, XXX% and XXX% in the order)
-
-Now, for interpretability and visualisation, let's see the proportion of swiss german people over the rest of the swiss citizens surveyed:
+For the sake of readability and visualisation, we decided to group the cantons into three categories: Swiss-Germans, Vaud, and the remaining Italian and Romansh-speaking cantons () under 'Other'. Since Vaud had the highest percentage of domestic visitors in the previous graph, we decided to give it its own category. Here is the scaled distribution of the swiss population surveyed:
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
   # Assuming 'Inside_Switzerland' has a column 'Canton' and you have a vector 'swiss_german_cantons' listing Swiss German cantons
 
-Inside_Switzerland <- Inside_Switzerland %>%
+Inside_Switzerland <- Inside_Switzerland_ratio %>%
   mutate(Categories = ifelse(Canton %in% swiss_german_cantons, "Swiss germans",
-                             ifelse(Canton %in% c("Waadt"),"Vaud","Other")))
-
-# Calculate total counts
-total_counts <- Inside_Switzerland %>% 
-  summarize(total = n())
+                             ifelse(Canton %in% c("Waadt"),"Vaud","Other"))) #Freiburg Genf Graubünden Jura Tessin Wallis
 
 # Calculate counts for Swiss German cantons and others
 counts <- Inside_Switzerland %>%
   group_by(Categories) %>%
-  summarize(count = n(), .groups = 'drop')
+  summarize(SumRatio = 100* sum(Scaled_Ratio), .groups = 'drop') %>%
+  mutate(Categories = fct_reorder(Categories, SumRatio, .desc = TRUE))
 
-# Calculate percentages
-counts <- counts %>%
-  mutate(percentage = count / total_counts$total * 100) %>%
-  mutate(Categories = fct_reorder(Categories, percentage, .desc = TRUE))
+# # Calculate total counts
+# total_counts <- Inside_Switzerland %>% 
+#   summarize(total = n())
+# 
+# # Calculate counts for Swiss German cantons and others
+# counts <- Inside_Switzerland %>%
+#   group_by(Categories) %>%
+#   summarize(count = n(), .groups = 'drop')
+# 
+# # Calculate percentages
+# counts <- counts %>%
+#   mutate(percentage = count / total_counts$total * 100) %>%
+#   mutate(Categories = fct_reorder(Categories, percentage, .desc = TRUE))
 
 
 
 # Plot
 ggplot(counts,
        aes(x = Categories,
-           y = percentage,
+           y = SumRatio,
            fill = Categories)) +
   geom_bar(stat = "identity") +
   # scale_x_discrete(labels = c("Others", "Swiss germans")) +
   theme_minimal() +
   theme(legend.position = "none") + 
-  geom_text(aes(label=sprintf("%.2f%%", percentage)),
+  geom_text(aes(label=sprintf("%.2f%%", SumRatio)),
             position=position_stack(vjust=0.5)) + 
-  labs(title = "Percentages of Swiss German, Vaud and other visitors",
-       x = "Canton",
-       y = "Percentage") +
+  labs(title = "Distribution of Swiss-German, Vaud and Other Cantons",
+       x = "Cantons",
+       y = "Percentages") +
   ylim(0, 90)
 ```
 
-Over all the swiss citizen, we can see that 72% of them are coming from the swiss german part.
+When looking at the total number of domestic visitors to Switzerland, around 70% come from the German-speaking part (18 cantons), which is more than three time as many as the 6 cantons under "Others" (Fribourg, Geneva, Grisons, Jura, Ticino, Valais) and more than 8 times as many as visitors from the canton of Vaud. 
+
+Scaled, the percentage for the Canton of Vaud reaches 8.5%. Without scaling, it would only be 4%, meaning that there are more people coming in the canton of Vaud in comparison with the canton population than the other cantons (without any scaling, "Other" cantons would reach 24% and Swiss-Germans ones 72%).
 
 ## Destinations and Accomodations
 

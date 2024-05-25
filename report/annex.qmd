@@ -47,13 +47,13 @@ questions_eng %>%
 
 ## Data summary {#sec-data-summary}
 
-Find below the full techincal description of the dataset:
+Find below the full technical description of the dataset:
 
 ```{r echo = FALSE}
 print(dfSummary(data), method = "render")
 ```
 
-## Percentage per continent of visitors coming in the canton of Vaud
+## Distribution of visitors per continent  {#sec-data-distributioncontinent}
 
 ```{r Percentage per continent of visitors coming in the canton of Vaud, echo = FALSE}
 datatable(F05_01_PCT,
