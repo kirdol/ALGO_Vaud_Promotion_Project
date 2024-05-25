@@ -718,6 +718,29 @@ NEED TO CHANGE INTO VICTOR'S DISTRICT
 
 Looking at the categories of spendings, we decided to analyse and compare the districts' spendings and see for which category each district spends the most.
 
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+# Code copied from maps
+
+# We will transform data to include corresponding leaflet district. 
+#unique(data$F105_Code)
+
+# Create a new column 'leaflet_region' with NA values
+data$leaflet_districts <- NA
+
+# Assign cities to districts based on conditions
+data$leaflet_districts[data$F105_Code == "Lausanne"] <- "Lausanne"
+data$leaflet_districts[data$F105_Code %in% c("Montreux", "Vevey", "La Tour-de-Peilz", "Rougemont", "Château-d'Oex", "Veytaux", "Rossinière", "Corsier-sur-Vevey", "Saint-Légier-La-Chiésaz", "Blonay", "Chardonne", "Chernex")] <- "Riviera-Pays-d'Enhaut"
+data$leaflet_districts[data$F105_Code %in% c("Morges", "Yens", "Aubonne")] <- "Morges"
+data$leaflet_districts[data$F105_Code %in% c("Yverdon-les-Bains", "L'Abbaye", "Vallorbe", "Orbe", "Yvonand", "La Praz", "Le Chenit", "Bullet", "Montagny-près-Yverdon", "Saint Croix", "Le Rocheray", "Le Pont", "Le Sentier", "Le Brassus", "Les Rasses", "Les Charbonnieres")] <- "Jura-Nord vaudois"
+data$leaflet_districts[data$F105_Code %in% c("Aigle", "Leysin", "Villeneuve (VD)", "Ormont-Dessus", "Bex", "Lavey-Morcles", "Gryon", "Ormont-Dessous", "Les Diablerets", "Villars-sur-Ollon")] <- "Aigle"
+data$leaflet_districts[data$F105_Code %in% c("Nyon", "Prangins", "Chavannes-de-Bogis", "Coppet", "Rolle", "Commugny", "Duillier", "Gilly", "Founex")] <- "Nyon"
+data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "Payerne", "Cudrefin", "St. Aubin", "Estavayer-le-Lac")] <- "Broye-Vully"
+data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)", "Renens", "Saint-Sulpice (VD)")] <- "Ouest lausannois"
+data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cully")] <- "Lavaux-Oron"
+data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
+
+```
+
 ```{r, warning = FALSE}
 # Convert data to long format and rename categories
 data_long <- data %>%
@@ -735,8 +758,8 @@ data_long <- data %>%
     "F81_06" = "Other expenses"
   ))
 
-# Generate a list of unique cities (F105_OrgCode assumed correct column name)
-cities <- unique(data_long$F105_OrgCode)
+# Generate a list of unique cities (leaflet_districts assumed correct column name)
+cities <- unique(data_long$leaflet_districts)
 
 # Create a plotly object with a dropdown menu
 p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', colors = ~Spending_Type) %>%
@@ -753,8 +776,8 @@ p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', colors = 
             method = "update",
             args = list(
               list(
-                x = list(data_long[data_long$F105_OrgCode == city,]$Spending_Type),
-                y = list(data_long[data_long$F105_OrgCode == city,]$Amount)
+                x = list(data_long[data_long$leaflet_districts == city,]$Spending_Type),
+                y = list(data_long[data_long$leaflet_districts == city,]$Amount)
               ),
               list(
                 title = paste("Spendings for", city),
@@ -836,7 +859,7 @@ ggplot(spendings_top7, aes(x = F05_02_ENG, y = per_person, fill = F05_02_ENG)) +
 
 ```{r}
 spendings_aigle <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Aigle-Leysin-Les Mosses") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Aigle") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -845,7 +868,7 @@ spendings_aigle <- data %>%
 
 ggplot(spendings_aigle, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Aigle-Leysin-Les Mosses",
+  labs(title = "Total Spendings by Nationality in Aigle",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
@@ -854,11 +877,11 @@ ggplot(spendings_aigle, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_E
         plot.title = element_text(hjust = 0.5))  
 ```
 
-#### Avenches
+#### Morges
 
 ```{r}
 spendings_avenches <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Avenches Tourisme") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Morges") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -867,7 +890,7 @@ spendings_avenches <- data %>%
 
 ggplot(spendings_avenches, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Avenches Tourisme",
+  labs(title = "Total Spendings by Nationality in Morges",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
@@ -876,11 +899,11 @@ ggplot(spendings_avenches, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_0
         plot.title = element_text(hjust = 0.5))
 ```
 
-#### Echallens
+#### Gros-de-Vaud
 
 ```{r}
 spendings_echallens <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Echallens Région Tourisme") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Gros-de-Vaud") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -889,7 +912,7 @@ spendings_echallens <- data %>%
 
 ggplot(spendings_echallens, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Echallens Région Tourisme",
+  labs(title = "Total Spendings by Nationality in Gros-de-Vaud",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
@@ -898,11 +921,11 @@ ggplot(spendings_echallens, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_
         plot.title = element_text(hjust = 0.5))
 ```
 
-#### Estavayer/Payerne
+#### Broye-Vully
 
 ```{r}
 spendings_estavayer <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Estavayer-le-Lac/Payerne Tourisme") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Broye-Vully") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -911,7 +934,7 @@ spendings_estavayer <- data %>%
 
 ggplot(spendings_estavayer, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Estavayer-le-Lac/Payerne Tourisme",
+  labs(title = "Total Spendings by Nationality in Broye-Vully",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
@@ -924,7 +947,7 @@ ggplot(spendings_estavayer, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_
 
 ```{r}
 spendings_lausanne <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Lausanne Tourisme") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Lausanne") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -933,7 +956,7 @@ spendings_lausanne <- data %>%
 
 ggplot(spendings_lausanne, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Lausanne Tourisme",
+  labs(title = "Total Spendings by Nationality in Lausanne",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
@@ -942,11 +965,11 @@ ggplot(spendings_lausanne, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_0
         plot.title = element_text(hjust = 0.5))
 ```
 
-#### Montreux
+#### Riviera-Pays-d'Enhaut
 
 ```{r}
 spendings_montreux <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Montreux Riviera") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Riviera-Pays-d'Enhaut") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -955,7 +978,7 @@ spendings_montreux <- data %>%
 
 ggplot(spendings_montreux, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Montreux Riviera",
+  labs(title = "Total Spendings by Nationality in Riviera-Pays-d'Enhaut",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
@@ -964,11 +987,11 @@ ggplot(spendings_montreux, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_0
         plot.title = element_text(hjust = 0.5))
 ```
 
-#### Moudon
+#### Lavaux-Oron
 
 ```{r}
 spendings_moudon <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Moudon Région Tourisme") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Lavaux-Oron") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -977,7 +1000,7 @@ spendings_moudon <- data %>%
 
 ggplot(spendings_moudon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Moudon Région Tourisme",
+  labs(title = "Total Spendings by Nationality in Lavaux-Oron",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
@@ -990,7 +1013,7 @@ ggplot(spendings_moudon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_
 
 ```{r}
 spendings_nyon <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Nyon Région Tourisme") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Nyon") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -999,7 +1022,7 @@ spendings_nyon <- data %>%
 
 ggplot(spendings_nyon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Nyon Région Tourisme",
+  labs(title = "Total Spendings by Nationality in Nyon",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
@@ -1008,11 +1031,11 @@ ggplot(spendings_nyon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_EN
         plot.title = element_text(hjust = 0.5))
 ```
 
-#### Pays d'Enhaut
+#### Ouest lausannois
 
 ```{r}
 spendings_enhaut <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Pays d'Enhaut Tourisme") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Ouest lausannois") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -1021,7 +1044,7 @@ spendings_enhaut <- data %>%
 
 ggplot(spendings_enhaut, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Pays d'Enhaut Tourisme",
+  labs(title = "Total Spendings by Nationality in Ouest lausannois",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
@@ -1030,55 +1053,13 @@ ggplot(spendings_enhaut, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_
         plot.title = element_text(hjust = 0.5))
 ```
 
-#### Vallée de Joux
 
-```{r}
-spendings_joux <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Vallée de Joux") %>%
-  group_by(F05_02_ENG) %>%
-  summarize(
-    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
-    .groups = 'drop'
-  )
 
-ggplot(spendings_joux, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Vallée de Joux",
-       x = "Nationality",
-       y = "Total Spendings",
-       fill = "Nationality") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
-```
-
-#### Villars
-
-```{r}
-spendings_villars <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Villars-Diablerets-Gryon-Bex") %>%
-  group_by(F05_02_ENG) %>%
-  summarize(
-    Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
-    .groups = 'drop'
-  )
-
-ggplot(spendings_villars, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Villars-Diablerets-Gryon-Bex",
-       x = "Nationality",
-       y = "Total Spendings",
-       fill = "Nationality") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
-```
-
-#### Yverdon
+#### Jura-Nord vaudois
 
 ```{r}
 spendings_yverdon <- data %>%
-  filter(F05_02_ENG %in% top7, F105_OrgCode == "Yverdon-les-Bains Région") %>%
+  filter(F05_02_ENG %in% top7, leaflet_districts == "Jura-Nord vaudois") %>%
   group_by(F05_02_ENG) %>%
   summarize(
     Total_Spendings = sum(F81_Total, na.rm = TRUE) + sum(F82_Total, na.rm = TRUE),
@@ -1087,7 +1068,7 @@ spendings_yverdon <- data %>%
 
 ggplot(spendings_yverdon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_ENG)) +
   geom_bar(stat = "identity") +
-  labs(title = "Total Spendings by Nationality in Yverdon-les-Bains Région",
+  labs(title = "Total Spendings by Nationality in Jura-Nord vaudois",
        x = "Nationality",
        y = "Total Spendings",
        fill = "Nationality") +
