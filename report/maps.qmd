@@ -8,7 +8,7 @@ format:
 
 Within this section, we present a series of maps showcasing the districts of canton Vaud, each illustrating the proportion of visitors from specific origins and demographic categories. These visualizations offer insights into the distribution of visitors across different regions, providing context for the diversity of visitors within the canton.
 
-Note that the proportions displayed on the map represent percentages relative to the total number of visitors per district. However, due to the small numbers of visitors to certain origins and nationalities, these proportions should not be taken at face value for all areas. For better context, the total number of visitors per district is displayed alongside the percentage.
+Note that the proportions displayed on the map represent percentages relative to the total number of visitors per district. However, due to the small numbers of visitors of certain origins and nationalities, these proportions should not be taken at face value for all areas. For better context, the total number of visitors per district is displayed alongside the percentage.
 
 ```{r, echo = FALSE, output = FALSE, warning = FALSE, warning = FALSE}
 # Load the packages and load the data
@@ -77,7 +77,7 @@ vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Oues
 
 ## Group types
 
-The following maps depict how people travel to the canton of Vaud. It shows the proportion of visitors of each regions that came with their children, alone or as a couple. Note that someone can be in multiple categories. For example, someone can be a couple and have children. He would then be counted in the couples and children categories.
+The following maps depict how people travel to the canton of Vaud. It shows the proportion of visitors from each region that came with their children, alone or as a couple. Note that someone can be in multiple categories. For example, someone can be a couple and have children. He would then be counted in the couples and children categories.
 
 ::: panel-tabset
 
@@ -186,7 +186,7 @@ leaflet(vaud) %>%
 
 ## Seasonality
 
-These maps show us which districts are most visited in the two main yearly seasons, summer and winter. We see a clear change in the district of Aigle, which has many more visitors during the winter, due to it being a region that is home to many ski slopes and winter activities. The main district that seems to profit from the summer months is Jura-Nord vaudois, and the proportion of visitors to the capital is indifferent to the seasons.
+These maps show us which districts are most visited in the two main yearly seasons, summer and winter. We see a clear change in the district of Aigle, which has many more visitors during the winter, due to it being a region that is home to many ski slopes and winter activities. The main district that seems to profit from the summer months is Jura-Nord Vaudois, and the proportion of visitors to the capital is indifferent to the seasons.
 
 ::: panel-tabset
 
@@ -250,7 +250,7 @@ As expected, we see a clear distinction between the summer and winter seasons. T
 
 ## Average spending
 
-Here is a map of the average and total spending by district. We can see that both the average and total spending is highest in the district of Riviera-Pays-d'Enhaut. We only take into account respondents with total expenses of under 30'000 CHF, in order to filter outliers.
+Here is a map of the average and total spending by district. We can see that both the average and total spending are highest in the district of Riviera-Pays-d'Enhaut. We only take into account respondents with total expenses of under 30'000 CHF in order to filter outliers.
 
 ```{r, echo = FALSE}
 # Drop outliers
@@ -278,11 +278,11 @@ leaflet(vaud) %>%
   addPolygons(color = "black", weight = 2, fillOpacity = 0, label = paste(vaud$NAME, vaud$average_spending, "CHF", "Total: ", vaud$spending_sum, "CHF"))
 ```
 
-It is interesting to see that the tourists that came in the region of Montreux have spent the most on average, around 2600 CHF. The tourists that came in Lausanne spent closer to 2300 CHF while the rest of the regions, they spent between 1500 and 2000 CHF in average. This is a consequent difference in spending between the districts.
+It is interesting to see that the tourists that came to the region of Montreux have spent the most on average, around 2600 CHF. The tourists that came to Lausanne spent closer to 2300 CHF, while in the rest of the regions, they spent between 1500 and 2000 CHF on average. This is a large difference in spending between the districts.
 
 ## Swiss tourists
 
-Let's explore on a map the proportion of Swiss tourists in each districts. We seperated the Swiss-German and Swiss-French tourists to check for different preferences patterns. The proportion of travelers from Ticino and Grisons is negligible (< 1% proportion for any district) so we don't include them on the map.
+Let's explore on a map the proportion of Swiss tourists in each district. We separated the Swiss-German and Swiss-French tourists to check for different preference patterns. The proportion of travelers from Ticino and Grisons is negligible (< 1% proportion for any district), so we don't include them on the map.
 
 ```{r, echo = FALSE}
 # Swiss sub columns
@@ -368,11 +368,11 @@ leaflet(vaud) %>%
 
 :::
 
-Interestingly the Swiss-German tourists represents a high proportion of the tourists in the region of Jura Nord vaudois. The Swiss-French tourists in the other hand seems more present in the region of Aigle.
+Interestingly, Swiss-German tourists represent a high proportion of the tourists in the Jura Nord vaudois region. The Swiss-French tourists, on the other hand, seem more present in the region of Aigle.
 
 ## French tourists
 
-Let's explore on a map the most frequently visited districts by French tourists. We seperated the tourists from Île-de-France, Auvergne-Rhône-Alpes and the rest of France to check for different preferences patterns and proportions of french tourists in each regions.
+Let's explore, on a map, the most frequently visited districts by French tourists. We separated the tourists from Île-de-France, Auvergne-Rhône-Alpes, and the rest of France to check for different preference patterns and proportions of French tourists in each region.
 
 ::: panel-tabset
 
@@ -470,11 +470,11 @@ leaflet(vaud) %>%
 
 :::
 
-We can see on the maps that the tourists from Île-de-France are well represented in the region of Lausanne while the tourists from Auvergne-Rhône-Alpes and the rest of France are also well represented in the region of Lausanne but also notably in the others regions.
+We can see on the maps that the tourists from Île-de-France are well represented in the region of Lausanne, while the tourists from Auvergne-Rhône-Alpes and the rest of France are also well represented in the region of Lausanne, but also notably in the other regions.
 
 ## British tourists
 
-You can find on the map below the most visited regions in proportions with to the total number of visitors in the region by British tourists. We seperated the tourists from London, the rest of England and Scotland to check for different preferences patterns. There were too few visitors from Northern Ireland and Wales to be included in the map.
+You can find on the map below the most visited regions in proportion to the total number of visitors in the region by British tourists. We separated the tourists from London, the rest of England, and Scotland to check for different preference patterns. There were too few visitors from Northern Ireland and Wales to be included in the map.
 
 ::: panel-tabset
 
@@ -570,11 +570,11 @@ leaflet(vaud) %>%
 
 :::
 
-There was a high proportion of visitors from London in the district Lavaux-Oron. We can't confirm that visitors from London are more interested in this district than other UK tourists, since the sample is so small.
+There was a high proportion of visitors from London in the district of Lavaux-Oron. We can't confirm that visitors from London are more interested in this district than other UK tourists, since the sample is so small.
 
 ## German tourists
 
-You can find on the map below the most visited regions in proportions with to the total number of visitors in the region by German tourists. We seperated the tourists from Baden-Württemberg, Bayern and Nordrhein-Westfalen to check for different preferences patterns.
+You can find on the map below the most visited regions in proportion to the total number of visitors in the region by German tourists. We separated the tourists from Baden-Württemberg, Bayern, and Nordrhein-Westfalen to check for different preference patterns.
 
 ::: panel-tabset
 
@@ -704,7 +704,7 @@ leaflet(vaud) %>%
 
 ## US tourists
 
-You can find on the map below the most visited regions in proportions with to the total number of visitors in the region by US tourists. We seperated the tourists from California and the rest of the US to check for different preferences patterns.
+You can find on the map below the most visited regions in proportion to the total number of visitors in the region by US tourists. We separated the tourists from California and the rest of the US to check for different preference patterns.
 
 ::: panel-tabset
 
@@ -772,7 +772,7 @@ leaflet(vaud) %>%
 
 ## Other main countries
 
-The most frequently visited districts by tourists from Belgium, Spain and the Netherlands can be seen on the map below.
+The most frequently visited districts by tourists from Belgium, Spain, and the Netherlands can be seen on the map below.
 
 ::: panel-tabset
 
@@ -928,4 +928,4 @@ leaflet(vaud) %>%
 
 :::
 
-A high proportion of visitors of the Aigle district are from Belgium and Netherlands. Italy seems to prefer the region of Lausanne.
+A high proportion of visitors to the Aigle district are from Belgium and the Netherlands. Italy seems to prefer the region of Lausanne.
