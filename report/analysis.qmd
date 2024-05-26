@@ -63,12 +63,12 @@ nb_days_per_month <- nb_days_per_month %>%
   ))
 
 #plot
-ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fill = season)) +
+ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fill = default_color)) +
   geom_bar(stat = "identity") +
-  geom_smooth(aes(group = 1), method = "loess", se = FALSE, color = "red", linetype = "dashed") +
-  scale_fill_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "purple", "Fall" = "orange")) +
+  geom_smooth(aes(group = 1), method = "loess", se = FALSE, color = "black", linetype = "dashed") +
+  #scale_fill_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "purple", "Fall" = "orange")) +
   theme_minimal() +
-  labs(x = "Months", y = "Sum Holiday Durations", title = "Total Holiday Duration by Month", fill = "Season") +
+  labs(x = "Months", y = "Sum Holiday Durations", title = "Total Holiday Duration by Month") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
  
@@ -286,12 +286,13 @@ F20_freq <- data_NAs %>%
   summarize(Count = n(), .groups = 'drop') %>%
   arrange(desc(Count)) # Optional: arrange in descending order of frequency
 
-ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
+ggplot(F20_freq, aes(x = F20, y = Count, fill = default_color)) +
   geom_bar(stat = "identity") +
   theme_minimal() +
   labs(x = "Number of nights", y = "Frequency", title = "Frequency of the number of nights in Vaud") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), # Improve readability of x-axis labels
-        legend.title = element_blank()) # Hide the legend if not needed
+        legend.title = element_blank()) + # Hide the legend if not needed
+  guides(fill=FALSE)
 ```
 
 As the question asked of visitors was the number of nights spent in Switzerland, it is difficult to know how many nights were spent in the canton of Vaud. We have therefore decided to use the total number of overnight stays in the country in our analysis. In addition, due to the structure of the survey, most of our data contained NAs (according to the answer to question F16, some people could not answer question F20, so their answer was reported as an NA). We have therefore decided to count the NAs as 1 overnight stay, as it is not possible to know if they only spent 1 day in Vaud without staying overnight.
@@ -320,7 +321,7 @@ my_theme <- theme_minimal() +
     
 # Plotting the density ridgeline plot
 ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F105_OrgCode)) + 
-  geom_density_ridges(fill = "#00AFBB", color = "white", alpha = 0.8) + 
+  geom_density_ridges(fill = default_color, color = "white", alpha = 0.8) + 
   scale_x_continuous(labels = scales::comma) +
   labs(
     x = "Number of Nights",  # Adjust x-axis label
@@ -352,7 +353,7 @@ ratio_nightstays_CH_EU <- data2 %>%
 
 # Create the distribution histogram
 ggplot(ratio_nightstays_CH_EU, aes(x = Percentage_Night_Stays_Switzerland)) +
-  geom_histogram(binwidth = 10, fill = "skyblue", color = "black") +
+  geom_histogram(binwidth = 10, fill = default_color, color = "black") +
   labs(
     title = "Distribution of Nightstays in Switzerland over Whole Trip",
     x = "Percentage nights spent in Switzerland",
@@ -398,7 +399,7 @@ result <- left_join(monthly_arrivals, per_country, by = "F05_02_ENG") %>%
 #                                    searchHighlight = TRUE), rownames = FALSE)
 
 # Visualize
-ggplot(result, aes(x = month_name_column, y = `F05_02_ENG`, size = Count/total)) +
+ggplot(result, aes(x = month_name_column, y = `F05_02_ENG`, size = Count/total, color = default_color)) +
   geom_point(alpha = 0.7) + # Using alpha for better visibility if points overlap
   theme_minimal() +
   labs(title = "Monthly Arrivals in Switzerland by Country of Origin",
@@ -417,9 +418,11 @@ Here we have calculated the average total CHF spent during a trip to Vaud per pe
 
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
 
-data <- read.csv("../data/TMS_dataset_Vaud_20240314_FINAL.csv", sep = ",")
+data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
+                 sep = ",")
 
-explanations <- read.csv("../data/explanations.csv")
+explanations <- read.csv(here("data", "explanations.csv"),
+                 sep = ",")
 
 which(colnames(data) == "F31_01")
 which(colnames(data) == "F32")
@@ -507,7 +510,7 @@ df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(
 ```{r, echo = FALSE, message = FALSE}
 #Plot frequency
 ggplot(df_sums_df, aes(x = Column, y = Spent)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_bar(stat = "identity", fill = default_color) +
   geom_text(aes(label = paste0("CHF ", round(Spent, 0))), vjust = -0.5, size = 3, color = "black") +
   labs(title = "Average CHF spent by group type", x = "Traveled with", y = "Amount spent / person")
 
@@ -591,7 +594,7 @@ Here we can see the group types of travelers (Alone, with partner, with children
 
 ```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = swiss)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_bar(stat = "identity", fill = default_color) +
   ylim(0, 100) +
   labs(title = "Group types for Swiss tourists", x = "Traveled with", y = "Percentage") +
   geom_text(aes(label = paste0(swiss, "%")), vjust = -0.5, size = 3)
@@ -603,7 +606,7 @@ Swiss tourists are more likely than other nations to travel with children. They 
 
 ```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = french)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_bar(stat = "identity", fill = default_color) +
   ylim(0, 100) +
   labs(title = "Group types for French tourists", x = "Traveled with", y = "Percentage") +
   geom_text(aes(label = paste0(french, "%")), vjust = -0.5, size = 3)
@@ -614,7 +617,7 @@ ggplot(sums_df, aes(x = group_name, y = french)) +
 
 ```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = british)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_bar(stat = "identity", fill = default_color) +
   ylim(0, 100) +
   labs(title = "Group types for British tourists", x = "Traveled with", y = "Percentage") +
   geom_text(aes(label = paste0(british, "%")), vjust = -0.5, size = 3)
@@ -625,7 +628,7 @@ ggplot(sums_df, aes(x = group_name, y = british)) +
 
 ```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = german)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_bar(stat = "identity", fill = default_color) +
   ylim(0, 100) +
   labs(title = "Group types for German tourists", x = "Traveled with", y = "Percentage") +
   geom_text(aes(label = paste0(german, "%")), vjust = -0.5, size = 3)
@@ -638,7 +641,7 @@ German tourists are the most likely of these countries to be traveling only with
 
 ```{r, echo = FALSE, message = FALSE}
 ggplot(sums_df, aes(x = group_name, y = american)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_bar(stat = "identity", fill = default_color) +
   ylim(0, 100) +
   labs(title = "Group types for American tourists", x = "Traveled with", y = "Percentage") +
   geom_text(aes(label = paste0(american, "%")), vjust = -0.5, size = 3)
@@ -713,7 +716,8 @@ p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', colors = 
             args = list(
               list(
                 x = list(data_long[data_long$leaflet_districts == city,]$Spending_Type),
-                y = list(data_long[data_long$leaflet_districts == city,]$Amount)
+                y = list(data_long[data_long$leaflet_districts == city,]$Amount),
+                marker = list(color = default_color)
               ),
               list(
                 title = paste("Spendings for", city),
