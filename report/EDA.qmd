@@ -231,7 +231,7 @@ The percentage here was in fact a ratio representing the number of people from o
 
 **Ratio of each country of origin relatively to the number of tourist surveyed in each district**
 
-In the same process, let's now explore the country of origin ratio per district of tourism.
+In the same process, let's now explore the country of origin ratio per district of tourism. The full table is in the [Annex -@sec-data-city_percentage_country]
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # ratio of each nationality relatively to the number of tourist surveyed in each district F105_OrgCode
@@ -262,7 +262,7 @@ Again, the low number of data available in our data don't allow us to get really
 
 #### Global Swiss Domestic Visitors
 
-As mentioned above, more than 30% of the visitors surveyed were Swiss. We therefore decided to find out more about the percentage of domestic visitors in the canton of Vaud. Here is the distribution of visitors by canton of origin, scaled by taking into account the population size of the cantons. This ensure the comparison between the different cantons.
+As mentioned above, more than 30% of the visitors surveyed were Swiss. We therefore decided to find out more about the percentage of domestic visitors in the canton of Vaud. Here is the distribution of visitors by canton of origin, scaled by taking into account the population size of the cantons. This ensure the comparison between the different cantons. The full table can be found at [Annex -@sec-data-domestic_visitors]
 
 ```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland, fig.width=10, fig.height=6, warning=FALSE, echo=FALSE}
 

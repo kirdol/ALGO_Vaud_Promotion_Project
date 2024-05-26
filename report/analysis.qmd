@@ -14,9 +14,9 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
 
 # Analysis
 
-## Plot of the total number of days spent in Vaud per month of the year
+## Distribution of the Days Spent per Month
 
-Now let's explore the number of day spent per month of the year in the Canton of Vaud.
+In order to show the possible seasonality of visits, we decided to look at the number of days spent per month of the year in the canton of Vaud.
 
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 ### F12 & F13 ###
@@ -72,7 +72,7 @@ ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fil
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
  
-We clearly see two major moment of the year were there is a rise in the number of days spent in Vaud: March and July. 
+We can clearly see two major moments in the year when there is an increase in the number of days spent in Vaud: March and July. This can be influenced by national holidays.
  
 ```{r, message=FALSE, fig.width=8, fig.height=8, warning=FALSE, echo=FALSE}
 ### F16 ### 
@@ -241,33 +241,36 @@ combined_plot_with_legend <- plot_grid(combined, legend, ncol = 1, nrow = 1)
 
 ```
 
-Now let's explore the percentage of trip category per continent. In the survey, the visitors were asked the type of trip they were having. Therefore, you will find here the graph of the distribution of the type of trip for each continent. The choice was made among 4 possibilities that are explained in the legend of the graph. 
- 
+## Nightstay Category Distribution per Continent 
+
+Let's now look at the percentage of nighstay trip per categories and continent. In the survey, visitors were asked to select the type of trip they took from 4 options, explained in the legend of the graph. So here is the graph of the distribution of the type of trip for each continent.
+
 ```{r, echo = FALSE, message=FALSE, out.height="100%", out.width="100%", fig.width= 10, fig.height=8}
 
 ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
   geom_bar(stat = "identity") +
-  labs(x = "Country", y = "Percentages", fill = "Type of Trip") +
+  labs(x = "Continents", y = "Percentages", fill = "Type of Trip") +
   ggtitle("Type of Trip by Continent of Origin") +
   scale_fill_manual(values = my_colors) + # Use your defined colors here
   geom_text(aes(label = Percentages), position = position_stack(vjust = 0.5), size = 5) +
   theme_minimal() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
         axis.text.y = element_text(hjust = 1, size = 10),
-        legend.text = element_text(size = 9),
+        legend.text = element_text(size = 10),
         legend.title = element_text(size = 0),
         #legend.box = "vertical",
         legend.position = "bottom",
-        legend.key.size = unit(0.4, "cm")) + 
+        legend.key.size = unit(0.4, "cm"),
+        plot.title = element_text(hjust = 0.5, size = 20)) + 
         guides(fill = guide_legend(nrow = 2, title = "Options"))
 
 ```
 
-In general, we notice that most of the visitors coming from continent far away from Switzerland are coming in Switzerland for serveral nightstays during their trip in Europe. On another hand, living closer, are staying most of the time for one overnight stay in Switzerland. This is probably due to the large quantity of visitors surveyed coming from Switzerland but from other cantons or visitors coming from adjacent countries such as Germany in France, all these visitors accounting for a total of approx. 50% of the people surveyed.
+In general, it can be seen that most visitors from continents far away from Switzerland come to Switzerland for one or more nights during their trip in Europe. In addition, visitors living closer to Switzerland, such as Europeans, mostly stay for one night in Switzerland. This is probably due to the large number of visitors surveyed who come from Switzerland but from other cantons or from neighbouring countries such as Germany in France, all of which together account for around 50% of the visitors surveyed. We can also see that few people making a European tour would spend only one night in Switzerland.
 
-## Global frenquency of nightstays in Switzerland
+## Global Frenquency of Nightstays in Switzerland
 
-Here are the distribution of the frequencies of the number of night spent during a trip in Switzerland.
+Here is the distribution of the frequencies of the number of nights spent during a trip in Switzerland.
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 ### F20 ###
@@ -291,9 +294,9 @@ ggplot(F20_freq, aes(x = F20, y = Count, fill = F20)) +
         legend.title = element_blank()) # Hide the legend if not needed
 ```
 
-As the question asked to the visitor was the number of night spent in Switzerland, it is difficult to know how many nights were spent in the Canton of Vaud. Therefore, we have decided here to take into account in our analysis the global number of night in the country. In addition, as most of our data contained NAs because of the structure of the survey (according to the answer of the question F16, some people could not answer question F20, therefore their answer was reported as a NA). Thus, we have decided to count the NAs as 1 overnight stay, as it is not possible to know if they only stayed in Vaud for 1 day without staying overnight. 
+As the question asked of visitors was the number of nights spent in Switzerland, it is difficult to know how many nights were spent in the canton of Vaud. We have therefore decided to use the total number of overnight stays in the country in our analysis. In addition, due to the structure of the survey, most of our data contained NAs (according to the answer to question F16, some people could not answer question F20, so their answer was reported as an NA). We have therefore decided to count the NAs as 1 overnight stay, as it is not possible to know if they only spent 1 day in Vaud without staying overnight.
 
-We can therefore see that most of the visitors only spend in general 1 night in the canton, and few people in comparison are staying more than a week. 
+We can therefore see that the majority of visitors generally spend only one night in the canton, with few people staying for more than a week. 
 
 ```{r, message = FALSE, warning = FALSE, echo = FALSE, fig.show='hide'}
 
@@ -328,8 +331,9 @@ ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F10
   )
 ```
 
+## Distribution Percentage Nightstays in Switzerland over Whole Trip
 
-Now let's explore the percentage of the number of days spent in Switzerland over the whole visitors' trip.
+Here is the distribution of the number of nights spent in Switzerland over the whole trip. 
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 ### F21 ###
@@ -350,16 +354,18 @@ ratio_nightstays_CH_EU <- data2 %>%
 ggplot(ratio_nightstays_CH_EU, aes(x = Percentage_Night_Stays_Switzerland)) +
   geom_histogram(binwidth = 10, fill = "skyblue", color = "black") +
   labs(
-    title = "Distribution of the percentage of nightstays in Vaud over the whole trip",
-    x = "Percentage Night Stays",
-    y = "Frequency"
+    title = "Distribution of Nightstays in Switzerland over Whole Trip",
+    x = "Percentage nights spent in Switzerland",
+    y = "Frequencies"
   ) +
   theme_minimal()
 ```
 
-As this graph shows, we notice that over the whole trip, most of the people will stay around 20% of their trip in Switzerland.
+As this graph shows, we notice that over the whole trip in Europe, most of the people will come over for 20% of their trip, and few will spend more than 75% of their time in Switzerland.
 
-Now let's explore the distribution of the arrivals per nationality over the year: 
+## Distribution of Arrivals per Nationality
+
+Now let's explore the distribution of the arrivals per nationality over the year. The full table of the arrivals can be found in the [Annex -@sec-data-arrivals].
 
 ```{r, fig.height=18, warning=FALSE, echo = FALSE}
 ### Deeper reasoning ###
@@ -387,9 +393,9 @@ per_country <- per_country %>%
 result <- left_join(monthly_arrivals, per_country, by = "F05_02_ENG") %>%
   distinct()
 
-datatable(per_country, options = list(pageLength = 10,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE)
+# datatable(per_country, options = list(pageLength = 10,
+#                                    class = "hover",
+#                                    searchHighlight = TRUE), rownames = FALSE)
 
 # Visualize
 ggplot(result, aes(x = month_name_column, y = `F05_02_ENG`, size = Count/total)) +
@@ -403,7 +409,7 @@ ggplot(result, aes(x = month_name_column, y = `F05_02_ENG`, size = Count/total))
 
 ```
 
-On this graph, we notice that the size of the dots, representing the monthly number of arrivals of a nationality over the total number of arrival of this particular nationality, yearly, are variating a lot according to the nationality. Unfortunately, due to the low number of data surveyed, some countries are only represented once over the whole year.
+On this graph, it can be seen that the size of the dots representing the monthly number of arrivals of a nationality, scaled over the total number of arrivals of that particular nationality over the year, varies considerably according to the nationality. Unfortunately, due to the small number of data collected, some countries are represented only once in the whole year. In addition, arrivals vary according to country of origin: most countries have the same main arrival period in March and June, as seen before, but this is not the case for every country, showing differences in seasonality. 
 
 ## Average spending by travel group type
 
