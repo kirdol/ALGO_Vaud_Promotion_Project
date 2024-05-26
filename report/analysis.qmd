@@ -69,7 +69,8 @@ ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fil
   #scale_fill_manual(values = c("Winter" = "blue", "Spring" = "green", "Summer" = "purple", "Fall" = "orange")) +
   theme_minimal() +
   labs(x = "Months", y = "Sum Holiday Durations", title = "Total Holiday Duration by Month") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  guides(fill=FALSE)
 ```
  
 We can clearly see two major moments in the year when there is an increase in the number of days spent in Vaud: March and July. This could be influenced by national holidays.
