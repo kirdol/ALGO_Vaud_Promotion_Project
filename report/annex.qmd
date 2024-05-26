@@ -74,6 +74,17 @@ datatable(F05_02_PCT,
                          searchHighlight = TRUE))
 ```
 
+## Percentage per continent of visitors coming in the canton of Vaud  {#sec-data-city_percentage_continent}
+
+```{r Percentage per continent of visitors coming in the canton of Vaud, echo = FALSE}
+datatable(F05_01_PCT,
+          rownames = FALSE,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE)) %>%
+  formatPercentage('Percentage', 2)
+```
+
 ## {#sec-data-city_percentage_country}
 
 ```{r Per city, the percentage of each visitor country of origin, relative to the number of visitor of the city, echo=FALSE}

@@ -113,15 +113,17 @@ Our results show that Switzerland is the country most represented among all visi
 
 ## City and District Visitor Distributions
 
-**Percentage of each country of origin by city**
+### Percentage of Each Country of Origin by City
 
-Now in order to know more precisely about the destination of the visitors, we have decided to separate countries of origin for each city.
+Now in order to know more precisely about the destination of the visitors, we decided to separate countries of origin for each city. For visualization purpose, we decided to take the top 10 most visited cities in the dataset. You will find the full table with the occurences per nationality in the [Annex -@sec-data-city_percentage_continent].
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Counting the number of tourists by city and nationality
 tourists_by_nationality <- data %>%
   group_by(F105_Code, F05_02_ENG) %>%
   summarise(Count = n(), .groups = 'drop')
+
+
 
 # Calculating the total number of tourists per city
 total_tourists_per_city <- tourists_by_nationality %>%
@@ -196,13 +198,13 @@ custom_colors <- brewer.pal(num_colors, "Spectral")  # Use 'Paired' palette
 # Plotly
 plot <- plot_ly(final_data, 
                 x = ~F105_Code, 
-                y = ~Ratio, 
+                y = ~Ratio * 100, 
                 color = ~F05_02_ENG,
                 colors = custom_colors,
                 type = 'bar') %>%
   layout(title = 'Stacked Bar Plot of Ratios by City and Nationality',
          xaxis = list(title = 'City', tickangle = -45),
-         yaxis = list(title = 'Ratio'),
+         yaxis = list(title = 'Percentages'),
          barmode = 'stack',
          showlegend = FALSE)  # Remove the legend
 
@@ -210,9 +212,9 @@ plot
 
 ```
 
-The percentage here was in fact a ratio representing the number of people from one particular nationality over the total number of visitors in each city. Unfortunately, as very few data has been collected in some cities, the ratio of visitor from one nationality over all the visitor surveyed can be really large (up to 1, in point of percentage). On the other hand, as data from some other city gathered a lot of answers, we observe that some country of origin (e.g. Austria in Lausanne) were only accounting for 0.2% of the total visitors.
+The percentage here was in fact a ratio representing the number of people from one particular nationality over the total number of visitors in each city. Unfortunately, as very few data has been collected in some cities, the ratio of visitor from one nationality over all the visitor surveyed can be really large (up to 1, in point of percentage). We notice in blue duck that Switzerland is again the main tourist class in most of the represented cities here, followed by visitors from the United Kingdom and France. On the other hand, as data from some other city gathered a lot of answers, we observe that some country of origin (e.g. Austria in Lausanne) were only accounting for 0.2% of the total visitors.
 
-**Ratio of each country of origin relatively to the number of tourist surveyed in each district**
+### Ratio of each country relatively to the number of tourist surveyed in each district
 
 In the same process, let's now explore the country of origin ratio per district of tourism. The full table is in the [Annex -@sec-data-city_percentage_country]
 
@@ -240,20 +242,20 @@ nationality_ratio_per_city <- tourists_by_nationality %>%
 
 plot <- plot_ly(nationality_ratio_per_city, 
                 x = ~District_tourism, 
-                y = ~Ratio, 
+                y = ~Ratio * 100, 
                 color = ~Country_of_origin,
                 colors = custom_colors,
                 type = 'bar') %>%
   layout(title = 'Stacked Bar Plot of Ratios by District and Nationality',
          xaxis = list(title = 'City', tickangle = -45),
-         yaxis = list(title = 'Ratio'),
+         yaxis = list(title = 'Percentages'),
          barmode = 'stack',
          showlegend = FALSE)  # Remove the legend
 
 plot
 ```
 
-Again, the low number of data available in our data don't allow us to get really satisfying results for every city surveyed.
+Again, the low number of data available in our data don't allow us to get really satisfying results for every district surveyed. Nevertheless, we notice the same results as the previous graph. 
 
 ### Domestic Tourism
 
