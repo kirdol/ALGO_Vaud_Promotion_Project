@@ -262,7 +262,7 @@ Again, the low number of data available in our data don't allow us to get really
 
 #### Global Swiss Domestic Visitors
 
-As mentioned above, more than 30% of the visitors surveyed were Swiss. We therefore decided to find out more about the percentage of domestic visitors in the canton of Vaud. Here is the distribution of visitors by canton of origin, scaled by taking into account the population size of the cantons. This ensure the comparison between the different cantons. The full table can be found at [Annex -@sec-data-domestic_visitors]
+As mentioned above, more than 30% of the visitors surveyed were Swiss. We therefore decided to find out more about the percentage of domestic visitors in the canton of Vaud. Here is the distribution of visitors by canton of origin, scaled by canton population size. This ensures a comparison between different cantons. The full table can be found at [Annex -@sec-data-domestic_visitors]
 
 ```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland, fig.width=10, fig.height=6, warning=FALSE, echo=FALSE}
 
@@ -360,7 +360,7 @@ ggplot(Inside_Switzerland_ratio,
 
 As can be seen from this table, the cantons with the highest percentage of domestic visitors scaled by the total population of these cantons are Vaud (around 8.5%), Uri (around 7.3%) and Obwalden (around 5.8%).
 
-For the sake of readability and visualization, we decided to group the cantons into three categories: Swiss-Germans, Vaud, and the remaining Italian and Romansh-speaking cantons () under 'Other'. Since Vaud had the highest percentage of domestic visitors in the previous graph, we decided to give it its own category. Here is the scaled distribution of the swiss population surveyed:
+For the sake of readability and visualization, we decided to group the cantons into three categories: Swiss-Germans, Vaud, and the remaining cantons under 'Other'. Since Vaud had the highest percentage of domestic visitors in the previous graph, we decided to give it its own category. Here is the scaled distribution of the swiss population surveyed:
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
   # Assuming 'Inside_Switzerland' has a column 'Canton' and you have a vector 'swiss_german_cantons' listing Swiss German cantons
@@ -408,13 +408,13 @@ ggplot(counts,
   ylim(0, 90)
 ```
 
-When looking at the total number of domestic visitors to Switzerland, around 70% come from the German-speaking part (18 cantons), which is more than three time as many as the 6 cantons under "Others" (Fribourg, Geneva, Grisons, Jura, Ticino, Valais) and more than 8 times as many as visitors from the canton of Vaud. 
+When looking at the total number of domestic visitors to Switzerland, around 70% come from the German-speaking part (18 cantons), which is more than three time as many as the 6 cantons under "Other" (Fribourg, Geneva, Grisons, Jura, Ticino, Valais) and more than 8 times as many as visitors from the canton of Vaud. 
 
 Scaled, the percentage for the Canton of Vaud reaches 8.5%. Without scaling, it would only be 4%, meaning that there are more people coming in the canton of Vaud in comparison with the canton population than the other cantons (without any scaling, "Other" cantons would reach 24% and Swiss-Germans ones 72%).
 
 ## Destinations and Accomodations
 
-> Where did they stay? (For example: yes, they went to Montreux, but what type of accommodation, what price?
+Where did they stay? (For example: yes, they went to Montreux, but what type of accommodation, what price?)
 
 ### Most popular destinations in the canton Vaud
 
@@ -455,7 +455,7 @@ data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cul
 data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
 ```
 
-Let's now dive into the subject of the location of their stay. First, let's have a look at the most popular locations in the canton Vaud. Given the architecture of the study this gives us the city where most people answer the survey.
+Let's now dive into the subject of the location of their stay. First, let's have a look at the most popular locations within Vaud. Given the architecture of the study, this gives us the city where most people answered the survey.
 
 ```{r Most Popular City destinations, echo = FALSE}
 # Assuming 'data' is already loaded
@@ -531,7 +531,7 @@ plot_ly(resort_counts_df,
          hovermode = 'x')
 ```
 
-From this plot, we can see that the most pupular city in the canton of Vaud is Lausanne. Let's now have a look at the type of accommodation where the visitor stayed in the canton of Vaud. We took the liberty to remove the `r data %>% filter(F125_ENG == "#N/A") %>% summarise(Count = n())` observation where the type of accommodation was not specified. We can now concentrate more our attention on the district where the people stayed.
+From this plot, we can see that the most popular city in the canton of Vaud is Lausanne. Let's now have a look at the type of accommodation where the visitor stayed in Vaud. We took the liberty to remove the `r data %>% filter(F125_ENG == "#N/A") %>% summarise(Count = n())` observations where the type of accommodation was not specified. We can now focus on the districts where people stayed.
 
 ::: panel-tabset
 #### Total
@@ -886,11 +886,11 @@ plot_ly(resort_counts_df,
 ```
 :::
 
-As we can see, out of the `r n_distinct(data$F105_Code)` city surveyed in the `r n_distinct(data$leaflet_districts)` district, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller one. It is still interesting to have a look to keep this in mind.
+As we can see, out of the `r n_distinct(data$F105_Code)` cities surveyed in the `r n_distinct(data$leaflet_districts)` districts, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller ones. It is still interesting to have a look while keeping this in mind.
 
 ### Type of Accommodation by country
 
-Let's dive deeper into the most popular type of accomodation per country. You can find below a plot showing the proportion of each type of accomodation for all the contries and for the most represented countries in our data, Switzerland, France, UK, Germany, USA, Belgium and Spain.
+Let's dive deeper into the most popular types of accommodations by country. You can find below a plot showing the proportion of each type of accommodation for all the countries and for the most represented countries in our data: Switzerland, France, the UK, Germany, the USA, Belgium, and Spain.
 
 ::: panel-tabset
 #### Total
@@ -1262,18 +1262,18 @@ plot_ly(spanish_accommodation_proportion,
 ```
 :::
 
-The most popular accommodation type in the canton of Vaud, according to a survey of 2,440 respondents, is the Hotel/SPA House, selected by 777 individuals. Notably, 293 people chose to stay at campsites. For Swiss respondents specifically, campsites rise to the second most popular option, with nearly 30% opting for this type of accommodation, while the Hotel/Spa House remains the top choice. Interestingly, the free apartment/house is highly favored by visitors from France, the United Kingdom, Germany, and Belgium, ranking in their top two choices. Conversely, visitors from the United States tend to prefer hotels, rented apartments/houses, or other types of accommodations over free apartments. Additionally, campsites are notably less popular among American visitors. Below, a word cloud illustrates other favored types of accommodation.
+The most popular accommodation type in the canton of Vaud, according to a survey of 2,440 respondents, is the Hotel/Spa House, selected by 777 individuals. Notably, 293 people chose to stay at campsites. For Swiss respondents specifically, campsites rise to the second most popular option, with nearly 30% opting for this type of accommodation, while the Hotel/Spa House remains the top choice. Interestingly, the free apartment/house is highly favored by visitors from France, the United Kingdom, Germany, and Belgium, ranking in their top two choices. Conversely, visitors from the United States tend to prefer hotels, rented apartments/houses, or other types of accommodations over free apartments. Additionally, campsites are notably less popular among American visitors. Below, a wordcloud illustrates other favored types of accommodation.
 
 ```{r wordcloud, echo = FALSE, warning = FALSE}
 # Running the wordcloud script
 source(here("scripts", "word_cloud_for_eda.R"))
 ```
 
-Among the `{r} sum(words)` respondents who did not choose traditional accommodations, the most popular alternative was staying with family, as indicated by `{r} words[1]` individuals. Staying with friends was the second most common choice, favored by `{r} words[2]` respondents, while staying at someone else's house ranked third with `{r} words[3]` mentions.
+Among the `r sum(words)` respondents who did not choose traditional accommodations, the most popular alternative was staying with family, as indicated by `r words[1]` individuals. Staying with friends was the second most common choice, favored by `r words[2]` respondents, while staying at someone else's house ranked third with `r words[3]` mentions.
 
-### Hotels Stars
+### Hotel Stars
 
-Now, let's have a look at the hotel standing of the places where the people stayed. This will highlight the quality of the stay per district.
+Now, let's have a look at the hotel ratings of the where people stayed. This will highlight the quality of the stay per district.
 
 ```{r Assign numeric value to the stars, echo = FALSE}
 data <- data %>% 
@@ -1338,15 +1338,15 @@ plot_ly(combined_data,
          hovermode = "closest") 
 ```
 
-As we can see on the graph above, the best average is optain in `r combined_data$leaflet_districts[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But this statistics is not very representative to the reality. Only `r combined_data$Count[1]` people answered the survey in this district which is not enough to have a good idea of the quality of the hotels in this district. The second best region after `r combined_data$leaflet_districts[1]` is `r combined_data$leaflet_districts[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district got with `r combined_data$Count[2]` observation which is more representative. This high score for the Region of `r combined_data$leaflet_districts[2]` is not really surprising given the fact that this place is well know for its luxury hotels.
+As we can see on the graph above, the best average is obtained in `r combined_data$leaflet_districts[1]` with an average of `r combined_data$Average_F130_num[1]` stars. But these statistics are not very representative of reality. Only `r combined_data$Count[1]` people answered the survey in this district, which is not enough to prove the higher quality of hotels. The second-best region after `r combined_data$leaflet_districts[1]` is `r combined_data$leaflet_districts[2]` with an average of `r combined_data$Average_F130_num[2]` stars. This district received `r combined_data$Count[2]` observations, which is more representative. This high score for the region of `r combined_data$leaflet_districts[2]` is not really surprising given the fact that it is well known for its luxury hotels.
 
 ## Spendings
 
-> Expenses and where they come from, when, where and for which sector?
+Expenses and where they come from, when, where and for which sector?
 
-### Percentage of people with package & without package
+### Percentage of people with & without a package
 
-To begin with, we can notice that there are 2 types of traveler spendings: the ones who come in Switzerland with no package, meaning they spend on different categories that are not included in the packages, and the ones who come with a package, which usually already includes some different categories.
+To begin with, we can notice that there are 2 types of traveler spending: the ones who come to Switzerland with no package, meaning they spend on different categories that are not included in the packages, and the ones who come with a package, which usually already includes some different categories, such as accommodation and food.
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Calculate the number of non-NA entries for each type of spending
@@ -1376,11 +1376,11 @@ ggplot(spending_counts, aes(x = PackageType, y = Percentage, fill = PackageType)
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-A majority of people travelling in Vaud come without a package. Despite only having around 8% of travelers without a package, it is of interest for us to see where they come from.
+A majority of people traveling in Vaud come without a package. Despite only having around 8% of travelers without a package, it is of interest to us to see where they come from.
 
 ### Percentage of package by continent
 
-To do so, we decided to see it as percentage per continent.
+To do so, we decided to represent the percentage of packages per continent.
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Prepare the data by adding a binary column for package and non-package tours
@@ -1420,11 +1420,11 @@ p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percent
 print(p)
 ```
 
-As a result, it is interesting to see that the main spenders in packages are from Asia, Africa and South America. It would be interesting to target travelers from these continents to package deals rather than the rest of nationalities.
+As a result, it is interesting to see that the main spenders on packages are from Asia, Africa, and South America. It would be interesting to target travelers from these continents for package deals rather than the rest of the continents.
 
 ### Average Spending by Category
 
-Now let's have a look at the average spending per category. The aim would be to see in which category most of the travelers spend their money on.
+Now let's have a look at the average spending per category. The aim is to see in which category most of the travelers spend their money on.
 
 ::: panel-tabset
 #### Without Package
@@ -1447,7 +1447,7 @@ ggplot(spending_data, aes(x = Spending_Type, y = Amount, fill = Spending_Type)) 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
 ```
 
-We observe that most of the expenses from the people coming to Vaud is in their overnight stay, followed by their eating expenses and the transports and souvenirs.
+We observe that most of the expenses of the people coming to Vaud are their overnight stay, followed by their eating expenses, transports, and souvenirs.
 
 #### With Package
 
@@ -1470,14 +1470,14 @@ ggplot(spending_data_package, aes(x = Spending_Type, y = Amount, fill = Spending
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-For the ones with the package, most is spent on the package, then the eating expenses and finally with the overnight stay. This is explained by the fact that packages usually include transportation and activities, which have a pretty high cost in Switzerland.
+For the ones with the package, most is spent on the package, then the eating expenses, and finally the overnight stay. This is explained by the fact that packages usually include transportation and activities, which have a pretty high cost in Switzerland.
 :::
 
-With these plots, we can observe that there is a difference in spending for people who traveled with a package compared to the ones travelling without a spending package. Overall, the main expenses of people with a package is the package itself, meaning that some of the other variables are already included in the package. On the other hand, without the package, it is interesting to see that the main spending is on the overnight stay, then the food & drinks and finally the souvenirs.
+With these plots, we can observe that there is a difference in spending for people who traveled with a package compared to those who traveled without a package. Overall, the main expense for people with a package is the package itself, meaning that some of the other variables are already included in the package. On the other hand, without the package, it is interesting to see that the main spending is on the overnight stay, then the food and drinks, and finally the souvenirs.
 
 ### Spending by Country
 
-Here, we will focus on our 7 main countries, putting the rest of the countries into "other countries". By doing so, we can observe which countries has the most expenses within our main nationalities.
+Here, we will focus on our 7 main countries, putting the rest of the countries into "other countries." By doing so, we can observe which countries have the most expenses among our main nationalities.
 
 ::: panel-tabset
 #### Total spending (without package)
@@ -1538,7 +1538,7 @@ ggplot(total_spending_F82, aes(x = reorder(F05_02_ENG_grouped, -Total_Spending_F
 
 ```
 
-Looking at the packages, and as we observed in the percentage of package by continent above, Europeans and North Americans aren't the ones spending most in total on packages. It is rather Asians who do so.
+Looking at the packages, and as we observed in the percentage of packages by continent above, Europeans and North Americans aren't the ones spending most in total on packages. It is, rather, Asians who do so.
 
 #### Average spending (without package)
 
@@ -1622,7 +1622,7 @@ ggplot(average_spending_by_country, aes(x = reorder(F05_02_ENG_grouped, -Average
 
 ```
 
-Once again, looking at the average with a package, it is North American again.
+Once again, looking at the average with a package, it is North Americans again.
 :::
 
 For the plots above, we removed outliers (spending of more than 30'000 CHF) because these observations biased the rest of the sample. We assumed that it was probable that most respondents with spending above 30'000 made an error in the currency, using their local currency to answer questions instead of CHF.
@@ -1648,7 +1648,7 @@ ggplot(currency_data, aes(x = reorder(F80, desc(Percentage)), y = Percentage, fi
   scale_fill_discrete(name = "Currency")
 ```
 
-We observed that most visitors spend in Swiss Francs or Euros. Other currencies are less used. As mentioned above, we assumed that some people used their currencies when putting their spendings, which created outliers in our results.
+We observed that most visitors spend in Swiss Francs or Euros. Other currencies are less used. As mentioned above, we assumed that some people used their currencies when inputting their spending amounts, which created outliers in our results.
 
 ## Travel partners of visitors
 
@@ -1716,8 +1716,8 @@ We notice that more than 2/3 of overall visitors came to Vaud with their partner
 
 # Methodology
 
-After receiving the raw data, we cleaned and translated it to create a main CSV data file. Following this, we wrote the EDA (Exploratory Data Analysis) section to display single variables/responses as graphs and plots, to get a better idea of the scale and type of responses in the survey. We also present the missing observations (NAs) in this section.
+After receiving the raw data, we cleaned and translated it to create a main CSV data file. Following this, we wrote the EDA (Exploratory Data Analysis) section to display single variables and responses as graphs and plots to get a better idea of the scale and type of responses in the survey. We also present the missing observations (NAs) in this section.
 
-The main results of the analysis is divided into two parts. The first part, Analysis, presents correlations between multiple variables/responses in the forms of plots and graphs. The second part, Maps, gives a visual representation of different responses with respect to Vaud's districts, which helps us categorize tourists geographically.
+The main results of the analysis are divided into two parts. The first part, Analysis, presents correlations between multiple variables and responses in the form of plots and graphs. The second part, Maps, gives a visual representation of different responses with respect to Vaud's districts, which helps us categorize tourists geographically.
 
 Finally, we will present our final takeaways and recommendations based on our findings.
