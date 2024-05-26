@@ -64,7 +64,7 @@ datatable(F05_01_PCT,
   formatPercentage('Percentage', 2)
 ```
 
-## Global Distribution of Visitors to the Canton of Vaud by Nationality
+## Global Distribution of Visitors to the Canton of Vaud by Nationality {#sec-data-distributionnationality}
 
 ```{r Global Distribution of Visitors to the Canton of Vaud by Nationality, echo=FALSE}
 datatable(F05_02_PCT,
@@ -74,7 +74,7 @@ datatable(F05_02_PCT,
                          searchHighlight = TRUE))
 ```
 
-## r
+## {#sec-data-city_percentage_country}
 
 ```{r Per city, the percentage of each visitor country of origin, relative to the number of visitor of the city, echo=FALSE}
 datatable(nationality_ratio_per_city,
@@ -84,6 +84,7 @@ datatable(nationality_ratio_per_city,
                          searchHighlight = TRUE))
 ```
 
+## Distribution domestic visitors {#sec-data-domestic_visitors}
 
 ```{r Distribution among swiss visitors (scaled ratio), echo=FALSE}
 datatable(Inside_Switzerland_ratio,
@@ -96,4 +97,16 @@ datatable(Inside_Switzerland_ratio,
   formatPercentage('Scaled_Ratio', 2)
 ```
 
+## Distribution of Arrivals per Nationality {#sec-data-arrivals}
+
+```{r Distribution of Arrivals per Nationality, echo=FALSE}
+datatable(Inside_Switzerland_ratio,
+          options = list(pageLength = 10,
+                         class = "hover",
+                         searchHighlight = TRUE,
+  columnDefs = list(list(targets = 4, visible = FALSE))),rownames = FALSE) %>%
+  formatPercentage('Percentage', 2) %>%
+  formatPercentage('Ratio', 5) %>%
+  formatPercentage('Scaled_Ratio', 2)
+```
 
