@@ -129,18 +129,6 @@ total_tourists_per_city <- tourists_by_nationality %>%
   summarise(TotalCount = sum(Count), .groups = 'drop') %>%
   arrange(desc(TotalCount)) 
 
-#top 10 cities 
-# top_10_cities <- total_tourists_per_city %>%
-#   arrange(desc(TotalCount)) %>%
-#   head(10)
-
-# Joining the counts back to the detailed breakdown and calculating the ratio
-# nationality_ratio_per_city <- tourists_by_nationality %>%
-#   left_join(total_tourists_per_city, by = "F105_Code") %>%
-#   mutate(Ratio = round((Count / TotalCount),3)) %>%
-#   select(F105_Code, F05_02_ENG, Ratio) %>%
-#   rename(City = F105_Code, Country_of_origin = F05_02_ENG)
-
 # Joining the counts back to the detailed breakdown and calculating the ratio
 nationality_ratio_per_city <- tourists_by_nationality %>%
   left_join(total_tourists_per_city, by = "F105_Code") %>%
@@ -199,11 +187,18 @@ sum_ratio_lausanne <- final_data %>%
   pull(SumRatio) ###why > 1 ??
 
 
+library(RColorBrewer)
+# Create a custom color palette
+num_colors <- length(unique(final_data$F05_02_ENG))
+custom_colors <- brewer.pal(num_colors, "Spectral")  # Use 'Paired' palette
+
+
 # Plotly
 plot <- plot_ly(final_data, 
                 x = ~F105_Code, 
                 y = ~Ratio, 
-                color = ~F05_02_ENG, 
+                color = ~F05_02_ENG,
+                colors = custom_colors,
                 type = 'bar') %>%
   layout(title = 'Stacked Bar Plot of Ratios by City and Nationality',
          xaxis = list(title = 'City', tickangle = -45),
@@ -212,18 +207,6 @@ plot <- plot_ly(final_data,
          showlegend = FALSE)  # Remove the legend
 
 plot
-
-
-# Create the stacked bar plot
-# ggplot(final_data, aes(x = F105_Code, y = Ratio, fill = F05_02_ENG)) +
-#   geom_bar(stat = "identity") +
-#   labs(title = "Stacked Bar Plot of Ratios by City and Nationality",
-#        x = "City",
-#        y = "Ratio",
-#        fill = "Nationality") +
-#   theme_minimal() +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-#         legend.position = "none")
 
 ```
 
@@ -251,9 +234,23 @@ nationality_ratio_per_city <- tourists_by_nationality %>%
   select(leaflet_districts, F05_02_ENG, Ratio) %>%
   rename(District_tourism = leaflet_districts,Country_of_origin = F05_02_ENG)
 
-datatable(nationality_ratio_per_city, options = list(pageLength = 10,
-                                   class = "hover",
-                                   searchHighlight = TRUE), rownames = FALSE)
+# datatable(nationality_ratio_per_city, options = list(pageLength = 10,
+#                                    class = "hover",
+#                                    searchHighlight = TRUE), rownames = FALSE)
+
+plot <- plot_ly(nationality_ratio_per_city, 
+                x = ~District_tourism, 
+                y = ~Ratio, 
+                color = ~Country_of_origin,
+                colors = custom_colors,
+                type = 'bar') %>%
+  layout(title = 'Stacked Bar Plot of Ratios by District and Nationality',
+         xaxis = list(title = 'City', tickangle = -45),
+         yaxis = list(title = 'Ratio'),
+         barmode = 'stack',
+         showlegend = FALSE)  # Remove the legend
+
+plot
 ```
 
 Again, the low number of data available in our data don't allow us to get really satisfying results for every city surveyed.
