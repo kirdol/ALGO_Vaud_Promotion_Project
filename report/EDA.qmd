@@ -17,11 +17,11 @@ data <- read.csv(here("data", "district_map.csv"),
 
 ### Global Distribution of Visitors in the Canton of Vaud by Continent
 
-The survey gathered around 2500 responses from 100 different nationalities. We decided to to start by looking at the overall nationality distribution of the visitors. The full statistics and additional informations can be found in the "Annex"  section.
+The survey gathered around 2500 responses from 100 different nationalities. We decided to start by looking at the overall nationality distribution of the visitors. The full statistics and additional information can be found in the "Annex" section.
 
 The graph below shows the percentage of visitors per continent who have visited the canton of Vaud. More detailed information on the distribution per continent can be found in the [Annex -@sec-data-distributioncontinent].
 
-```{r, warning=FALSE, out.height="100%", out.width="100%", fig.width=7}
+```{r, warning=FALSE, out.height="100%", out.width="100%", fig.width=7, echo=FALSE}
 ### F05_01.ENG ###
 
 # nb of occurrences by country and continents 
@@ -67,7 +67,7 @@ As we can see, the majority of respondents came from Europe (around 78%), follow
 
 ### Global Distribution of Visitors in the Canton of Vaud by Nationality
 
-Then we decided to explore the distribution of the nationalities per continent. Here is a graph showing our results. For better visibility, we have grouped most of the countries in the variable "Other Countries" and added them on the graph with the remaining top 7 most represented countries in the list. You can find the table of the occurrences and percentages per nationality in the [Annex -@sec-data-distributionnationality].
+We decided to explore the distribution of the nationalities per continent. Here is a graph showing our results. For better visibility, we have grouped most of the countries in the variable "Other Countries" and added them on the graph with the remaining top 7 most represented countries in the list. You can find the table of the occurrences and percentages per nationality in the [Annex-@sec-data-distributionnationality].
 
 ```{r,fig.width=10, fig.height=10, echo=FALSE}
 # Countries in percentages 
@@ -109,13 +109,13 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
             position=position_stack(vjust=0.5))
 ```
 
-Our results show that Switzerland is the country most represented among all visitors (around 31.5%). The canton of Vaud therefore has a large number of domestic visitors. We can also see that the countries most represented are European, such as France (around 14.5%), the United Kingdom (around 7.5%), Germany (around 5.5%), Belgium (around 3.5%) and finally Spain (around 3%). The only other nationality from another continent represented here is the United States of America (around 5.5%). Proximity, for example, could be one of the main factors explaining these results.
+Our results show that Switzerland is the country most represented among all visitors (around 31.5%). The canton of Vaud, therefore, has a large number of domestic visitors. We can also see that the countries most represented are European, such as France (around 14.5%), the United Kingdom (around 7.5%), Germany (around 5.5%), Belgium (around 3.5%), and finally Spain (around 3%). The only other nationality from another continent represented here is the United States of America (around 5.5%). Proximity, for example, could be one of the main factors explaining these results.
 
 ## City and District Visitor Distributions
 
-**Per city, the percentage of each visitor's country of origin, relative to the number of visitor of the city**
+**Percentage of each country of origin by city**
 
-Now in order to know more precisely about the destination of the visitors, we have decided to gather by city the percentage of country of origin.
+Now in order to know more precisely about the destination of the visitors, we have decided to separate countries of origin for each city.
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Counting the number of tourists by city and nationality

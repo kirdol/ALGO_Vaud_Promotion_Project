@@ -7,9 +7,9 @@ data <- read.csv(here("data","TMS_dataset_Vaud_20240314_FINAL.csv"),
 
 # Introduction
 
-The object of this report is the tourism survey conducted by Tourismus Monitor Schweiz, focusing on tourists visiting the canton of Vaud, Switzerland, from November 2022 to March 2024. The survey aims to identify key information about tourists visiting Vaud, including information about their stay in Switzerland (length of stay, amount spent, etc.) and information identifying the tourists (Country of origin, type of visit, etc.). The survey also provides information on the specific destination within the canton (City, hotel, etc.).
+The object of this report is the tourism survey conducted by Tourismus Monitor Schweiz, focusing on tourists visiting the canton of Vaud, Switzerland, from November 2022 to March 2024. The survey aims to identify key information about tourists visiting Vaud, including information about their stay in Switzerland (length of stay, amount spent, etc.) and information identifying the tourists (country of origin, type of visit, etc.). The survey also provides information on the specific destination within the canton (city, hotel, etc.).
 
-Our report aims to simplify the comprehension of this raw data through data visualization techniques and plots. Additionally, we aim to categorize the types of tourists visiting Vaud and their regions of origin. This will help Vaud Plus in understanding the demographics of visitors to the canton and possibly help with targeted marketing efforts.
+Our report aims to simplify the comprehension of this raw data through data visualization techniques and plots. Additionally, we aim to categorize the types of tourists visiting Vaud and their regions of origin. This will help Vaud Plus understand the demographics of visitors to the canton and possibly help with targeted marketing efforts.
 
 The first part of our report presents the data in a more readable format. Following that, we conduct exploratory data analysis (EDA), which involves creating basic charts to provide perspective and convey the scale of the variables to the reader. Next, we proceed to the analysis phase, where we cross-analyze multiple variables to highlight correlations. The final section of the report is dedicated to plotting various variables on a map of the districts of Canton Vaud. Lastly, we will articulate our conclusions about the survey data and share our experience with this report.
 
@@ -76,7 +76,7 @@ leaflet(vaud) %>%
 
 ### Countries of Origin
 
-You can find below the map of the countries of origin of the tourists visiting Vaud. This gives a great idea of the scope of the survey and the diversity of the tourists visiting the canton.
+You can find below the map of the countries of origin of the tourists visiting Vaud. This gives an idea of the scope of the survey and the diversity of the tourists visiting the canton.
 
 ```{r, echo = FALSE, message = FALSE}
 # Read in the dataset
@@ -103,7 +103,7 @@ color_pal <- colorBin("YlGnBu", domain = country$Proportion, bins = 10, na.color
 # Create the leaflet map
 m <- leaflet(country) %>%
   addProviderTiles(providers$CartoDB.PositronNoLabels) %>%
-  setView(lng = 9, lat = 46, zoom = 4) %>%
+  setView(lng = 9, lat = 46, zoom = 1.5) %>%
   addPolygons(weight = 1, color = "white", fillColor = "lightblue",
               fillOpacity = 0.7, highlight = highlightOptions(weight = 2, color = "#666", fillOpacity = 0.7),
               label = ~paste(""),
@@ -118,7 +118,7 @@ m
 # Create the leaflet map (with Propotion of tourists from each country)
 m <- leaflet(country) %>%
   addProviderTiles(providers$CartoDB.PositronNoLabels) %>%
-  setView(lng = 9, lat = 46, zoom = 3) %>%
+  setView(lng = 9, lat = 46, zoom = 1.5) %>%
   addPolygons(weight = 1, color = "white", fillColor = ~color_pal(Proportion),
               fillOpacity = 0.7, highlight = highlightOptions(weight = 2, color = "#666", fillOpacity = 0.7),
               label = ~paste(name, ":", round(Proportion, 4)*100, "%"),
