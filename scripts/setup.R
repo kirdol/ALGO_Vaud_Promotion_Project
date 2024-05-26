@@ -23,7 +23,9 @@ packages_loaded <- c(
   "summarytools",
   "readr",
   "jsonlite",
-  "sf")
+  "sf",
+  "RColorBrewer",
+  "viridis")
 
 # Function that install the packages if not already installed on your computer
 for (pkg in packages_loaded) {
@@ -37,3 +39,8 @@ for (pkg in packages_loaded) {
 # cleaning of the environment
 rm(pkg,
    packages_loaded)
+
+#colors
+default_color <- "#DA291C"
+
+discrete_color <- "RdYIGn"
