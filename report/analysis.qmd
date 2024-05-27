@@ -12,7 +12,7 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
                  sep = ",")
 ```
 
-# Analysis
+# Analysis {#sec-analysis}
 
 ## Distribution of the days spent per month
 
@@ -73,7 +73,7 @@ ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fil
   guides(fill=FALSE)
 ```
  
-We can clearly see two major moments in the year when there is an increase in the number of days spent in Vaud: March and July. This could be influenced by national holidays.
+We can clearly see two major periods in the year when there is an increase in the number of days spent in Vaud: March and July. This could be influenced by national holidays.
  
 ```{r, message=FALSE, fig.width=8, fig.height=8, warning=FALSE, echo=FALSE}
 ### F16 ### 
