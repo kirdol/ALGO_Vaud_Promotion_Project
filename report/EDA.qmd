@@ -125,7 +125,6 @@ tourists_by_nationality <- data %>%
   summarise(Count = n(), .groups = 'drop')
 
 
-
 # Calculating the total number of tourists per city
 total_tourists_per_city <- tourists_by_nationality %>%
   group_by(F105_Code) %>%

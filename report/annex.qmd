@@ -53,7 +53,7 @@ Find below the full technical description of the dataset:
 print(dfSummary(data), method = "render")
 ```
 
-## Distribution of visitors per continent  {#sec-data-distributioncontinent}
+## Distribution of Visitors per Continent  {#sec-data-distributioncontinent}
 
 ```{r Percentage per continent of visitors coming in the canton of vaud, echo = FALSE}
 datatable(F05_01_PCT,
@@ -74,10 +74,10 @@ datatable(F05_02_PCT,
                          searchHighlight = TRUE))
 ```
 
-## Percentage per continent of visitors coming in the canton of Vaud  {#sec-data-city_percentage_continent}
+## Occurences per nationality per city  {#sec-data-city_percentage_continent}
 
-```{r Percentage per continent of visitors coming in the canton of Vaud, echo = FALSE}
-datatable(F05_01_PCT,
+```{r Occurences per nationality per city, echo = FALSE}
+datatable(nationality_ratio_per_city,
           rownames = FALSE,
           options = list(pageLength = 10,
                          class = "hover",
