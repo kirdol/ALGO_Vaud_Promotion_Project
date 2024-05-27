@@ -782,7 +782,8 @@ plot_ly(resort_counts_df,
         text = "",
         hoverinfo = 'text',
         hovertext = ~HoverText,
-        textposition = 'auto') %>%
+        textposition = 'auto',
+        marker = list(color = default_color)) %>%
   config(modeBarButtonsToRemove = c('pan2d', 'select2d', 'lasso2d', 'zoomIn2d',
                                     'zoomOut2d', 'autoScale2d', 'resetScale2d',
                                     'hoverClosestCartesian', 
