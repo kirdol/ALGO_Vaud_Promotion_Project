@@ -17,7 +17,7 @@ data <- read.csv(here("data", "district_map.csv"),
 
 ### Global Distribution of Visitors in the Canton of Vaud by Continent
 
-The survey gathered around 2500 responses from 100 different nationalities. We decided to start by looking at the overall nationality distribution of the visitors. The full statistics and additional information can be found in the "Annex" section.
+The survey gathered around 2'500 responses from 100 different nationalities. We decided to start by looking at the overall nationality distribution of the visitors. The full statistics and additional information can be found in the "Annex" section.
 
 The graph below shows the percentage of visitors per continent who have visited the canton of Vaud. More detailed information on the distribution per continent can be found in the [Annex -@sec-data-distributioncontinent].
 
@@ -108,13 +108,13 @@ ggplot(F05_02_PCT, aes(x = reorder(`F05_02_ENG`, Percentage), y = Percentage, fi
             position = position_stack(vjust = 0.5))
 ```
 
-Our results show that Switzerland is the country most represented among all visitors (around 31.5%). The canton of Vaud, therefore, has a large number of domestic visitors. We can also see that the countries most represented are European, such as France (around 14.5%), the United Kingdom (around 7.5%), Germany (around 5.5%), Belgium (around 3.5%), and finally Spain (around 3%). The only other nationality from another continent represented here is the United States of America (around 5.5%). Proximity, for example, could be one of the main factors explaining these results.
+Our results show that Switzerland is the country most represented among all visitors (around 31.5%). The canton of Vaud, therefore, has a large number of domestic visitors. We can also see that the countries most represented are European, such as France (around 14.5%), the United Kingdom (around 7.5%), Germany (around 5.5%), Belgium (around 3.5%), and finally Spain (around 3%). The only other nationality from another continent represented here is the United States of America (around 5.5%). Proximity to Switzerland could for instance be one of the main factors explaining these results.
 
 ## City and District Visitor Distributions
 
 ### Percentage of Each Country of Origin by City
 
-Now in order to know more precisely about the destination of the visitors, we decided to separate countries of origin for each city. For visualization purpose, we decided to take the top 10 most visited cities in the dataset. You will find the full table with the occurences per nationality in the [Annex -@sec-data-city_percentage_continent].
+Now in order to know more precisely about the destination of the visitors, we decided to separate countries of origin for each city. For visualization purposes, we decided to take the top 10 most visited cities in the dataset. You will find the full table with the occurrences per nationality in the [Annex -@sec-data-city_percentage_continent].
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # Counting the number of tourists by city and nationality
@@ -212,9 +212,9 @@ plot
 
 The percentage here was in fact a ratio representing the number of people from one particular nationality over the total number of visitors in each city. Unfortunately, as very few data has been collected in some cities, the ratio of visitor from one nationality over all the visitor surveyed can be really large (up to 1, in point of percentage). We notice in blue duck that Switzerland is again the main tourist class in most of the represented cities here, followed by visitors from the United Kingdom and France. On the other hand, as data from some other city gathered a lot of answers, we observe that some country of origin (e.g. Austria in Lausanne) were only accounting for 0.2% of the total visitors.
 
-### Ratio of each country relatively to the number of tourist surveyed in each district
+### Ratio of each country relativel to the number of tourist surveyed in each district
 
-In the same process, let's now explore the country of origin ratio per district of tourism. The full table is in the [Annex -@sec-data-city_percentage_country]
+In the same process, let's now explore the country of origin ratio per district of tourism. The full table is in the [Annex -@sec-data-city_percentage_country].
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 # ratio of each nationality relatively to the number of tourist surveyed in each district F105_OrgCode
@@ -253,13 +253,13 @@ plot <- plot_ly(nationality_ratio_per_city,
 plot
 ```
 
-Again, the low number of data available in our data don't allow us to get really satisfying results for every district surveyed. Nevertheless, we notice the same results as the previous graph. 
+Again, the low number of data available in our data doesn't allow us to get really satisfying results for every district surveyed. Nevertheless, we notice the same results as the previous graph. 
 
 ### Domestic Tourism
 
 #### Global Swiss Domestic Visitors
 
-As mentioned above, more than 30% of the visitors surveyed were Swiss. We therefore decided to find out more about the percentage of domestic visitors in the canton of Vaud. Here is the distribution of visitors by canton of origin, scaled by canton population size. This ensures a comparison between different cantons. The full table can be found at [Annex -@sec-data-domestic_visitors]
+As mentioned above, more than 30% of the visitors surveyed were Swiss. We therefore decided to find out more about the percentage of domestic visitors in the canton of Vaud. Here is the distribution of visitors by canton of origin, scaled by canton population size. This ensures a comparison between different cantons. The full table can be found at [Annex -@sec-data-domestic_visitors].
 
 ```{r Ratio of each canton of origin relatively to the number of tourist surveyed in Switzerland, fig.width=10, fig.height=6, warning=FALSE, echo=FALSE}
 
@@ -353,7 +353,7 @@ ggplot(Inside_Switzerland_ratio, aes(x = reorder(Canton, Scaled_Ratio), y = Scal
   guides(fill = FALSE)
 ```
 
-As can be seen from this table, the cantons with the highest percentage of domestic visitors scaled by the total population of these cantons are Vaud (around 8.5%), Uri (around 7.3%) and Obwalden (around 5.8%).
+As it can be seen from this table, the cantons with the highest percentage of domestic visitors scaled by the total population of these cantons are Vaud (around 8.5%), Uri (around 7.3%) and Obwalden (around 5.8%).
 
 For the sake of readability and visualization, we decided to group the cantons into three categories: Swiss-Germans, Vaud, and the remaining cantons under 'Other'. Since Vaud had the highest percentage of domestic visitors in the previous graph, we decided to give it its own category. Here is the scaled distribution of the swiss population surveyed:
 
@@ -409,7 +409,7 @@ When looking at the total number of domestic visitors to Switzerland, around 70%
 
 Scaled, the percentage for the Canton of Vaud reaches 8.5%. Without scaling, it would only be 4%, meaning that there are more people coming in the canton of Vaud in comparison with the canton population than the other cantons (without any scaling, "Other" cantons would reach 24% and Swiss-Germans ones 72%).
 
-## Destinations and Accomodations
+## Destinations and Accommodations
 
 Where did they stay? (For example: yes, they went to Montreux, but what type of accommodation, what price?)
 
@@ -891,7 +891,7 @@ plot_ly(resort_counts_df,
 ```
 :::
 
-As we can see, out of the `r n_distinct(data$F105_Code)` cities surveyed in the `r n_distinct(data$leaflet_districts)` districts, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really suprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller ones. It is still interesting to have a look while keeping this in mind.
+As we can see, out of the `r n_distinct(data$F105_Code)` cities surveyed in the `r n_distinct(data$leaflet_districts)` districts, the most popular district is `r resort_counts_df$Var1[order(-resort_counts_df$Proportion)][1]`. This is not really surprising because of the way the data was collected. More people were surveyed in these city/districts than other smaller ones. It is still interesting to have a look while keeping this in mind.
 
 ### Type of Accommodation by country
 
@@ -1275,7 +1275,7 @@ plot_ly(spanish_accommodation_proportion,
 ```
 :::
 
-The most popular accommodation type in the canton of Vaud, according to a survey of 2,440 respondents, is the Hotel/Spa House, selected by 777 individuals. Notably, 293 people chose to stay at campsites. For Swiss respondents specifically, campsites rise to the second most popular option, with nearly 30% opting for this type of accommodation, while the Hotel/Spa House remains the top choice. Interestingly, the free apartment/house is highly favored by visitors from France, the United Kingdom, Germany, and Belgium, ranking in their top two choices. Conversely, visitors from the United States tend to prefer hotels, rented apartments/houses, or other types of accommodations over free apartments. Additionally, campsites are notably less popular among American visitors. Below, a wordcloud illustrates other favored types of accommodation.
+The most popular accommodation type in the canton of Vaud, according to a survey of 2'440 respondents, is the Hotel/Spa House, selected by 777 individuals. Notably, 293 people chose to stay at campsites. For Swiss respondents specifically, campsites rise to the second most popular option, with nearly 30% opting for this type of accommodation, while the Hotel/Spa House remains the top choice. Interestingly, the free apartment/house is highly favored by visitors from France, the United Kingdom, Germany, and Belgium, ranking in their top two choices. Conversely, visitors from the United States tend to prefer hotels, rented apartments/houses, or other types of accommodations over free apartments. Additionally, campsites are notably less popular among American visitors. Below, a wordcloud illustrates other favored types of accommodation.
 
 ```{r wordcloud, echo = FALSE, warning = FALSE}
 # Running the wordcloud script
@@ -1439,7 +1439,7 @@ p <- ggplot(continent_summary, aes(x = reorder(F05_01_ENG, -Package_Tour_Percent
 print(p)
 ```
 
-As a result, it is interesting to see that the main spenders on packages are from Asia, Africa, and South America. It would be interesting to target travelers from these continents for package deals rather than the rest of the continents.
+As a result, we observe that the main spenders on packages are from Asia, Africa, and South America. It would be interesting to target travelers from these continents for package deals rather than the rest of the continents.
 
 ### Average Spending by Category
 
@@ -1558,7 +1558,7 @@ ggplot(total_spending_F82, aes(x = reorder(F05_02_ENG_grouped, -Total_Spending_F
 
 ```
 
-Looking at the packages, and as we observed in the percentage of packages by continent above, Europeans and North Americans aren't the ones spending most in total on packages. It is, rather, Asians who do so.
+Looking at the packages, and as we observed in the percentage of packages by continent above, Europeans and North Americans aren't the ones spending most in total on packages. It is rather Asians who do so.
 
 #### Average spending (without package)
 
@@ -1642,7 +1642,7 @@ ggplot(average_spending_by_country, aes(x = reorder(F05_02_ENG_grouped, -Average
 
 ```
 
-Once again, looking at the average with a package, it is North Americans again.
+Once again, looking at the average with a package, it is North Americans.
 
 :::
 

@@ -269,7 +269,7 @@ ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
 
 In general, it can be seen that most visitors from continents far away from Switzerland come to Switzerland for one or more nights during their trip in Europe. In addition, visitors living closer to Switzerland, such as Europeans, mostly stay for one night in Switzerland. This is probably due to the large number of visitors surveyed who come from Switzerland but from other cantons or from neighboring countries such as Germany and France, all of which together account for around 50% of the visitors surveyed. We can also see that few people making a European tour would spend only one night in Switzerland.
 
-## Global Frenquency of Nightstays in Switzerland
+## Global Frequency of Nightstays in Switzerland
 
 Here is the distribution of the frequencies of the number of nights spent during a trip in Switzerland.
 
@@ -586,8 +586,7 @@ sums_df$american <- round(100*as.numeric(sums_df[, "american"])/sum(df$american 
 
 ```
 
-Here we can see the group types of travelers (Alone, with partner, with children, etc.) For each of the top 5 nations of origin of tourists.
-
+Here we can see the group types of travelers (alone, with partner, with children, etc.) for each of the top 5 nations of origin of tourists.
 
 ::: panel-tabset
 
@@ -799,7 +798,7 @@ ggplot(spendings_top7, aes(x = F05_02_ENG, y = per_person, fill = F05_02_ENG)) +
 
 :::
 
-We notice that by taking spending per person, Americans are the main spenders, followed by the British and the Spanish. When compared to the total spending, where Swiss, American, and French are the highest, the results for individual spending are more interesting.
+We notice that by taking spending per person, Americans are the main spenders, followed by the British and the Spanish. When compared to the total spending, where Swiss, American, and French are the highest, the results for individual spending are more interesting to evaluate the nationality whose individuals spend the most in the canton of Vaud.
 
 ## Countries' spendings by district
 
@@ -1058,4 +1057,4 @@ Top spenders: Swiss, only a few French and German travelers.
 
 :::
 
-  As a result, we notice that some countries, such as Spain, Germany, or the United Kingdom, are more present and spend more in some districts than others. French, Swiss, and Americans seem to be very present in most districts and have pretty high expenses in each one.
+  As a result, we notice that some countries, such as Spain, Germany, or the United Kingdom, are more present and spend more in some districts than others. French, Swiss, and Americans seem to be very present in most districts and have pretty high expenses in almost each one.
