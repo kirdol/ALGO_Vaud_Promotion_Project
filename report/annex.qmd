@@ -55,7 +55,7 @@ print(dfSummary(data), method = "render")
 
 ## Distribution of visitors per continent  {#sec-data-distributioncontinent}
 
-```{r Percentage per continent of visitors coming in the canton of Vaud, echo = FALSE}
+```{r Percentage per continent of visitors coming in the canton of vaud, echo = FALSE}
 datatable(F05_01_PCT,
           rownames = FALSE,
           options = list(pageLength = 10,

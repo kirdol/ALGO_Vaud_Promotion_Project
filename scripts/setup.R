@@ -43,4 +43,5 @@ rm(pkg,
 #colors
 default_color <- "#DA291C"
 
-discrete_color <- "RdYIGn"
+discrete_color <- brewer.pal(11, "RdYlGn")
+discrete_color_less <- brewer.pal(4, "RdYlGn")

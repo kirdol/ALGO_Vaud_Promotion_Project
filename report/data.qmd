@@ -7,6 +7,8 @@ data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"), sep = ",")
 
 Below is the list of questions that were asked during the survey. The original questionnaire that we received was in German. The questions were translated before we conducted our analysis. The version shown below is a simplified version of the original questions. Find the original German and English explanations in [Annex -@sec-data-description] and a better view of the type of data in [Annex -@sec-data-summary].
 
+### Questions overview
+
 ```{r dataframe with the questions, echo=FALSE}
 questions <- data.frame(
   "Questions" = c("<b>F05: Your permanent residence<b/>",
@@ -138,6 +140,8 @@ questions %>%
 ## NAs analysis
 Now that we have a better understanding of the questions asked during the survey, let's look at the missing values in our dataset. Find below the visualization of the entire dataset. The gray cells represent the missing values.
 
+### Missing values visualization
+
 ```{r Vis dat plot of all the data, echo=FALSE}
 # Function to replace empty strings with NA in character columns
 convert_blanks_to_NA <- function(x) {
@@ -148,15 +152,20 @@ convert_blanks_to_NA <- function(x) {
 data[sapply(data, is.character)] <-
   lapply(data[sapply(data, is.character)], convert_blanks_to_NA)
 
-# Generate the plot
+# Generate the plot with the custom color palette
 plot <- vis_dat(data) +
+  scale_fill_manual(values = discrete_color_less) +
   theme(legend.position = "bottom")
-plot
+
+# Print the plot
+print(plot)
 ```
 
 Let's now have a closer look at the column with missing values. We will order the columns by the percentage of missing values.
 
-```{r Vis_miss Missing values, echo=FALSE}
+### Missing values details
+
+```{r Vis_miss Missing values, echo=FALSE, message = FALSE}
 # Filter columns with missing values
 missing_percentages <- sapply(data, function(x) sum(is.na(x)) / length(x))
 columns_with_missing <- which(missing_percentages > 0)
@@ -166,8 +175,21 @@ data_with_missing <- data[, columns_with_missing]
 ordered_indices <- order(missing_percentages[columns_with_missing], decreasing = TRUE)
 data_ordered <- data_with_missing[, ordered_indices]
 
-# plot
-vis_miss(data_ordered)
+# Define the color palette
+discrete_color_NA <- c("#d81f1c", "#7f7f7f")
+
+# Generate the plot with the custom color palette
+plot <- vis_miss(data_ordered) +
+  scale_fill_manual(
+    name = "Data Status",
+    values = discrete_color_NA,
+    labels = c("Not Missing", "Missing"),
+    aesthetics = c("fill", "colour")
+  ) +
+  theme(legend.position = "bottom")
+
+# Print the plot
+print(plot)
 ```
 
 

@@ -64,7 +64,7 @@ vaud$sum[vaud$NAME == "Ouest lausannois"] <- sum(data$leaflet_districts == "Oues
 vaud$value <- 1
 
 # Couples proportion plot
-value_palette <- leaflet::colorNumeric(palette = "lightblue", domain = vaud$value)
+value_palette <- leaflet::colorNumeric(palette = default_color, domain = vaud$value)
 
 
 leaflet(vaud) %>%
@@ -104,7 +104,7 @@ color_pal <- colorBin("YlGnBu", domain = country$Proportion, bins = 10, na.color
 m <- leaflet(country) %>%
   addProviderTiles(providers$CartoDB.PositronNoLabels) %>%
   setView(lng = 9, lat = 46, zoom = 1.5) %>%
-  addPolygons(weight = 1, color = "white", fillColor = "lightblue",
+  addPolygons(weight = 1, color = "white", fillColor = default_color,
               fillOpacity = 0.7, highlight = highlightOptions(weight = 2, color = "#666", fillOpacity = 0.7),
               label = ~paste(""),
               labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "15px", direction = "auto")) %>%
