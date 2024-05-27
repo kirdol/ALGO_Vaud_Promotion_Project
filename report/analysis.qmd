@@ -108,10 +108,10 @@ trip_percentages <- trip_percentages %>%
 #                                    searchHighlight = TRUE), rownames = FALSE) 
 
 #plot
-my_colors <- c("Holidays with only one overnight stay in Switzerland" = "#FF9999",
-"Round trip only within Switzerland (several overnight locations in Switzerland)" = "#9999FF",
-"Round trip through Europe: only one overnight stay in Switzerland" = "#66CC99",
-"Round trip through Europe: several places to stay in Switzerland" = "#E69F00")
+my_colors <- c("Holidays with only one overnight stay in Switzerland" = "#D73027",
+"Round trip only within Switzerland (several overnight locations in Switzerland)" = "#F46D43",
+"Round trip through Europe: only one overnight stay in Switzerland" = "#FDAE61",
+"Round trip through Europe: several places to stay in Switzerland" = "#FEE08B")
 
 #filter by continent for pie plots
 trip_percentages_Af <- trip_percentages %>% filter(F05_01_ENG == "Africa")
@@ -776,7 +776,8 @@ ggplot(spendings_top7, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_EN
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust text angle for better readability
-        plot.title = element_text(hjust = 0.5))  # Center the title for aesthetics
+        plot.title = element_text(hjust = 0.5)) +  # Center the title for aesthetics
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 #### Per person
@@ -792,7 +793,8 @@ ggplot(spendings_top7, aes(x = F05_02_ENG, y = per_person, fill = F05_02_ENG)) +
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust text angle for better readability
-        plot.title = element_text(hjust = 0.5))  # Center the title for aesthetics
+        plot.title = element_text(hjust = 0.5)) +  # Center the title for aesthetics
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 :::
@@ -823,7 +825,8 @@ ggplot(spendings_aigle, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_E
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))  
+        plot.title = element_text(hjust = 0.5)) + 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top spenders: Swiss, French and British travelers.
@@ -847,7 +850,8 @@ ggplot(spendings_avenches, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_0
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5))+ 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top Spenders: Swiss, American, French and British.
@@ -871,7 +875,8 @@ ggplot(spendings_echallens, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5))+ 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top spenders: None of our seven countries of interest.
@@ -895,7 +900,8 @@ ggplot(spendings_estavayer, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5))+ 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top spenders: Swiss, French and Spanish travelers.
@@ -919,7 +925,8 @@ ggplot(spendings_lausanne, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_0
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5))+ 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top spenders: American, French, Swiss and British travelers.
@@ -943,7 +950,8 @@ ggplot(spendings_montreux, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_0
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5))+ 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top spenders: Swiss, American and French travelers.
@@ -967,7 +975,8 @@ ggplot(spendings_moudon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5))+ 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top spenders: Swiss, Spanish and German travelers.
@@ -991,7 +1000,8 @@ ggplot(spendings_nyon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_EN
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5))+ 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top spenders: French, American and Swiss travelers.
@@ -1015,7 +1025,8 @@ ggplot(spendings_enhaut, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02_
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5))+ 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top spenders: American, French and Swiss travelers.
@@ -1039,7 +1050,8 @@ ggplot(spendings_yverdon, aes(x = F05_02_ENG, y = Total_Spendings, fill = F05_02
        fill = "Nationality") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5))+ 
+  scale_fill_manual(values = discrete_color, name = "Nationality")
 ```
 
 Top spenders: Swiss, only a few French and German travelers.

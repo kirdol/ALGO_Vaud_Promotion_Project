@@ -43,7 +43,7 @@ rm(pkg,
 #colors
 default_color <- "#DA291C"
 
-discrete_color <- brewer.pal(11, "RdYlGn")
+discrete_color <- brewer.pal(8, "RdYlGn")
 discrete_color_less <- brewer.pal(4, "RdYlGn")
 
 maps_palette <- "Reds"
