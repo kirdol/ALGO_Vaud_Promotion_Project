@@ -106,7 +106,7 @@ vaud <- calculate_couples_sum(data, vaud)
 vaud$couples_proportion <- round((vaud$couples_sum / vaud$sum) * 100, 2)
 
 # Couples proportion plot
-couples_palette <- leaflet::colorNumeric(palette = "Purples", domain = vaud$couples_proportion)
+couples_palette <- leaflet::colorNumeric(palette = maps_palette, domain = vaud$couples_proportion)
 
 leaflet(vaud) %>%
   leaflet::addTiles() %>%
@@ -139,7 +139,7 @@ vaud <- calculate_children_sum(data, vaud)
 vaud$children_proportion <- round((vaud$children_sum / vaud$sum) * 100, 2)
 
 # Children proportion plot
-children_palette <- colorNumeric(palette = "Purples", domain = vaud$children_proportion)
+children_palette <- colorNumeric(palette = maps_palette, domain = vaud$children_proportion)
 
 leaflet(vaud) %>%
   leaflet::addTiles() %>%
@@ -172,7 +172,7 @@ vaud <- calculate_alone_sum(data, vaud)
 vaud$alone_proportion <- round((vaud$alone_sum / vaud$sum) * 100, 2)
 
 # Alone proportion plot
-alone_palette <- colorNumeric(palette = "Purples", domain = vaud$alone_proportion)
+alone_palette <- colorNumeric(palette = maps_palette, domain = vaud$alone_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -208,7 +208,7 @@ vaud <- calculate_summer_sum(data, vaud)
 vaud$summer_proportion <- round((vaud$summer_sum / vaud$sum) * 100, 2)
 
 # Alone proportion plot
-summer_palette <- colorNumeric(palette = "Purples", domain = vaud$summer_proportion)
+summer_palette <- colorNumeric(palette = maps_palette, domain = vaud$summer_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -235,7 +235,7 @@ vaud <- calculate_winter_sum(data, vaud)
 vaud$winter_proportion <- round((vaud$winter_sum / vaud$sum) * 100, 2)
 
 # Alone proportion plot
-winter_palette <- colorNumeric(palette = "Purples", domain = vaud$winter_proportion)
+winter_palette <- colorNumeric(palette = maps_palette, domain = vaud$winter_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -269,7 +269,7 @@ vaud <- calculate_spending_sum(data_spending, vaud)
 vaud$average_spending <- round((vaud$spending_sum / vaud$sum), 0)
 
 # Average spending plot
-spending_palette <- colorNumeric(palette = "Purples", domain = vaud$average_spending)
+spending_palette <- colorNumeric(palette = maps_palette, domain = vaud$average_spending)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -325,7 +325,7 @@ vaud <- calculate_swiss_german_sum(data, vaud)
 vaud$swiss_german_proportion <- round((vaud$swiss_german_sum / vaud$sum) * 100, 2)
 
 # swiss_german proportion plot
-swiss_german_palette <- colorNumeric(palette = "Purples", domain = vaud$swiss_german_proportion)
+swiss_german_palette <- colorNumeric(palette = maps_palette, domain = vaud$swiss_german_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -357,7 +357,7 @@ vaud <- calculate_swiss_french_sum(data, vaud)
 vaud$swiss_french_proportion <- round((vaud$swiss_french_sum / vaud$sum) * 100, 2)
 
 # swiss_french proportion plot
-swiss_french_palette <- colorNumeric(palette = "Purples", domain = vaud$swiss_french_proportion)
+swiss_french_palette <- colorNumeric(palette = maps_palette, domain = vaud$swiss_french_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -397,7 +397,7 @@ vaud <- calculate_france_idf_sum(data, vaud)
 vaud$france_idf_proportion <- round((vaud$france_idf_sum / vaud$sum) * 100, 2)
 
 # france_idf proportion plot
-france_idf_palette <- colorNumeric(palette = "Purples", domain = vaud$france_idf_proportion)
+france_idf_palette <- colorNumeric(palette = maps_palette, domain = vaud$france_idf_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -427,7 +427,7 @@ vaud <- calculate_france_ara_sum(data, vaud)
 vaud$france_ara_proportion <- round((vaud$france_ara_sum / vaud$sum) * 100, 2)
 
 # france_ara proportion plot
-france_ara_palette <- colorNumeric(palette = "Purples", domain = vaud$france_ara_proportion)
+france_ara_palette <- colorNumeric(palette = maps_palette, domain = vaud$france_ara_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -459,7 +459,7 @@ vaud <- calculate_france_rest_sum(data, vaud)
 vaud$france_rest_proportion <- round((vaud$france_rest_sum / vaud$sum) * 100, 2)
 
 # france_rest proportion plot
-france_rest_palette <- colorNumeric(palette = "Purples", domain = vaud$france_rest_proportion)
+france_rest_palette <- colorNumeric(palette = maps_palette, domain = vaud$france_rest_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -499,7 +499,7 @@ vaud <- calculate_uk_london_sum(data, vaud)
 vaud$uk_london_proportion <- round((vaud$uk_london_sum / vaud$sum) * 100, 2)
 
 # uk_london proportion plot
-uk_london_palette <- colorNumeric(palette = "Purples", domain = vaud$uk_london_proportion)
+uk_london_palette <- colorNumeric(palette = maps_palette, domain = vaud$uk_london_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -529,7 +529,7 @@ vaud <- calculate_uk_england_sum(data, vaud)
 vaud$uk_england_proportion <- round((vaud$uk_england_sum / vaud$sum) * 100, 2)
 
 # uk_england proportion plot
-uk_england_palette <- colorNumeric(palette = "Purples", domain = vaud$uk_england_proportion)
+uk_england_palette <- colorNumeric(palette = maps_palette, domain = vaud$uk_england_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -559,7 +559,7 @@ vaud <- calculate_uk_scotland_sum(data, vaud)
 vaud$uk_scotland_proportion <- round((vaud$uk_scotland_sum / vaud$sum) * 100, 2)
 
 # uk_scotland proportion plot
-uk_scotland_palette <- colorNumeric(palette = "Purples", domain = vaud$uk_scotland_proportion)
+uk_scotland_palette <- colorNumeric(palette = maps_palette, domain = vaud$uk_scotland_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -599,7 +599,7 @@ vaud <- calculate_de_baden_sum(data, vaud)
 vaud$de_baden_proportion <- round((vaud$de_baden_sum / vaud$sum) * 100, 2)
 
 # de_baden proportion plot
-de_baden_palette <- colorNumeric(palette = "Purples", domain = vaud$de_baden_proportion)
+de_baden_palette <- colorNumeric(palette = maps_palette, domain = vaud$de_baden_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -631,7 +631,7 @@ vaud <- calculate_de_bayern_sum(data, vaud)
 vaud$de_bayern_proportion <- round((vaud$de_bayern_sum / vaud$sum) * 100, 2)
 
 # de_bayern proportion plot
-de_bayern_palette <- colorNumeric(palette = "Purples", domain = vaud$de_bayern_proportion)
+de_bayern_palette <- colorNumeric(palette = maps_palette, domain = vaud$de_bayern_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -661,7 +661,7 @@ vaud <- calculate_de_nordrhein_sum(data, vaud)
 vaud$de_nordrhein_proportion <- round((vaud$de_nordrhein_sum / vaud$sum) * 100, 2)
 
 # de_nordrhein proportion plot
-de_nordrhein_palette <- colorNumeric(palette = "Purples", domain = vaud$de_nordrhein_proportion)
+de_nordrhein_palette <- colorNumeric(palette = maps_palette, domain = vaud$de_nordrhein_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -691,7 +691,7 @@ vaud <- calculate_de_rest_sum(data, vaud)
 vaud$de_rest_proportion <- round((vaud$de_rest_sum / vaud$sum) * 100, 2)
 
 # de_rest proportion plot
-de_rest_palette <- colorNumeric(palette = "Purples", domain = vaud$de_rest_proportion)
+de_rest_palette <- colorNumeric(palette = maps_palette, domain = vaud$de_rest_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -729,7 +729,7 @@ vaud <- calculate_us_california_sum(data, vaud)
 vaud$us_california_proportion <- round((vaud$us_california_sum / vaud$sum) * 100, 2)
 
 # us_california proportion plot
-us_california_palette <- colorNumeric(palette = "Purples", domain = vaud$us_california_proportion)
+us_california_palette <- colorNumeric(palette = maps_palette, domain = vaud$us_california_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -759,7 +759,7 @@ vaud <- calculate_us_rest_sum(data, vaud)
 vaud$us_rest_proportion <- round((vaud$us_rest_sum / vaud$sum) * 100, 2)
 
 # us_rest proportion plot
-us_rest_palette <- colorNumeric(palette = "Purples", domain = vaud$us_rest_proportion)
+us_rest_palette <- colorNumeric(palette = maps_palette, domain = vaud$us_rest_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -797,7 +797,7 @@ vaud <- calculate_belgium_sum(data, vaud)
 vaud$belgium_proportion <- round((vaud$belgium_sum / vaud$sum) * 100, 2)
 
 # belgium proportion plot
-belgium_palette <- colorNumeric(palette = "Purples", domain = vaud$belgium_proportion)
+belgium_palette <- colorNumeric(palette = maps_palette, domain = vaud$belgium_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -827,7 +827,7 @@ vaud <- calculate_spain_sum(data, vaud)
 vaud$spain_proportion <- round((vaud$spain_sum / vaud$sum) * 100, 2)
 
 # spain proportion plot
-spain_palette <- colorNumeric(palette = "Purples", domain = vaud$spain_proportion)
+spain_palette <- colorNumeric(palette = maps_palette, domain = vaud$spain_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -857,7 +857,7 @@ vaud <- calculate_netherlands_sum(data, vaud)
 vaud$netherlands_proportion <- round((vaud$netherlands_sum / vaud$sum) * 100, 2)
 
 # netherlands proportion plot
-netherlands_palette <- colorNumeric(palette = "Purples", domain = vaud$netherlands_proportion)
+netherlands_palette <- colorNumeric(palette = maps_palette, domain = vaud$netherlands_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -887,7 +887,7 @@ vaud <- calculate_canada_sum(data, vaud)
 vaud$canada_proportion <- round((vaud$canada_sum / vaud$sum) * 100, 2)
 
 # canada proportion plot
-canada_palette <- colorNumeric(palette = "Purples", domain = vaud$canada_proportion)
+canada_palette <- colorNumeric(palette = maps_palette, domain = vaud$canada_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
@@ -917,7 +917,7 @@ vaud <- calculate_italy_sum(data, vaud)
 vaud$italy_proportion <- round((vaud$italy_sum / vaud$sum) * 100, 2)
 
 # italy proportion plot
-italy_palette <- colorNumeric(palette = "Purples", domain = vaud$italy_proportion)
+italy_palette <- colorNumeric(palette = maps_palette, domain = vaud$italy_proportion)
 
 leaflet(vaud) %>%
   addTiles() %>%
