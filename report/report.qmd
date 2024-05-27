@@ -1,8 +1,8 @@
 ---
 title: "Comprehensive Analysis of the Tourismus Monitor Schweiz Survey"
-title-block-banner: "#0095C8"
 author: "Lodrik Adam, Stefan Favre, Victor Hogan, Jeff Macaraeg"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+title-block-banner: "#DA291C"
 format:
   html:
     toc: true
@@ -12,11 +12,11 @@ format:
     self-contained: true
     number-sections: true
     code-fold: true
-    code-tools: true
-    theme: Flatly
+    theme: Journal
     code-block-bg: true
-    code-block-border-left: "#0095C8"
+    code-block-border-left: "#DA291C"
     link-external-icon: true
+    css: info.css
 ---
 
 ```{r child = c('intro.qmd', 'data.qmd', 'EDA.qmd', 'analysis.qmd', 'maps.qmd', 'conclusion.qmd', 'annex.qmd')}

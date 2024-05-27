@@ -6,7 +6,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r output = FALSE}
+```{r output = FALSE, echo = FALSE}
 source(here::here("scripts", "setup.R"))
 data <- read.csv(here("data", "TMS_dataset_Vaud_20240314_FINAL.csv"),
                  sep = ",")

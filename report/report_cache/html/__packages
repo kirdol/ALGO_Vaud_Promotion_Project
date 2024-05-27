@@ -27,3 +27,6 @@ visdat
 summarytools
 cowplot
 jsonlite
+RColorBrewer
+viridisLite
+viridis
