@@ -73,7 +73,7 @@ ggplot(nb_days_per_month, aes(x = month_name_column, y = total_hFerienDauer, fil
   guides(fill=FALSE)
 ```
  
-We can clearly see two major periods in the year when there is an increase in the number of days spent in the canto of Vaud: March and July. This could be influenced by national holidays.
+We can clearly see two major periods in the year when there is an increase in the number of days spent in the canton of Vaud: March and July. This could be influenced by national holidays.
  
 ```{r, message=FALSE, fig.width=8, fig.height=8, warning=FALSE, echo=FALSE}
 ### F16 ### 
@@ -242,7 +242,7 @@ combined_plot_with_legend <- plot_grid(combined, legend, ncol = 1, nrow = 1)
 
 ```
 
-## Nightstay Category Distribution per Continent 
+## Nightstay category distribution per continent
 
 Let's now look at the percentage of nightstay trips per category and continent. In the survey, visitors were asked to select the type of trip they took from four options, as explained in the legend of the graph. So here is the graph of the distribution of the type of trip for each continent.
 
@@ -267,9 +267,9 @@ ggplot(trip_percentages, aes(x = F05_01_ENG, y = Percentages, fill = F16_ENG)) +
 
 ```
 
-In general, it can be seen that most visitors from continents far away from Switzerland come to Switzerland for one or more nights during their trip in Europe. In addition, visitors living closer to Switzerland, such as Europeans, mostly stay for one night in Switzerland. This is probably due to the large number of visitors surveyed who come from Switzerland but from other cantons or from neighboring countries such as Germany and France, all of which together account for around 50% of the visitors surveyed. We can also see that few people making a European tour would spend only one night in Switzerland.
+In general, we can see that most visitors from continents far away from Switzerland come to Switzerland for one or more nights during their trip in Europe. In addition, visitors living closer to Switzerland, such as Europeans, mostly stay for one night in Switzerland. This is probably due to the large number of visitors surveyed who comes from Switzerland but from other cantons or from neighboring countries such as Germany and France, all of which together account for around 50% of the visitors surveyed. We can also see that few people making a European tour would spend only one night in Switzerland.
 
-## Global Frequency of Nightstays in Switzerland
+## Global frequency of nightstays in switzerland
 
 Here is the distribution of the frequencies of the number of nights spent during a trip in Switzerland.
 
@@ -296,7 +296,7 @@ ggplot(F20_freq, aes(x = F20, y = Count, fill = default_color)) +
   guides(fill=FALSE)
 ```
 
-As the question asked of visitors was the number of nights spent in Switzerland, it is difficult to know how many nights were spent in the canton of Vaud. We have therefore decided to use the total number of overnight stays in the country in our analysis. In addition, due to the structure of the survey, most of our data contained NAs (according to the answer to question F16, some people could not answer question F20, so their answer was reported as an NA). We have therefore decided to count the NAs as 1 overnight stay, as it is not possible to know if they only spent 1 day in Vaud without staying overnight.
+As the question asked to the visitors was the number of nights spent in Switzerland, it is difficult to know how many nights were spent in the canton of Vaud. We have therefore decided to use the total number of overnight stays in the country in our analysis. In addition, due to the structure of the survey, most of our data contained NAs (according to the answer to question F16, some people could not answer question F20, so their answers were reported as an NA). We have therefore decided to count the NAs as 1 overnight stay, as it is not possible to know if they only spent 1 day in Vaud without staying overnight.
 
 We can therefore see that the majority of visitors generally spend only one night in the canton, with few people staying for more than a week. 
 
@@ -333,7 +333,7 @@ ggplot(distr_nightstays_per_district, aes(x = F20, y = F105_OrgCode, group = F10
   )
 ```
 
-## Distribution Percentage Nightstays in Switzerland over Entire Trip
+## Distribution percentage nightstays in Switzerland over entire trip
 
 Here is the distribution of the number of nights spent in Switzerland over the whole trip. 
 
@@ -363,9 +363,9 @@ ggplot(ratio_nightstays_CH_EU, aes(x = Percentage_Night_Stays_Switzerland)) +
   theme_minimal()
 ```
 
-As this graph shows, we notice that over visitor trips to Europe, most people will come to Switzerland for 20% of their trip, and few will spend more than 75% of their trip in the country.
+As this graph shows, we notice that most people will come to Switzerland for 20% of their trip, and few will spend more than 75% of their trip in the country.
 
-## Distribution of Arrivals per Nationality
+## Distribution of arrivals per nationality
 
 Now let's explore the distribution of the arrivals by nationality over the year. The full table of the arrivals can be found in the [Annex -@sec-data-arrivals].
 
@@ -411,11 +411,11 @@ ggplot(result, aes(x = month_name_column, y = `F05_02_ENG`, size = Count/total, 
 
 ```
 
-On this graph, it can be seen that the size of the dots representing the monthly number of arrivals of a nationality, scaled over the total number of arrivals of that particular nationality over the year, varies considerably according to the nationality. Unfortunately, due to the small number of data collected, some countries are represented only once in the whole year. In addition, arrivals vary according to country of origin: most countries have the same main arrival period in March and June, as seen before, but this is not the case for every country, showing differences in seasonality. 
+On this graph, we can see that the size of the dots represents the monthly number of arrivals of a nationality, scaled over the total number of arrivals of that particular country over the year, varies considerably according to the nationality. Unfortunately, due to the small number of data collected, some countries are represented only once in the whole year. In addition, arrivals vary according to country of origin: most countries have the same main arrival period in March and June, as seen before, but this is not the case for every country, showing differences in seasonality. 
 
 ## Average spending by travel group type
 
-Here we have calculated the average total CHF spent during a trip to Vaud per person, depending on who the respondent has traveled with. All the bars in this plot are non-mutually exclusive responses, meaning respondents could select multiple options, except for the bar "Only with partner", in which case the respondent only selected "traveled with partner".
+Here we have calculated the average total expenses in francs spent during a trip to the canton of Vaud per person, depending on who the respondent has traveled with. All the bars in this plot are non-mutually exclusive responses, meaning respondents could select multiple options, except for the bar "Only with partner", in which case the respondent only selected "traveled with partner".
 
 ```{r, echo=FALSE, output=FALSE, warning=FALSE, error=FALSE}
 
@@ -513,8 +513,8 @@ df_sums_df$Column <- factor(df_sums_df$Column, levels = df_sums_df$Column[order(
 ggplot(df_sums_df, aes(x = Column, y = Spent)) +
   geom_bar(stat = "identity", fill = default_color) +
   geom_text(aes(label = paste0("CHF ", round(Spent, 0))), vjust = -0.5, size = 3, color = "black") +
-  labs(title = "Average CHF spent by group type", x = "Traveled with", y = "Amount spent / person")
-
+  labs(title = "Average CHF spent by group type", x = "Traveled with", y = "Amount spent / person") + 
+  theme_minimal()
 ```
 
 ## Travel group type by nation
@@ -610,7 +610,6 @@ ggplot(sums_df, aes(x = group_name, y = french)) +
   ylim(0, 100) +
   labs(title = "Group types for French tourists", x = "Traveled with", y = "Percentage") +
   geom_text(aes(label = paste0(french, "%")), vjust = -0.5, size = 3)
-
 ```
 
 #### British
@@ -621,7 +620,6 @@ ggplot(sums_df, aes(x = group_name, y = british)) +
   ylim(0, 100) +
   labs(title = "Group types for British tourists", x = "Traveled with", y = "Percentage") +
   geom_text(aes(label = paste0(british, "%")), vjust = -0.5, size = 3)
-
 ```
 
 #### German
@@ -632,7 +630,6 @@ ggplot(sums_df, aes(x = group_name, y = german)) +
   ylim(0, 100) +
   labs(title = "Group types for German tourists", x = "Traveled with", y = "Percentage") +
   geom_text(aes(label = paste0(german, "%")), vjust = -0.5, size = 3)
-
 ```
 
 German tourists are the most likely of these countries to be traveling only with their partner, as a couple.
@@ -645,17 +642,15 @@ ggplot(sums_df, aes(x = group_name, y = american)) +
   ylim(0, 100) +
   labs(title = "Group types for American tourists", x = "Traveled with", y = "Percentage") +
   geom_text(aes(label = paste0(american, "%")), vjust = -0.5, size = 3)
-
-
 ```
 
 American tourists have by far the highest percentage of tourists traveling alone as well as with a group of unknown people. This suggests they are more likely to be on a solo trip to Switzerland and also be on an organized group tour with other strangers.
 
 :::
 
-## Spending by District
+## Spending by district
 
-It is interesting for us to combine the expense variables with the district ones in order to see in which category of spending the travelers spend the most money for each district.
+It is interesting for us to combine the expense variables with the district ones in order to see in which category of expenses the travelers spent the most money for each district.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 # Code copied from maps
@@ -677,7 +672,6 @@ data$leaflet_districts[data$F105_Code %in% c("Valbroye", "Lucens", "Avenches", "
 data$leaflet_districts[data$F105_Code %in% c("Crissier", "Bussigny", "Ecublens (VD)", "Renens", "Saint-Sulpice (VD)")] <- "Ouest lausannois"
 data$leaflet_districts[data$F105_Code %in% c("Chexbres", "Bourg-en-Lavaux", "Cully")] <- "Lavaux-Oron"
 data$leaflet_districts[data$F105_Code %in% c("Echallens")] <- "Gros-de-Vaud"
-
 ```
 
 ```{r, echo = FALSE, warning = FALSE}
@@ -735,7 +729,7 @@ p <- plot_ly(data_long, x = ~Spending_Type, y = ~Amount, type = 'bar', colors = 
 p
 ```
 
-In all cases, overnight stays are the category most spent on. It is followed mainly by food and drinks, transport, and souvenirs. Looking at the Ouest Lausannois district, we notice that travelers also spend on other expenses. 
+In all cases, the category for which the tourists spend the most amount of money is their overnight stays. It is followed mainly by food and drinks, transport, and souvenirs categories. Looking at the Ouest Lausannois district, we notice that travelers also spend on other expenses. 
 
 Next, we will go through the spending for our seven main countries.
 
@@ -762,6 +756,7 @@ spendings_top7$per_person = spendings_top7$Total_Spendings/c(nrow(data[data$F05_
 ```
 
 ::: panel-tabset
+
 #### Total
 
 ```{r, warning = FALSE, echo = FALSE}
@@ -805,6 +800,7 @@ We notice that by taking spending per person, Americans are the main spenders, f
 Now, we will focus on the districts that these countries spend in. The aim is to see in which districts we find more nationalities and how much they spend in each district.
 
 ::: panel-tabset
+
 #### Aigle
 
 ```{r, warning = FALSE, echo = FALSE}
